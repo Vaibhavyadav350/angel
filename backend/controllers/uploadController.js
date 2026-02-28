@@ -12,6 +12,7 @@ exports.uploadImage = catchAsyncError(async (req, res, next) => {
     fetch_format: 'auto',
     quality: 'auto'
   });
+  console.info(`[UPLOAD SUCCESS] Image uploaded to Cloudinary: ${public_id}`);
   res.status(200).json({
     success: true,
     data: {

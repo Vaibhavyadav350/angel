@@ -127,8 +127,7 @@ out/
 dist/
 
 # Gatsby (if used in future)
-.cache/
-public
+# public
 
 # Storybook (if used in future)
 storybook-static

@@ -8,18 +8,21 @@ import { FilterProvider } from './context/filter_context';
 import { CartProvider } from './context/cart_context';
 import { UserProvider } from './context/user_context';
 import { OrderProvider } from './context/order_context';
+import ErrorBoundary from './components/ErrorBoundary';
 
 ReactDOM.render(
-  <UserProvider>
-    <ProductsProvider>
-      <FilterProvider>
-        <CartProvider>
-          <OrderProvider>
-            <App />
-          </OrderProvider>
-        </CartProvider>
-      </FilterProvider>
-    </ProductsProvider>
-  </UserProvider>,
+  <ErrorBoundary>
+    <UserProvider>
+      <ProductsProvider>
+        <FilterProvider>
+          <CartProvider>
+            <OrderProvider>
+              <App />
+            </OrderProvider>
+          </CartProvider>
+        </FilterProvider>
+      </ProductsProvider>
+    </UserProvider>
+  </ErrorBoundary>,
   document.getElementById('root')
 );

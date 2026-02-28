@@ -5,6 +5,7 @@ const ErrorHandler = require('../utils/ErrorHandler');
 // Create Coupon
 exports.createCoupon = catchAsyncErrors(async (req, res, next) => {
     const coupon = await Coupon.create(req.body);
+    console.info(`[COUPON CREATED] Code: ${coupon.code}, Type: ${coupon.discountType}, Amount: ${coupon.amount}`);
     res.status(201).json({
         success: true,
         data: coupon
@@ -24,6 +25,7 @@ exports.getAllCoupons = catchAsyncErrors(async (req, res, next) => {
 exports.deleteCoupon = catchAsyncErrors(async (req, res, next) => {
     const coupon = await Coupon.findById(req.params.id);
     if (!coupon) return next(new ErrorHandler('Coupon not found', 404));
+    console.info(`[COUPON DELETED] Code: ${coupon.code}`);
     await coupon.remove();
     res.status(200).json({
         success: true,
@@ -50,6 +52,7 @@ exports.validateCoupon = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler(`Minimum purchase of $${coupon.minPurchase} required`, 400));
     }
 
+    console.info(`[COUPON VALIDATED] Code: ${coupon.code} applied successfully. Discount: ${coupon.discountType} ${coupon.amount}`);
     res.status(200).json({
         success: true,
         data: {

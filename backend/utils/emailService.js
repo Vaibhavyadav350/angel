@@ -26,10 +26,10 @@ const sendEmail = async (options) => {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email sent successfully: ${info.messageId}`);
+        console.info(`[EMAIL SENT] To: ${options.email} | Subject: "${options.subject}" | MessageId: ${info.messageId}`);
         return info;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error(`[EMAIL FAILED] To: ${options.email} | Subject: "${options.subject}" | Error: ${error.message}`);
         // Do not throw to prevent crashing the app if email fails
         return null;
     }

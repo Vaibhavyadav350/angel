@@ -7,8 +7,20 @@ import { formatPrice } from '../../utils/helpers';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCouponContext } from '../../context/admin_coupon_context';
-import { Country, State, City } from 'country-state-city';
 import { domain } from '../../utils/constants';
+
+// Strict minimal Australian state mapping
+const AU_STATES = [
+  { code: 'NSW', name: 'New South Wales' },
+  { code: 'VIC', name: 'Victoria' },
+  { code: 'QLD', name: 'Queensland' },
+  { code: 'WA', name: 'Western Australia' },
+  { code: 'SA', name: 'South Australia' },
+  { code: 'TAS', name: 'Tasmania' },
+  { code: 'ACT', name: 'Australian Capital Territory' },
+  { code: 'NT', name: 'Northern Territory' }
+];
+
 const CheckoutPage = () => {
   const { cart, total_amount, shipping_fee } = useCartContext();
   const { shipping, updateShipping } = useOrderContext();
@@ -16,7 +28,6 @@ const CheckoutPage = () => {
   const location = useLocation();
 
   // Country State City
-  const [selectedCountry, setSelectedCountry] = useState(shipping.address?.country || '');
   const [selectedState, setSelectedState] = useState(shipping.address?.state || '');
 
   // Coupons
@@ -29,59 +40,48 @@ const CheckoutPage = () => {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
 
-  const countries = Country.getAllCountries();
-  const states = selectedCountry ? State.getStatesOfCountry(selectedCountry) : [];
-  const cities = selectedCountry && selectedState ? City.getCitiesOfState(selectedCountry, selectedState) : [];
-
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Secure Checkout';
     window.scrollTo(0, 0);
+
+    // Ensure strictly AU context in context state if not present
+    if (!shipping.address?.country || shipping.address.country !== 'AU') {
+      updateShipping({ target: { name: 'country', value: 'AU' } });
+    }
 
     // Handle return from Stripe (Cancel only, success goes to /orders)
     const params = new URLSearchParams(location.search);
     if (params.get('canceled')) {
       toast.error('Payment cancelled.');
     }
-  }, [location]);
+  }, [location, shipping.address, updateShipping]);
 
   useEffect(() => {
-    if (shipping.address?.country && shipping.address.country !== selectedCountry) {
-      setSelectedCountry(shipping.address.country);
-    }
     if (shipping.address?.state && shipping.address.state !== selectedState) {
       setSelectedState(shipping.address.state);
     }
-  }, [shipping.address, selectedCountry, selectedState]);
-
-
-  const handleCountryChange = (e) => {
-    setSelectedCountry(e.target.value);
-    setSelectedState('');
-    updateShipping(e);
-    updateShipping({ target: { name: 'state', value: '' } });
-    updateShipping({ target: { name: 'city', value: '' } });
-  }
+  }, [shipping.address, selectedState]);
 
   const handleStateChange = (e) => {
     setSelectedState(e.target.value);
     updateShipping(e);
-    updateShipping({ target: { name: 'city', value: '' } });
-  }
+  };
 
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setProcessing(true);
     setError(null);
 
-    const { name, phone_number, address: { line1, postal_code, city, state, country } } = shipping;
-    if (!name || !phone_number || !line1 || !postal_code || !city || !state || !country) {
+    const { name, phone_number, address: { line1, postal_code, city, state } } = shipping;
+    if (!name || !phone_number || !line1 || !postal_code || !city || !state) {
       toast.error('Please fill all shipping fields completely', { position: 'top-center' });
       setProcessing(false);
       return;
     }
 
     try {
-      const finalDiscount = discount.type === 'PERCENTAGE' ? (total_amount * discount.amount / 100) : discount.amount;
+      const rawDiscount = discount.type === 'PERCENTAGE' ? (total_amount * discount.amount / 100) : discount.amount;
+      const finalDiscount = Number(rawDiscount.toFixed(2));
 
       const response = await axios.post(`${domain}/api/payment/create-checkout-session`, {
         cart,
@@ -89,7 +89,7 @@ const CheckoutPage = () => {
         total_amount,
         shipping: {
           name,
-          address: { line1, postal_code, city, state, country }
+          address: { line1, postal_code, city, state, country: 'AU' }
         },
         discountAmount: finalDiscount,
         couponCode: discount.code,
@@ -164,28 +164,29 @@ const CheckoutPage = () => {
                   />
                 </div>
 
-                <div>
-                  <label className={labelClasses}>Country</label>
-                  <select className={inputClasses} name="country" value={selectedCountry} onChange={handleCountryChange} required>
-                    <option value="">Select Country</option>
-                    {countries.map((c) => <option key={c.isoCode} value={c.isoCode}>{c.name}</option>)}
-                  </select>
+                <div className="hidden">
+                  <input type="hidden" name="country" value="AU" />
                 </div>
 
                 <div>
-                  <label className={labelClasses}>State / Province</label>
-                  <select className={inputClasses} name="state" value={selectedState} onChange={handleStateChange} disabled={!selectedCountry} required>
+                  <label className={labelClasses}>State / Territory</label>
+                  <select className={inputClasses} name="state" value={selectedState} onChange={handleStateChange} required>
                     <option value="">Select State</option>
-                    {states.map((s) => <option key={s.isoCode} value={s.isoCode}>{s.name}</option>)}
+                    {AU_STATES.map((s) => <option key={s.code} value={s.code}>{s.name} ({s.code})</option>)}
                   </select>
                 </div>
 
                 <div>
-                  <label className={labelClasses}>City</label>
-                  <select className={inputClasses} name="city" value={shipping.address?.city || ''} onChange={updateShipping} disabled={!selectedState} required>
-                    <option value="">Select City</option>
-                    {cities.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
-                  </select>
+                  <label className={labelClasses}>City / Suburb</label>
+                  <input
+                    className={inputClasses}
+                    type="text"
+                    placeholder="e.g. Sydney, Melbourne"
+                    name="city"
+                    value={shipping.address?.city || ''}
+                    onChange={updateShipping}
+                    required
+                  />
                 </div>
 
                 <div className="col-span-2">

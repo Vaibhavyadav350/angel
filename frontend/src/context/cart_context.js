@@ -64,6 +64,13 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(state.cart));
   }, [state.cart]);
 
+  // Securely wipe Cart data when a user logs out to prevent leaks on shared devices
+  useEffect(() => {
+    const handleLogout = () => clearCart();
+    window.addEventListener('userLoggedOut', handleLogout);
+    return () => window.removeEventListener('userLoggedOut', handleLogout);
+  }, []);
+
   return (
     <CartContext.Provider
       value={{ ...state, addToCart, removeItem, toggleAmount, clearCart }}

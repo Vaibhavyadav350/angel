@@ -19,6 +19,9 @@ exports.createProduct = catchAsyncError(async (req, res, next) => {
   }
   req.body.images = [...newImages];
   const product = await Product.create(req.body);
+
+  console.info(`[CATALOG CREATION] New product added: ${product.name} (SKU: ${product._id}). Starting stock: ${product.stock}`);
+
   res.status(200).json({
     success: true,
     data: product,
@@ -60,6 +63,8 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
     await notifySubscribers(req.params.id);
   }
 
+  console.info(`[CATALOG MUTATION] Product updated: ${product.name} (SKU: ${product._id}).`);
+
   res.status(200).json({
     success: true,
     data: product,
@@ -79,6 +84,9 @@ exports.deleteProduct = catchAsyncError(async (req, res, next) => {
     await cloudinary.uploader.destroy(product.images[i].public_id);
   }
   await product.remove();
+
+  console.info(`[CATALOG DELETION] Product permanently removed from database: ${product.name} (SKU: ${product._id}).`);
+
   res.status(200).json({
     success: true,
     message: 'Product deleted',
@@ -87,7 +95,8 @@ exports.deleteProduct = catchAsyncError(async (req, res, next) => {
 
 // send all product details
 exports.getAllProducts = catchAsyncError(async (req, res) => {
-  const products = await Product.find();
+  // Prevent memory explosion but allow client-side filtering max limit
+  const products = await Product.find().limit(1000);
   // Transform for list view (frontend expects 'image' not 'images')
   const data = products.map((item) => {
     const {

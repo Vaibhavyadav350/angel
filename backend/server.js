@@ -35,8 +35,8 @@ const cloudinary = require('./config/cloudinary');
 
 // uncaught exception
 process.on('uncaughtException', async (err) => {
-  console.error(`Error: ${err.message}`);
-  console.error(`Server shutting down due to uncaught exception`);
+  console.error(`[SERVER FATAL] Uncaught Exception: ${err.message}`);
+  console.error(err.stack);
   if (mongoose.connection.readyState === 1) {
     await mongoose.connection.close();
   }
@@ -73,6 +73,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
+        console.warn(`[CORS BLOCKED] Origin rejected: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -84,9 +85,27 @@ app.use(
 app.use(helmet());
 app.use(mongoSanitize());
 
+// Rate Limiting (Prevents Brute-Force & basic DDoS)
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300, // limit each IP to 300 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', limiter);
+
+// Stricter Rate Limiting for Auth/Payment routes
+const strictLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 20, // 20 requests
+  message: 'Too many sensitive requests, please try again after 10 minutes',
+});
+
 // Stripe Webhooks need the raw body, so express.raw must come BEFORE express.json
 const webhookController = require('./controllers/webhookController');
-app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), webhookController);
+app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), strictLimiter, webhookController);
 
 app.use(express.json({ limit: '20mb' }));
 app.use(cookieParser());
@@ -102,7 +121,7 @@ app.get('/', (req, res) => {
 // using routers
 app.use('/api/payment', paymentRouter);
 app.use('/api/products', productRouter);
-app.use('/api/admin', adminRouter);
+app.use('/api/admin', strictLimiter, adminRouter); // Protect admin endpoints
 app.use('/api/orders', orderRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/newsletter', newsletterRouter);
@@ -117,14 +136,16 @@ app.use(errorMiddleware);
 // starting server
 // connect to db and start server
 connectToDb().then(() => {
-  const server = app.listen(process.env.PORT || 5000, () => {
-    console.log('Server running');
+  const port = process.env.PORT || 5000;
+  const server = app.listen(port, () => {
+    console.info(`[SERVER] Angel Fashion Studio API running on port ${port} | ENV: ${process.env.NODE_ENV || 'development'}`);
+    console.info(`[SERVER] CORS origins: ${allowedOrigins.join(', ')}`);
   });
 
   // unhandled promise rejection
   process.on('unhandledRejection', (err) => {
-    console.error(`Error: ${err.message}`);
-    console.error(`Server shutting down due to unhandled promise rejection`);
+    console.error(`[SERVER FATAL] Unhandled Promise Rejection: ${err.message}`);
+    console.error(err.stack);
     server.close(async () => {
       if (mongoose.connection.readyState === 1) {
         await mongoose.connection.close();

@@ -34,6 +34,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const logoutUser = () => {
+    window.dispatchEvent(new Event('userLoggedOut'));
     return signOut(auth);
   };
 

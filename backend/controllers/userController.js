@@ -65,19 +65,21 @@ exports.toggleWishlist = catchAsyncErrors(async (req, res, next) => {
 // Update User Spend (Internal use during order placement)
 exports.updateUserSpend = async (userId, amount) => {
     try {
-        await UserProfile.findOneAndUpdate(
+        const updatedSpend = await UserProfile.findOneAndUpdate(
             { userId },
             {
                 $inc: { totalSpend: amount, orderCount: 1 }
             },
             { new: true, upsert: true }
         );
+        console.info(`[USER SPEND TRACK] Added $${amount} to User: ${userId}. New Lifetime Total: $${updatedSpend.totalSpend}`);
 
         // Potential VIP check logic
         const profile = await UserProfile.findOne({ userId });
         if (profile.totalSpend > 50000 && !profile.isVIP) {
             profile.isVIP = true;
             await profile.save();
+            console.info(`[USER VIP UNLOCKED] User ${userId} has surpassed $50,000 in lifetime spend and upgraded to VIP.`);
         }
     } catch (error) {
         console.error('Error updating user spend:', error);

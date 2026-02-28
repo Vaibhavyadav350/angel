@@ -23,6 +23,7 @@ exports.subscribe = catchAsyncError(async (req, res, next) => {
         existing.active = true;
         existing.subscribedAt = Date.now();
         await existing.save();
+        console.info(`[NEWSLETTER REACTIVATED] ${email} re-subscribed.`);
         return res.status(200).json({
             success: true,
             message: 'Welcome back to the archive.',
@@ -30,6 +31,7 @@ exports.subscribe = catchAsyncError(async (req, res, next) => {
     }
 
     await Newsletter.create({ email });
+    console.info(`[NEWSLETTER NEW SUBSCRIBER] ${email}`);
 
     res.status(201).json({
         success: true,
@@ -55,6 +57,7 @@ exports.deleteSubscriber = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler('Subscriber not found', 404));
     }
 
+    console.info(`[NEWSLETTER UNSUBSCRIBED] ${subscriber.email} removed by admin.`);
     await subscriber.remove();
 
     res.status(200).json({

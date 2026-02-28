@@ -15,6 +15,7 @@ exports.registerAdmin = catchAsyncError(async (req, res, next) => {
     privilege,
     password,
   });
+  console.info(`[ADMIN REGISTERED] New admin created: '${admin.name}' (${admin.email}), privilege: ${admin.privilege}, by: ${req.user?.email || 'system'}`);
   res.status(200).json({
     success: true,
     data: {
@@ -37,8 +38,10 @@ exports.loginAdmin = catchAsyncError(async (req, res, next) => {
   }
   const isPasswordMatched = await admin.comparePassword(password);
   if (!isPasswordMatched) {
+    console.warn(`[ADMIN AUTH FAILED] Invalid password attempt for email: ${email}`);
     return next(new ErrorHandler('Invalid email or password', 401));
   }
+  console.info(`[ADMIN AUTH SUCCESS] Admin '${admin.name}' (${admin.email}) logged in.`);
   sendToken(admin, 200, res);
 });
 
@@ -123,6 +126,7 @@ exports.updateAdminPrivilege = catchAsyncError(async (req, res, next) => {
   }
   admin.privilege = privilege;
   await admin.save();
+  console.info(`[ADMIN PRIVILEGE CHANGE] Admin '${admin.email}' privilege changed to '${privilege}' by ${req.user.email}`);
   res.status(200).json({
     success: true,
     data: admin,
@@ -140,6 +144,7 @@ exports.deleteAdmin = catchAsyncError(async (req, res, next) => {
   if (admin.email === req.user.email) {
     return next(new ErrorHandler('Cannot delete self', 400));
   }
+  console.info(`[ADMIN DELETED] Admin '${admin.name}' (${admin.email}) permanently deleted by ${req.user.email}`);
   await admin.remove();
   res.status(200).json({
     success: true,

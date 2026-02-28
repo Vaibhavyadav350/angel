@@ -93,7 +93,11 @@ const cart_reducer = (state, action) => {
       (total, cartItem) => {
         const { price, amount } = cartItem;
         total.total_items += amount;
+
+        // Fix JavaScript floating point math errors (e.g. 0.1 + 0.2 = 0.30000000000000004)
         total.total_amount += price * amount;
+        total.total_amount = Number(total.total_amount.toFixed(2));
+
         // Shipping fee: $15 flat rate per order for Angel Archive, not per item
         if (total.total_amount > 0) {
           total.shipping_fee = 15; // $15 standard archival shipping

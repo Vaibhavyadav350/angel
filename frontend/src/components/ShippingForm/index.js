@@ -3,10 +3,16 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useOrderContext } from '../../context/order_context';
 import { useCartContext } from '../../context/cart_context';
-import { Country, State, City } from 'country-state-city';
-
-// Get all countries for dynamic selection
-const countries = Country.getAllCountries();
+const AU_STATES = [
+  { code: 'NSW', name: 'New South Wales' },
+  { code: 'VIC', name: 'Victoria' },
+  { code: 'QLD', name: 'Queensland' },
+  { code: 'WA', name: 'Western Australia' },
+  { code: 'SA', name: 'South Australia' },
+  { code: 'TAS', name: 'Tasmania' },
+  { code: 'ACT', name: 'Australian Capital Territory' },
+  { code: 'NT', name: 'Northern Territory' }
+];
 
 // Validation functions
 const validatePhone = (phone, countryCode) => {
@@ -42,24 +48,12 @@ function ShippingForm({ confirmShipping }) {
   } = useOrderContext();
   const { cart } = useCartContext();
 
-  // State for dynamic country/state/city selection
-  const [selectedCountry, setSelectedCountry] = useState(country || '');
-  const [selectedState, setSelectedState] = useState(state || '');
-
-  // Update local state when shipping state changes
+  // Ensure strictly AU context in context state if not present
   useEffect(() => {
-    if (country && country !== selectedCountry) {
-      setSelectedCountry(country);
+    if (!country || country !== 'AU') {
+      updateShipping({ target: { name: 'country', value: 'AU' } });
     }
-    if (state && state !== selectedState) {
-      setSelectedState(state);
-    }
-  }, [country, state, selectedCountry, selectedState]);
-
-  const states = selectedCountry ? State.getStatesOfCountry(selectedCountry) : [];
-  const cities = selectedCountry && selectedState
-    ? City.getCitiesOfState(selectedCountry, selectedState)
-    : [];
+  }, [country, updateShipping]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -159,53 +153,26 @@ function ShippingForm({ confirmShipping }) {
             />
           </div>
           {/* end address postal code */}
-          {/* address country */}
-          <div className='form-control'>
-            <select
-              name='country'
-              className='input sort-input'
-              value={selectedCountry}
-              onChange={(e) => {
-                const newCountry = e.target.value;
-                setSelectedCountry(newCountry);
-                setSelectedState(''); // Reset state when country changes
-                updateShipping(e);
-                // Clear state and city when country changes
-                updateShipping({ target: { name: 'state', value: '' } });
-                updateShipping({ target: { name: 'city', value: '' } });
-              }}
-            >
-              <option value=''>Select Country</option>
-              {countries.map((item, index) => {
-                return (
-                  <option key={index} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                );
-              })}
-            </select>
+          {/* Hidden country input */}
+          <div className='hidden'>
+            <input type='hidden' name='country' value='AU' />
           </div>
-          {/* end address country */}
           {/* address state */}
           <div className='form-control'>
             <select
               name='state'
               className='input sort-input'
-              value={selectedState}
+              value={state || ''}
               onChange={(e) => {
-                const newState = e.target.value;
-                setSelectedState(newState);
                 updateShipping(e);
-                // Clear city when state changes
-                updateShipping({ target: { name: 'city', value: '' } });
               }}
-              disabled={!selectedCountry}
+              required
             >
-              <option value=''>Select State</option>
-              {states.map((item, index) => {
+              <option value=''>Select State / Territory</option>
+              {AU_STATES.map((item, index) => {
                 return (
-                  <option key={index} value={item.isoCode}>
-                    {item.name}
+                  <option key={index} value={item.code}>
+                    {item.name} ({item.code})
                   </option>
                 );
               })}
@@ -214,22 +181,15 @@ function ShippingForm({ confirmShipping }) {
           {/* end address state */}
           {/* address city */}
           <div className='form-control'>
-            <select
+            <input
+              type='text'
               name='city'
-              className='input sort-input'
-              value={city}
+              className='input'
+              placeholder='City / Suburb'
+              value={city || ''}
               onChange={updateShipping}
-              disabled={!selectedState}
-            >
-              <option value=''>Select City</option>
-              {cities.map((item, index) => {
-                return (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
-                );
-              })}
-            </select>
+              required
+            />
           </div>
           {/* end address city */}
           <button type='submit' className='btn shipping-btn'>

@@ -58,8 +58,11 @@ exports.notifySubscribers = async (productId) => {
             sub.notified = true;
             await sub.save();
         }
+        if (subscriptions.length > 0) {
+            console.info(`[RESTOCK NOTIFY] Notified ${subscriptions.length} subscriber(s) that '${product.name}' is back in stock.`);
+        }
     } catch (error) {
-        console.error('Failed to notify subscribers:', error);
+        console.error(`[RESTOCK NOTIFY FAILED] Error notifying subscribers for product ${productId}: ${error.message}`);
     }
 };
 
@@ -75,6 +78,6 @@ exports.alertAdminLowStock = async (product) => {
             });
         }
     } catch (error) {
-        console.error('Failed to alert admin:', error);
+        console.error(`[LOW STOCK ALERT FAILED] Could not email admins about '${product.name}': ${error.message}`);
     }
 };

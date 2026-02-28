@@ -2,7 +2,7 @@ import { getOrderStatusColor, formatPrice } from '../../utils/helpers';
 import { ReturnModal, Loading, Error } from '../../components';
 import React, { useEffect, useState } from 'react';
 import { useOrderContext } from '../../context/order_context';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useCartContext } from '../../context/cart_context';
 import { toast } from 'react-toastify';
 
@@ -22,6 +22,7 @@ const OrdersPage = () => {
   };
 
   const location = useLocation();
+  const history = useHistory();
   const { clearCart } = useCartContext();
 
   useEffect(() => {
@@ -32,10 +33,10 @@ const OrdersPage = () => {
     if (params.get('success') === 'true') {
       toast.success('Payment successful! Your exquisite archive order has been placed. It may take a few moments to appear.', { position: 'top-center', autoClose: 5000 });
       clearCart();
-      // Remove query param to prevent multiple toasts on refresh
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // Remove query param to prevent multiple toasts on refresh using React Router v5's history
+      history.replace(location.pathname);
     }
-  }, [location, clearCart]);
+  }, [location, clearCart, history]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;

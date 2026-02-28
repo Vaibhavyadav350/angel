@@ -23,15 +23,16 @@ exports.createNewOrder = catchAsyncError(async (req, res, next) => {
     couponCode,
   } = req.body;
 
-  // Update stock for each item BEFORE creating order
+  // Step 1: Check if ALL items have sufficient stock before doing anything
   for (let index = 0; index < orderItems.length; index++) {
     const item = orderItems[index];
-    const success = await updateStock(item.product, item.quantity);
-    if (!success) {
-      return next(new ErrorHandler(`Product ${item.name} is out of stock`, 400));
+    const product = await Product.findById(item.product);
+    if (!product || product.stock < item.quantity) {
+      return next(new ErrorHandler(`Product ${item.name} is currently out of stock`, 400));
     }
   }
 
+  // Step 2: Create the Order first. If this crashes due to validation errors, no stock is lost.
   const order = await Order.create({
     shippingInfo,
     orderItems,
@@ -53,6 +54,12 @@ exports.createNewOrder = catchAsyncError(async (req, res, next) => {
   // Update user lifetime spend and order count
   if (order.user.userId) {
     await updateUserSpend(order.user.userId, totalPrice);
+  }
+
+  // Step 3: Now safely decrement stock
+  for (let index = 0; index < orderItems.length; index++) {
+    const item = orderItems[index];
+    await updateStock(item.product, item.quantity);
   }
 
   // If coupon used, increment its usage
@@ -182,6 +189,19 @@ exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
 
   // Stock was already decremented when the order was created (createNewOrder).
   // No need to decrement again when confirming.
+  // If transitioning to cancelled, restore stock
+  if (req.body.status === 'cancelled' && order.orderStatus !== 'cancelled') {
+    for (let index = 0; index < order.orderItems.length; index++) {
+      const item = order.orderItems[index];
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save({ validateBeforeSave: false });
+      }
+    }
+    console.info(`[ORDER CANCELLED] Order ${order._id} cancelled. Stock restored for ${order.orderItems.length} items.`);
+  }
+
   order.orderStatus = req.body.status;
   if (req.body.status === 'shipped') {
     order.shippingInfo.trackingNumber = req.body.trackingNumber || '';
@@ -191,6 +211,8 @@ exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
     order.deliveredAt = Date.now();
   }
   await order.save({ validateBeforeSave: false });
+
+  console.info(`[ORDER STATUS MUTATION] Order: ${order._id} successfully transitioned to '${req.body.status}'.`);
 
   // Send Email Notification
   try {
@@ -229,6 +251,8 @@ exports.deleteOrder = catchAsyncError(async (req, res, next) => {
   }
 
   await Order.findByIdAndDelete(req.params.id);
+
+  console.info(`[ORDER DELETED - ADMIN OVERRIDE] Order ${req.params.id} was force deleted and all stock amounts restored.`);
 
   res.status(200).json({
     success: true,
@@ -321,6 +345,8 @@ exports.requestReturn = catchAsyncError(async (req, res, next) => {
 
   await order.save();
 
+  console.info(`[ORDER RETURN INITIATED] Customer requested return for delivered Order ${order._id}. Reason: ${order.returnReason}`);
+
   res.status(200).json({
     success: true,
     message: 'Return requested successfully',
@@ -364,6 +390,8 @@ exports.updateReturnStatus = catchAsyncError(async (req, res, next) => {
   }
 
   await order.save();
+
+  console.info(`[RETURN STATUS MUTATION] Return Request for Order ${order._id} transitioned to '${status}'.`);
 
   try {
     if (['approved', 'rejected', 'completed'].includes(status)) {

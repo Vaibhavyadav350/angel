@@ -13,6 +13,7 @@ const paymentController = async (req, res) => {
 
   // Validation
   if (!cart || !Array.isArray(cart) || cart.length === 0) {
+    console.error(`[STRIPE CHECKOUT FAILED] Validation Error: Cart is missing or empty. User: ${req.user?.email || req.body.email || 'Guest'}`);
     return res.status(400).json({
       success: false,
       message: 'Cart is required and must not be empty',
@@ -41,9 +42,11 @@ const paymentController = async (req, res) => {
   }
 
   try {
+    console.info(`[STRIPE CHECKOUT INITIATED] User: ${req.user?.email || req.body.email || 'Guest'}, Items: ${cart.length}, Total: $${total_amount}, Shipping: $${shipping_fee}`);
+
     const allowedShippingFees = [0, 100, 200];
     if (!allowedShippingFees.includes(shipping_fee)) {
-      console.warn(`Warning: Client sent non-standard shipping fee: ${shipping_fee}`);
+      console.warn(`[STRIPE CHECKOUT WARN] Client sent non-standard shipping fee: ${shipping_fee}`);
     }
 
     // 2. Race Condition Check: Verify Stock BEFORE creating checkout
@@ -65,13 +68,10 @@ const paymentController = async (req, res) => {
       }
 
       orderItemsMeta.push({
-        name: item.name,
-        price: item.price,
-        quantity: item.amount,
-        image: item.image,
-        color: item.color || 'Standard',
-        size: item.size || 'M',
-        product: productId
+        id: productId, // Using 'id' for Product ID
+        q: item.amount, // Using 'q' for Quantity
+        c: item.color || 'Standard', // Using 'c' for Color
+        s: item.size || 'M', // Using 's' for Size
       });
     }
 
@@ -111,7 +111,7 @@ const paymentController = async (req, res) => {
         }
       ] : [],
       shipping_address_collection: {
-        allowed_countries: ['AU', 'US', 'GB', 'IN'], // adjust as needed via config
+        allowed_countries: ['AU'], // strictly confined to Australian market as per localization strategy
       },
       metadata: {
         userId: req.user?.id || req.body.userId || '',
@@ -122,17 +122,26 @@ const paymentController = async (req, res) => {
         shippingFee: shipping_fee,
         itemsPrice: total_amount,
         taxPrice: 0,
-        orderItems: JSON.stringify(orderItemsMeta) // Packing array to string
+        orderItems: JSON.stringify(orderItemsMeta), // Packing array to string
+        // Shipping fallback fields (used if Stripe API doesn't include shipping_details in webhook)
+        shippingLine1: req.body.shipping?.address?.line1 || '',
+        shippingCity: req.body.shipping?.address?.city || '',
+        shippingState: req.body.shipping?.address?.state || '',
+        shippingPostalCode: req.body.shipping?.address?.postal_code || '',
+        shippingPhone: req.body.shipping?.phone_number || '',
       },
       success_url: `${FRONTEND_URL}/orders?success=true`,
       cancel_url: `${FRONTEND_URL}/checkout?canceled=true`,
     });
+
+    console.info(`[STRIPE CHECKOUT SUCCESS] Session created successfully. Session ID: ${session.id}`);
 
     return res.status(200).json({
       success: true,
       url: session.url,
     });
   } catch (error) {
+    console.error(`[STRIPE CHECKOUT FATAL] Session creation failed for User: ${req.user?.email || req.body.email || 'Guest'}. Error: ${error.message}`);
     return res.status(500).json({
       success: false,
       message: error.message,
