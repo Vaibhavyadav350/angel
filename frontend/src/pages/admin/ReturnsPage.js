@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { SidebarWithHeader, OrdersTable } from '../../components/admin';
 import { useOrderContext } from '../../context/admin_order_context';
 import { MdRefresh, MdFilterList } from 'react-icons/md';
-import { toast } from 'react-toastify';
 
 function ReturnsPage() {
     const {

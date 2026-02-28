@@ -77,21 +77,26 @@ const paymentController = async (req, res) => {
 
     const FRONTEND_URL = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',')[0] : 'http://localhost:3000';
 
+    // Calculate discount ratio for proportional distribution across line items
+    const discountAmount = Number(req.body.discountAmount) || 0;
+    const discountRatio = total_amount > 0 ? discountAmount / total_amount : 0;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       customer_email: req.user?.email || req.body.email || undefined,
       line_items: cart.map(item => {
+        const itemTotal = item.price * item.amount;
+        const itemDiscount = itemTotal * discountRatio;
+        const discountedUnitPrice = item.price - (itemDiscount / item.amount);
         return {
           price_data: {
             currency: process.env.STRIPE_CURRENCY || 'aud',
             product_data: {
               name: item.name,
-              images: [item.image],
+              images: (item.image && item.image.startsWith('http')) ? [item.image] : [],
             },
-            // Note: Our discount is calculated inside line items on the frontend already
-            // so we send the raw price here, but in cents
-            unit_amount: Math.round(item.price * 100),
+            unit_amount: Math.round(discountedUnitPrice * 100),
           },
           quantity: item.amount,
         }

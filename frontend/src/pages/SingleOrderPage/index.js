@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useOrderContext } from '../../context/order_context';
 import { formatPrice, getOrderStatusColor } from '../../utils/helpers';
 import { Loading, Error } from '../../components';
+import { domain } from '../../utils/constants';
 
 const SingleOrderPage = () => {
     const { id } = useParams();
@@ -42,7 +43,7 @@ const SingleOrderPage = () => {
 
     const handleDownloadInvoice = async () => {
         try {
-            const response = await axios.get(`/api/orders/${_id}/invoice`, {
+            const response = await axios.get(`${domain}/api/orders/${_id}/invoice`, {
                 responseType: 'blob', // Important: tell Axios to expect binary data
                 withCredentials: true
             });
@@ -172,8 +173,9 @@ const SingleOrderPage = () => {
                                         style={{
                                             width:
                                                 orderStatus === 'processing' ? '0%' :
-                                                    orderStatus === 'shipped' ? '50%' :
-                                                        orderStatus === 'delivered' ? '100%' : '0%'
+                                                    orderStatus === 'confirmed' ? '33%' :
+                                                        orderStatus === 'shipped' ? '66%' :
+                                                            orderStatus === 'delivered' ? '100%' : '0%'
                                         }}
                                     />
 
@@ -181,10 +183,11 @@ const SingleOrderPage = () => {
                                     <div className="relative flex justify-between">
                                         {[
                                             { id: 'processing', label: 'Secured' },
+                                            { id: 'confirmed', label: 'Confirmed' },
                                             { id: 'shipped', label: 'Dispatched' },
                                             { id: 'delivered', label: 'Acquired' }
                                         ].map((step, idx) => {
-                                            const statuses = ['processing', 'shipped', 'delivered'];
+                                            const statuses = ['processing', 'confirmed', 'shipped', 'delivered'];
                                             const currentIdx = statuses.indexOf(orderStatus);
                                             const stepIdx = statuses.indexOf(step.id);
                                             const isCompleted = stepIdx < currentIdx || orderStatus === 'delivered';
@@ -296,9 +299,9 @@ const SingleOrderPage = () => {
                     </div>
 
                     {/* Sidebar: Totals & Shipping */}
-                    <div className="space-y-12">
+                    <div className="space-y-8 lg:space-y-12 h-fit sticky top-32">
                         {/* Totals Card */}
-                        <div className="bg-bronze text-champagne rounded-[40px] p-10 shadow-2xl shadow-bronze/20 space-y-10">
+                        <div className="bg-bronze text-champagne rounded-[40px] p-8 lg:p-12 shadow-2xl shadow-bronze/20 space-y-10">
                             <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] opacity-40">Valuation</h3>
                             <div className="space-y-6">
                                 <div className="flex justify-between items-center text-sm font-medium">
@@ -316,7 +319,7 @@ const SingleOrderPage = () => {
                                     </div>
                                 )}
                                 <div className="h-px bg-champagne/10 pt-4" />
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center pb-2">
                                     <span className="text-[11px] font-bold uppercase tracking-[0.4em]">Total</span>
                                     <span className="text-3xl font-editorial font-bold text-gold">
                                         {formatPrice(totalPrice)}
@@ -326,23 +329,39 @@ const SingleOrderPage = () => {
                         </div>
 
                         {/* Shipping Info Card */}
-                        <div className="bg-white border border-bronze/5 rounded-[40px] p-10 shadow-xl shadow-bronze/5 space-y-8">
-                            <div className="space-y-2">
-                                <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold">Shipping To</h3>
-                                <p className="text-lg font-bold text-bronze block">{user.name.toUpperCase()}</p>
-                                <p className="text-sm font-medium text-bronze/60 leading-relaxed">
-                                    {shippingInfo.address}<br />
-                                    {shippingInfo.city}, {shippingInfo.state}<br />
-                                    {shippingInfo.country} — {shippingInfo.pinCode}
-                                </p>
+                        <div className="bg-white border border-bronze/5 rounded-[40px] p-8 lg:p-12 shadow-xl shadow-bronze/5 space-y-8">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="material-symbols-outlined text-gold text-lg">local_shipping</span>
+                                    <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-bronze/40">Shipping Address</h3>
+                                </div>
+                                <p className="text-lg font-bold text-bronze uppercase tracking-widest">{user.name}</p>
+                                <div className="text-sm font-medium text-bronze/60 leading-loose">
+                                    <p>{shippingInfo.address}</p>
+                                    <p>{shippingInfo.city}, {shippingInfo.state}</p>
+                                    <p className="text-bronze font-bold">{shippingInfo.country} — {shippingInfo.pinCode}</p>
+                                </div>
                             </div>
+
                             <div className="h-px bg-bronze/5" />
-                            <div className="space-y-2">
-                                <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold">Contact</h3>
-                                <p className="text-sm font-medium text-bronze/60">{user.email}</p>
-                                {shippingInfo.phoneNumber && (
-                                    <p className="text-sm font-medium text-bronze/60">{shippingInfo.phoneNumber}</p>
-                                )}
+
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="material-symbols-outlined text-gold text-lg">contact_mail</span>
+                                    <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-bronze/40">Contact Details</h3>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3 text-bronze/60">
+                                        <span className="material-symbols-outlined text-base opacity-50">mail</span>
+                                        <p className="text-sm font-medium">{user.email}</p>
+                                    </div>
+                                    {shippingInfo.phoneNumber && (
+                                        <div className="flex items-center gap-3 text-bronze/60">
+                                            <span className="material-symbols-outlined text-base opacity-50">call</span>
+                                            <p className="text-sm font-medium">{shippingInfo.phoneNumber}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

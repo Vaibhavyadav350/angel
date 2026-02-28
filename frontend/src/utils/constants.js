@@ -2,9 +2,7 @@ import React from 'react';
 import { GiCompass, GiDiamondHard, GiStabbedNote } from 'react-icons/gi';
 import {
   AiFillLinkedin,
-  AiFillYoutube,
   AiFillTwitterCircle,
-  AiFillGithub,
 } from 'react-icons/ai';
 import {
   FaHome,
@@ -12,7 +10,6 @@ import {
   FaShoppingCart,
   FaUserTie,
   FaTicketAlt,
-  FaHeart,
   FaUndo,
 } from 'react-icons/fa';
 
@@ -129,6 +126,8 @@ export const services = [
   },
 ];
 
+// Production Configuration
+// When deployed on Vercel, we will set REACT_APP_BACKEND_HOST to the Koyeb URL
 export const domain = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:5000';
 export const products_url = `${domain}/api/products`;
 export const single_product_url = `${domain}/api/products/`;

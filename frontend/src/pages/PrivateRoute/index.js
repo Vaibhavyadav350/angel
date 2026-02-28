@@ -3,8 +3,13 @@ import { Route, Redirect, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../context/user_context';
 
 const PrivateRoute = ({ children, ...rest }) => {
-  const { currentUser } = useUserContext();
+  const { currentUser, userLoading } = useUserContext();
   const location = useLocation();
+
+  // While Firebase auth state is loading, render nothing to prevent flash
+  if (userLoading) {
+    return null;
+  }
 
   if (
     rest.path === '/login' ||

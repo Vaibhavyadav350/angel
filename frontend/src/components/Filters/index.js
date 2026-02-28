@@ -5,14 +5,13 @@ import { categoryData } from '../../utils/categoryData';
 
 const Filters = () => {
   const {
-    filters: { text, company, collection, category, subCategory, productType, color, min_price, max_price, price, shipping },
+    filters: { text, collection, category, subCategory, productType, color, min_price, max_price, price, shipping },
     updateFilters,
     clearFilters,
     all_products,
   } = useFilterContext();
 
   const categories = ['all', 'Women', 'Men', 'Kids', 'Jewelry'];
-  const companies = getUniqueValues(all_products, 'company');
   const colors = getUniqueValues(all_products, 'colors');
   const collections = getUniqueValues(all_products, 'collections');
 

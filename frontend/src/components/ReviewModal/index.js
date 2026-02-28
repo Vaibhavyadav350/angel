@@ -51,36 +51,62 @@ function ReviewModal({ product }) {
 
   return (
     <div>
-      <button className='btn' onClick={onOpen}>
-        review product
+      <button
+        className="w-full py-4 border border-bronze/20 text-bronze text-[10px] font-bold uppercase tracking-[0.3em] hover:border-gold hover:text-gold transition-colors text-center"
+        onClick={onOpen}
+      >
+        Leave A Mark
       </button>
-      <div className={`${isOpen ? 'modal' : 'modal hide'}`}>
-        <div className='form'>
-          <ReviewStars stars={stars} updateStars={updateStars} />
-          <textarea
-            className='input'
-            placeholder='your comment'
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          {currentUser ? (
-            <div className='btn-container'>
-              <Button disabled={loading} className='btn' onClick={handleSubmit}>
-                review
-              </Button>
-              <button className='btn btn-outline' onClick={onClose}>
-                cancel
-              </button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-bronze/40 backdrop-blur-sm" onClick={onClose}></div>
+          <div className="relative bg-white border border-bronze/10 rounded-lg p-8 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+            <h3 className="text-2xl font-editorial font-bold text-bronze mb-6">Chronicle Your Experience</h3>
+            <div className="space-y-6">
+              <div>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-bronze/60 mb-2">Heritage Rating</span>
+                <ReviewStars stars={stars} updateStars={updateStars} />
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-bronze/60 mb-2">Your Diary Entry</span>
+                <textarea
+                  className="w-full bg-champagne/50 border border-bronze/20 rounded p-4 text-sm text-bronze placeholder:text-bronze/30 focus:outline-none focus:border-gold transition-colors min-h-[120px] resize-y"
+                  placeholder="Share your experience with this artifact..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+              </div>
+              {currentUser ? (
+                <div className="flex gap-4 pt-4">
+                  <button
+                    disabled={loading}
+                    className="flex-1 py-3 bg-bronze text-champagne text-[10px] font-bold uppercase tracking-[0.3em] rounded hover:bg-gold transition-colors disabled:opacity-50"
+                    onClick={handleSubmit}
+                  >
+                    {loading ? 'Submitting...' : 'Submit Entry'}
+                  </button>
+                  <button
+                    className="px-6 py-3 border border-bronze/20 text-bronze text-[10px] font-bold uppercase tracking-[0.3em] rounded hover:bg-bronze/5 transition-colors"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-4">
+                  <Link
+                    to="/login"
+                    className="block w-full text-center py-3 border border-bronze text-bronze text-[10px] font-bold uppercase tracking-[0.3em] rounded hover:bg-bronze hover:text-white transition-colors"
+                  >
+                    Login to Review
+                  </Link>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className='btn-container'>
-              <Link to='/login' className='btn'>
-                login
-              </Link>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

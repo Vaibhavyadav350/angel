@@ -59,11 +59,15 @@ app.use(
 
       // Check if origin is in allowed list
       const isAllowed = allowedOrigins.some(allowed => {
-        if (allowed.includes('*')) {
-          const regex = new RegExp(allowed.replace(/\*/g, '.*'));
-          return regex.test(origin);
+        // Handle trailing slashes gracefully
+        const originClean = origin.replace(/\/$/, '');
+        const allowedClean = allowed.trim().replace(/\/$/, '');
+
+        if (allowedClean.includes('*')) {
+          const regex = new RegExp(allowedClean.replace(/\*/g, '.*'));
+          return regex.test(originClean);
         }
-        return origin === allowed || origin.includes(allowed);
+        return originClean === allowedClean || originClean.includes(allowedClean);
       });
 
       if (isAllowed) {

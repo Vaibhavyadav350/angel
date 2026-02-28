@@ -1,9 +1,10 @@
-import { ArchivePageHero } from '../../components/archive';
 import { getOrderStatusColor, formatPrice } from '../../utils/helpers';
 import { ReturnModal, Loading, Error } from '../../components';
 import React, { useEffect, useState } from 'react';
 import { useOrderContext } from '../../context/order_context';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useCartContext } from '../../context/cart_context';
+import { toast } from 'react-toastify';
 
 const OrdersPage = () => {
   const {
@@ -20,9 +21,21 @@ const OrdersPage = () => {
     setIsReturnModalOpen(true);
   };
 
+  const location = useLocation();
+  const { clearCart } = useCartContext();
+
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Orders';
-  }, []);
+
+    // Check if coming back from a successful Stripe checkout
+    const params = new URLSearchParams(location.search);
+    if (params.get('success') === 'true') {
+      toast.success('Payment successful! Your exquisite archive order has been placed. It may take a few moments to appear.', { position: 'top-center', autoClose: 5000 });
+      clearCart();
+      // Remove query param to prevent multiple toasts on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location, clearCart]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;

@@ -153,7 +153,7 @@ exports.sendOrderConfirmation = async (user, order, pdfBuffer) => {
 // 3. Order Status Update Email
 exports.sendStatusUpdate = async (user, order, trackingNumber = null) => {
     let trackingHtml = '';
-    if (order.status === 'Shipped' && trackingNumber) {
+    if (order.orderStatus === 'shipped' && trackingNumber) {
         trackingHtml = `<div style="margin: 20px 0; padding: 15px; background-color: #f5f2eb; border-left: 3px solid #C5A059;">
             <p style="margin: 0; font-size: 12px; font-weight: bold; color: #432918;">TRACKING NUMBER:</p>
             <p style="margin: 5px 0 0 0; font-size: 14px; color: #8A6B4E;">${trackingNumber}</p>
@@ -172,7 +172,7 @@ exports.sendStatusUpdate = async (user, order, trackingNumber = null) => {
             <p style="font-size: 14px; text-align: center; margin-bottom: 30px;">Order #${order._id.toString().substring(15).toUpperCase()}</p>
 
             <p style="font-size: 14px; line-height: 1.6;">Dear ${user.name},</p>
-            <p style="font-size: 14px; line-height: 1.6;">The status of your order has been updated to: <strong>${order.status.toUpperCase()}</strong>.</p>
+            <p style="font-size: 14px; line-height: 1.6;">The status of your order has been updated to: <strong>${order.orderStatus.toUpperCase()}</strong>.</p>
             
             ${trackingHtml}
 
@@ -209,7 +209,7 @@ exports.sendReturnUpdate = async (user, returnRequest, status) => {
             <p style="font-size: 14px; line-height: 1.6;">Your archival return request has been reviewed by our team.</p>
             <p style="font-size: 14px; line-height: 1.6;">Status: <strong>${status.toUpperCase()}</strong></p>
             
-            ${status === 'Approved' ? '<p style="font-size: 14px; line-height: 1.6;">Your refund will be processed back to your original payment method within 3-5 business days. We will notify you once the transfer is initiated.</p>' : '<p style="font-size: 14px; line-height: 1.6;">Unfortunately, your request could not be approved at this time. Please contact strictly archival compliance if you require further investigation.</p>'}
+            ${status === 'approved' ? '<p style="font-size: 14px; line-height: 1.6;">Your refund will be processed back to your original payment method within 3-5 business days. We will notify you once the transfer is initiated.</p>' : '<p style="font-size: 14px; line-height: 1.6;">Unfortunately, your request could not be approved at this time. Please contact strictly archival compliance if you require further investigation.</p>'}
 
             <div style="margin-top: 60px; text-align: center; border-top: 1px solid #E6D5B8; padding-top: 20px;">
                 <p style="font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; color: #432918; letter-spacing: 1px;">ANGEL FASHION STUDIO PTY LTD</p>

@@ -8,6 +8,12 @@ import { formatPrice } from '../../utils/helpers';
  * Shows full-screen image with product hotspots and hover cards
  * Now uses real product data from the API via featured_products
  */
+// Hotspot positions for up to 2 products
+const hotspotPositions = [
+  { position: { top: '40%', left: '35%' }, cardPosition: 'left' },
+  { position: { top: '55%', left: '65%' }, cardPosition: 'right' },
+];
+
 const ShopTheLook = React.memo(() => {
   const sectionRef = useRef(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
@@ -21,12 +27,6 @@ const ShopTheLook = React.memo(() => {
     duration: 1,
     ease: 'power2.out',
   });
-
-  // Hotspot positions for up to 2 products
-  const hotspotPositions = [
-    { position: { top: '40%', left: '35%' }, cardPosition: 'left' },
-    { position: { top: '55%', left: '65%' }, cardPosition: 'right' },
-  ];
 
   // Use featured products from API, take up to 2
   const products = useMemo(() => {

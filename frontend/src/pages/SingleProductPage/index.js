@@ -26,8 +26,7 @@ const SingleProductPage = () => {
     single_product_error: error,
     single_product: product,
     fetchSingleProduct,
-    featured_products, // Get other products for "Complete The Look"
-    products // details
+    products,
   } = useProductsContext();
 
   const [isNotifyModalOpen, setIsNotifyModalOpen] = React.useState(false);
@@ -166,34 +165,34 @@ const SingleProductPage = () => {
               </div>
 
               {/* Price & Value Breakdown */}
-              <div className="border-y border-bronze/10 py-8 space-y-4">
-                <div className="flex items-end gap-6">
+              <div className="border-y border-bronze/10 py-8 space-y-5">
+                <div className="flex flex-wrap items-end gap-6">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-bronze/30 block">Archival Investment</span>
-                    <span className="text-5xl font-editorial font-light text-bronze leading-none">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-bronze/50 block">Archival Investment</span>
+                    <span className="text-5xl font-editorial font-bold text-bronze leading-none">
                       {formatPrice(((price * (1 - (product.discountPercent || 0) / 100)) * (1 + (product.taxPercent || 0) / 100)))}
                     </span>
                   </div>
                   {(product.discountPercent > 0) && (
-                    <div className="pb-1">
-                      <span className="text-xl font-editorial font-light text-bronze/30 line-through">
+                    <div className="pb-1 flex items-center gap-4">
+                      <span className="text-2xl font-editorial font-medium text-bronze/40 line-through">
                         {formatPrice(price)}
                       </span>
-                      <span className="ml-3 px-2 py-1 bg-gold/10 text-gold text-[9px] font-black uppercase tracking-widest rounded leading-none">
+                      <span className="px-3 py-1.5 bg-gold text-white text-xs font-black uppercase tracking-widest rounded-sm leading-none shadow-sm">
                         -{product.discountPercent}% Archival
                       </span>
                     </div>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-bronze/40">
-                  <span>Authenticity Verified</span>
+                <div className="flex flex-wrap items-center justify-between text-xs font-bold uppercase tracking-[0.2em] text-bronze/60 bg-bronze/5 p-4 rounded-lg">
+                  <span className="flex items-center gap-2"><span className="material-symbols-outlined text-sm text-gold">verified</span> Authenticity Verified</span>
                   <span>Incl. {product.taxPercent || 0}% Regional GST</span>
                 </div>
               </div>
 
               {/* Description */}
               <div className="prose prose-bronze">
-                <p className="text-sm font-medium leading-loose text-bronze/80">
+                <p className="text-base font-medium leading-relaxed text-bronze/80">
                   {description}
                 </p>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useProductContext } from '../../context/admin_product_context';
 import { categoryData } from '../../utils/categoryData';

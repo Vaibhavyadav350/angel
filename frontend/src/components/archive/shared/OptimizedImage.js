@@ -25,7 +25,7 @@ const OptimizedImage = React.memo(({
     ...props,
   };
 
-  return <img {...imageProps} />;
+  return <img alt={alt || ''} {...imageProps} />;
 });
 
 OptimizedImage.displayName = 'OptimizedImage';

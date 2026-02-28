@@ -41,11 +41,11 @@ function ShippingForm({ confirmShipping }) {
     updateShipping,
   } = useOrderContext();
   const { cart } = useCartContext();
-  
+
   // State for dynamic country/state/city selection
   const [selectedCountry, setSelectedCountry] = useState(country || '');
   const [selectedState, setSelectedState] = useState(state || '');
-  
+
   // Update local state when shipping state changes
   useEffect(() => {
     if (country && country !== selectedCountry) {
@@ -54,11 +54,11 @@ function ShippingForm({ confirmShipping }) {
     if (state && state !== selectedState) {
       setSelectedState(state);
     }
-  }, [country, state]);
-  
+  }, [country, state, selectedCountry, selectedState]);
+
   const states = selectedCountry ? State.getStatesOfCountry(selectedCountry) : [];
-  const cities = selectedCountry && selectedState 
-    ? City.getCitiesOfState(selectedCountry, selectedState) 
+  const cities = selectedCountry && selectedState
+    ? City.getCitiesOfState(selectedCountry, selectedState)
     : [];
 
   const handleSubmit = (e) => {

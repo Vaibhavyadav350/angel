@@ -131,7 +131,7 @@ export const OrderProvider = ({ children }) => {
   useEffect(() => {
     fetchOrders(get_order_url);
     // eslint-disable-next-line
-  }, [currentUser, cart, fetchOrders]);
+  }, [currentUser, fetchOrders]);
 
   return (
     <OrderContext.Provider value={{ ...state, updateShipping, placeOrder, fetchOrders, fetchSingleOrder, requestReturn }}>

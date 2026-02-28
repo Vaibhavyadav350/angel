@@ -33,6 +33,9 @@ export const getOrderStatusColor = (status) => {
   if (status === 'processing' || status === 'pending') {
     return 'orange';
   }
+  if (status === 'confirmed') {
+    return 'blue';
+  }
   if (status === 'rejected' || status === 'cancelled') {
     return 'red';
   }

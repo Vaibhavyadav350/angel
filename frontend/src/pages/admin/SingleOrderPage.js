@@ -116,65 +116,88 @@ function SingleOrderPage() {
 
   return (
     <SidebarWithHeader>
-      {/* Status Control */}
-      <div className="flex items-center justify-between bg-white border border-bronze/10 rounded-lg p-5 mb-5">
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50">Status:</span>
-          {order && order.returnStatus !== 'none' ? (
-            <span className="bg-red-50 border border-red-200 text-red-700 rounded px-4 py-2 text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
-              Locked (Return Active)
-            </span>
-          ) : (
-            <select
-              value={single_order_status}
-              onChange={handleChange}
-              className="bg-champagne/50 border border-bronze/20 rounded px-4 py-2 text-sm text-bronze focus:outline-none focus:border-gold transition-colors"
-            >
-              {statusList.map((status, index) => {
-                const { name, value } = status;
-                return (
-                  <option key={index} value={value}>{name}</option>
-                );
-              })}
-            </select>
-          )}
-
-          {single_order_status === 'shipped' && (!order || order.returnStatus === 'none') && (
-            <div className="flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
-              <input
-                type="text"
-                placeholder="Tracking #"
-                value={trackingInfo.trackingNumber}
-                onChange={(e) => setTrackingInfo({ ...trackingInfo, trackingNumber: e.target.value })}
-                className="bg-white border border-bronze/10 rounded px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-bronze focus:border-gold outline-none w-32"
-              />
-              <select
-                value={trackingInfo.carrier}
-                onChange={(e) => setTrackingInfo({ ...trackingInfo, carrier: e.target.value })}
-                className="bg-white border border-bronze/10 rounded px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-bronze focus:border-gold outline-none"
-              >
-                <option value="Australia Post">Australia Post</option>
-                <option value="DHL Express">DHL Express</option>
-                <option value="StarTrack">StarTrack</option>
-                <option value="Courier Please">Courier Please</option>
-              </select>
-            </div>
-          )}
+      {/* Page Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-bronze/40 mb-3">
+          <span className="hover:text-gold cursor-pointer transition-colors" onClick={() => window.location.href = '/admin/orders'}>Orders</span>
+          <span>/</span>
+          <span className="text-bronze">Archive #{id.slice(-8)}</span>
         </div>
+        <h1 className="text-3xl font-editorial font-black text-bronze uppercase tracking-widest">Order Details</h1>
+      </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => handleDownloadPDF('invoice')}
-            className="flex items-center gap-2 bg-bronze/10 text-bronze px-5 py-2.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-bronze hover:text-white transition-all border border-bronze/10"
-          >
-            <FaFilePdf size={14} /> Invoice
-          </button>
-          <button
-            onClick={() => handleDownloadPDF('packingslip')}
-            className="flex items-center gap-2 bg-bronze text-white px-5 py-2.5 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-gold transition-all"
-          >
-            <FaFilePdf size={14} /> Packing Slip
-          </button>
+      {/* Page Header & Controls */}
+      <div className="bg-white border border-bronze/10 rounded-xl p-6 mb-6 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+          {/* Status Control Section */}
+          <div className="flex flex-col gap-2">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-bronze/50">Order Status Management</h2>
+            <div className="flex flex-wrap items-center gap-4">
+              {order && order.returnStatus !== 'none' ? (
+                <span className="bg-red-50 border border-red-200 text-red-700 rounded px-4 py-2.5 text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
+                  Locked (Return Active)
+                </span>
+              ) : (
+                <select
+                  value={single_order_status}
+                  onChange={handleChange}
+                  className="bg-champagne/30 border border-bronze/20 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-bronze focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer min-w-[200px]"
+                >
+                  {statusList.map((status, index) => {
+                    const { name, value } = status;
+                    return (
+                      <option key={index} value={value}>{name}</option>
+                    );
+                  })}
+                </select>
+              )}
+
+              {single_order_status === 'shipped' && (!order || order.returnStatus === 'none') && (
+                <div className="flex gap-3 animate-in fade-in slide-in-from-left-4 duration-500">
+                  <input
+                    type="text"
+                    placeholder="Tracking #"
+                    value={trackingInfo.trackingNumber}
+                    onChange={(e) => setTrackingInfo({ ...trackingInfo, trackingNumber: e.target.value })}
+                    className="bg-white border border-bronze/20 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-bronze focus:border-gold focus:ring-1 focus:ring-gold outline-none w-40 placeholder:text-bronze/30 transition-all"
+                  />
+                  <select
+                    value={trackingInfo.carrier}
+                    onChange={(e) => setTrackingInfo({ ...trackingInfo, carrier: e.target.value })}
+                    className="bg-white border border-bronze/20 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-bronze focus:border-gold focus:ring-1 focus:ring-gold outline-none cursor-pointer transition-all"
+                  >
+                    <option value="Australia Post">Australia Post</option>
+                    <option value="DHL Express">DHL</option>
+                    <option value="StarTrack">StarTrack</option>
+                    <option value="Courier Please">Courier Please</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Document Actions */}
+          <div className="flex flex-col gap-2 md:items-end">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-bronze/50">Documentation</h2>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleDownloadPDF('invoice')}
+                className="flex items-center justify-center gap-2 bg-white text-bronze px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-bronze hover:text-white transition-all border border-bronze/20 shadow-sm"
+              >
+                <FaFilePdf size={14} className="text-red-500 group-hover:text-white transition-colors" />
+                <span>Invoice</span>
+              </button>
+              <button
+                onClick={() => handleDownloadPDF('packingslip')}
+                className="flex items-center justify-center gap-2 bg-bronze text-white px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all shadow-md shadow-bronze/20 border border-transparent"
+              >
+                <FaFilePdf size={14} className="text-white/80" />
+                <span>Packing Slip</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 

@@ -15,7 +15,7 @@ const NewsletterPage = () => {
 
     useEffect(() => {
         fetchSubscribers();
-    }, []);
+    }, [fetchSubscribers]);
 
     const handleDelete = async (id, email) => {
         if (window.confirm(`Are you sure you want to remove ${email} from the newsletter?`)) {
@@ -103,8 +103,8 @@ const NewsletterPage = () => {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sub.active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
                                                 }`}>
                                                 {sub.active ? 'Active' : 'Unsubscribed'}
                                             </span>

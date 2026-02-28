@@ -7,24 +7,27 @@ const Hero = () => {
   const heroRef = useRef(null);
   const titleRef = useRef(null);
   const circleRef = useRef(null);
-  const { products_loading: loading, products_error: error, featured_products } = useProductsContext();
+  const { featured_products } = useProductsContext();
 
   // Fallback image if no products
   const defaultImage = "/assets/archive/hero_main.jpg";
   const heroImage = featured_products.length > 0 ? featured_products[0].image : defaultImage;
 
   useEffect(() => {
+    const titleEl = titleRef.current;
+    const circleEl = circleRef.current;
+
     // GSAP animations - optimized with will-change
-    if (titleRef.current && circleRef.current) {
+    if (titleEl && circleEl) {
       // Set will-change for better performance
-      titleRef.current.style.willChange = 'transform, opacity';
-      circleRef.current.style.willChange = 'transform, opacity';
+      titleEl.style.willChange = 'transform, opacity';
+      circleEl.style.willChange = 'transform, opacity';
 
       const ctx = gsap.context(() => {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
         tl.fromTo(
-          titleRef.current,
+          titleEl,
           { opacity: 0, y: 50 },
           {
             opacity: 1,
@@ -32,7 +35,7 @@ const Hero = () => {
             duration: 1.2,
           }
         ).fromTo(
-          circleRef.current,
+          circleEl,
           { opacity: 0, scale: 0.8 },
           {
             opacity: 1,
@@ -44,8 +47,6 @@ const Hero = () => {
         );
 
         // Clean up will-change after animation
-        const titleEl = titleRef.current;
-        const circleEl = circleRef.current;
         tl.eventCallback('onComplete', () => {
           if (titleEl) titleEl.style.willChange = 'auto';
           if (circleEl) circleEl.style.willChange = 'auto';
@@ -53,8 +54,6 @@ const Hero = () => {
       }, heroRef);
 
       return () => {
-        const titleEl = titleRef.current;
-        const circleEl = circleRef.current;
         ctx.revert();
         if (titleEl) titleEl.style.willChange = 'auto';
         if (circleEl) circleEl.style.willChange = 'auto';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { Toast, ErrorBoundary } from './components';
 import { ArchiveNavbar, ArchiveFooter } from './components/archive';
 import { useProductsContext } from './context/products_context';
@@ -76,188 +76,193 @@ function App() {
                     <Router>
                       <Toast />
                       <ErrorBoundary>
-                        <Switch>
-                          {/* Customer Routes */}
-                          <Route exact path='/'>
-                            <>
-                              <ArchiveNavbar />
-                              <Home />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/about'>
-                            <>
-                              <ArchiveNavbar />
-                              <About />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/products'>
-                            <>
-                              <ArchiveNavbar />
-                              <Products />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/cart'>
-                            <>
-                              <ArchiveNavbar />
-                              <Cart />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <PrivateRoute exact path='/login'>
-                            <>
-                              <ArchiveNavbar />
-                              <Login />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/register'>
-                            <>
-                              <ArchiveNavbar />
-                              <Register />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/forgot-password'>
-                            <>
-                              <ArchiveNavbar />
-                              <Forgot />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/reset-password'>
-                            <>
-                              <ArchiveNavbar />
-                              <Reset />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <Route exact path='/products/:id'>
-                            <>
-                              <ArchiveNavbar />
-                              <SingleProduct />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <PrivateRoute exact path='/checkout'>
-                            <>
-                              <ArchiveNavbar />
-                              <Checkout />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/orders'>
-                            <>
-                              <ArchiveNavbar />
-                              <OrdersPage />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/orders/:id'>
-                            <>
-                              <ArchiveNavbar />
-                              <SingleOrder />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/profile'>
-                            <>
-                              <ArchiveNavbar />
-                              <ProfilePage />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-                          <PrivateRoute exact path='/wishlist'>
-                            <>
-                              <ArchiveNavbar />
-                              <WishlistPage />
-                              <ArchiveFooter />
-                            </>
-                          </PrivateRoute>
-
-                          {/* Static Content Pages */}
-                          <Route exact path='/contact'>
-                            <>
-                              <ArchiveNavbar />
-                              <ContactPage />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/shipping'>
-                            <>
-                              <ArchiveNavbar />
-                              <ShippingPage />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/privacy-policy'>
-                            <>
-                              <ArchiveNavbar />
-                              <PrivacyPolicyPage />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/refund-policy'>
-                            <>
-                              <ArchiveNavbar />
-                              <RefundPolicyPage />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                          <Route exact path='/terms'>
-                            <>
-                              <ArchiveNavbar />
-                              <TermsPage />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-
-                          {/* Admin Routes - No Navbar/Sidebar/Footer */}
-                          <AdminPrivateRoute exact path='/admin/login'>
-                            <AdminLogin />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin'>
-                            <AdminDashboard />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/products'>
-                            <AdminProducts />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/products/:id'>
-                            <AdminSingleProductPage />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/orders'>
-                            <AdminOrders />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/orders/:id'>
-                            <AdminSingleOrderPage />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/admins'>
-                            <AdminUsers />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/newsletter'>
-                            <AdminNewsletter />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/coupons'>
-                            <AdminCoupons />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/returns'>
-                            <AdminReturns />
-                          </AdminPrivateRoute>
-                          <AdminPrivateRoute exact path='/admin/customers'>
-                            <AdminCustomers />
-                          </AdminPrivateRoute>
-
-                          {/* 404 Route */}
-                          <Route exact path='*'>
-                            <>
-                              <ArchiveNavbar />
+                        {window.location.hostname.startsWith('admin.') ? (
+                          <Switch>
+                            <Route exact path='/'>
+                              <Redirect to="/admin" />
+                            </Route>
+                            <Route exact path='/admin/login'>
+                              <AdminLogin />
+                            </Route>
+                            <AdminPrivateRoute exact path='/admin'>
+                              <AdminDashboard />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/products'>
+                              <AdminProducts />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/products/:id'>
+                              <AdminSingleProductPage />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/orders'>
+                              <AdminOrders />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/orders/:id'>
+                              <AdminSingleOrderPage />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/admins'>
+                              <AdminUsers />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/newsletter'>
+                              <AdminNewsletter />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/coupons'>
+                              <AdminCoupons />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/returns'>
+                              <AdminReturns />
+                            </AdminPrivateRoute>
+                            <AdminPrivateRoute exact path='/admin/customers'>
+                              <AdminCustomers />
+                            </AdminPrivateRoute>
+                            <Route exact path='*'>
                               <Error />
-                              <ArchiveFooter />
-                            </>
-                          </Route>
-                        </Switch>
+                            </Route>
+                          </Switch>
+                        ) : (
+                          <Switch>
+                            {/* Customer Routes */}
+                            <Route exact path='/'>
+                              <>
+                                <ArchiveNavbar />
+                                <Home />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/about'>
+                              <>
+                                <ArchiveNavbar />
+                                <About />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/products'>
+                              <>
+                                <ArchiveNavbar />
+                                <Products />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/cart'>
+                              <>
+                                <ArchiveNavbar />
+                                <Cart />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <PrivateRoute exact path='/login'>
+                              <>
+                                <ArchiveNavbar />
+                                <Login />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/register'>
+                              <>
+                                <ArchiveNavbar />
+                                <Register />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/forgot-password'>
+                              <>
+                                <ArchiveNavbar />
+                                <Forgot />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/reset-password'>
+                              <>
+                                <ArchiveNavbar />
+                                <Reset />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <Route exact path='/products/:id'>
+                              <>
+                                <ArchiveNavbar />
+                                <SingleProduct />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <PrivateRoute exact path='/checkout'>
+                              <>
+                                <ArchiveNavbar />
+                                <Checkout />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/orders'>
+                              <>
+                                <ArchiveNavbar />
+                                <OrdersPage />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/orders/:id'>
+                              <>
+                                <ArchiveNavbar />
+                                <SingleOrder />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/profile'>
+                              <>
+                                <ArchiveNavbar />
+                                <ProfilePage />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/wishlist'>
+                              <>
+                                <ArchiveNavbar />
+                                <WishlistPage />
+                                <ArchiveFooter />
+                              </>
+                            </PrivateRoute>
+                            <Route exact path='/contact'>
+                              <>
+                                <ArchiveNavbar />
+                                <ContactPage />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/shipping'>
+                              <>
+                                <ArchiveNavbar />
+                                <ShippingPage />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/privacy-policy'>
+                              <>
+                                <ArchiveNavbar />
+                                <PrivacyPolicyPage />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/refund-policy'>
+                              <>
+                                <ArchiveNavbar />
+                                <RefundPolicyPage />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='/terms'>
+                              <>
+                                <ArchiveNavbar />
+                                <TermsPage />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                            <Route exact path='*'>
+                              <>
+                                <ArchiveNavbar />
+                                <Error />
+                                <ArchiveFooter />
+                              </>
+                            </Route>
+                          </Switch>
+                        )}
                       </ErrorBoundary>
                     </Router>
                   </AdminUserProvider>

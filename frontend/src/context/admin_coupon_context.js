@@ -1,6 +1,7 @@
 import React, { useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { domain } from '../utils/constants';
 
 const GET_COUPONS_BEGIN = 'GET_COUPONS_BEGIN';
 const GET_COUPONS_SUCCESS = 'GET_COUPONS_SUCCESS';
@@ -26,7 +27,7 @@ export const CouponProvider = ({ children }) => {
     const fetchCoupons = useCallback(async () => {
         dispatch({ type: GET_COUPONS_BEGIN });
         try {
-            const res = await axios.get('/api/coupon');
+            const res = await axios.get(`${domain}/api/coupon`);
             dispatch({ type: GET_COUPONS_SUCCESS, payload: res.data.data });
         } catch (error) {
             dispatch({ type: GET_COUPONS_ERROR });
@@ -35,7 +36,7 @@ export const CouponProvider = ({ children }) => {
 
     const createCoupon = async (couponData) => {
         try {
-            const res = await axios.post('/api/coupon', couponData);
+            const res = await axios.post(`${domain}/api/coupon`, couponData);
             toast.success('Coupon created');
             fetchCoupons();
             return { success: true, data: res.data.data };
@@ -47,7 +48,7 @@ export const CouponProvider = ({ children }) => {
 
     const deleteCoupon = async (id) => {
         try {
-            await axios.delete(`/api/coupon/${id}`);
+            await axios.delete(`${domain}/api/coupon/${id}`);
             toast.success('Coupon deleted');
             fetchCoupons();
         } catch (error) {
@@ -57,7 +58,7 @@ export const CouponProvider = ({ children }) => {
 
     const validateCoupon = async (code, cartTotal) => {
         try {
-            const res = await axios.post('/api/coupon/validate', { code, cartTotal });
+            const res = await axios.post(`${domain}/api/coupon/validate`, { code, cartTotal });
             return { success: true, data: res.data.data };
         } catch (error) {
             return { success: false, message: error.response?.data?.message || 'Invalid coupon' };
@@ -72,3 +73,4 @@ export const CouponProvider = ({ children }) => {
 };
 
 export const useCouponContext = () => useContext(CouponContext);
+

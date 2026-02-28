@@ -80,7 +80,7 @@ export const ProductProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to delete product' };
     }
   }, []);
@@ -136,7 +136,7 @@ export const ProductProvider = ({ children }) => {
       fetchProducts();
       return { success, data };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to create product' };
     }
   }, [fetchProducts]);
@@ -147,7 +147,7 @@ export const ProductProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to update product' };
     }
   }, []);
@@ -163,7 +163,7 @@ export const ProductProvider = ({ children }) => {
       fetchSingleProduct(productId);
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to delete review' };
     }
   }, [fetchSingleProduct]);
@@ -189,7 +189,7 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   return (
     <ProductContext.Provider

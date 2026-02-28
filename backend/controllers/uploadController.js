@@ -4,7 +4,7 @@ const cloudinary = require('../config/cloudinary');
 
 exports.uploadImage = catchAsyncError(async (req, res, next) => {
   const { image } = req.body;
-  if (!image) {
+  if (!image || typeof image !== 'string' || image.length > 10000000) {
     return next(new ErrorHandler('Invalid request', 400));
   }
   const { public_id, url } = await cloudinary.uploader.upload(image, {

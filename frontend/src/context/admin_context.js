@@ -36,9 +36,7 @@ export const AdminProvider = ({ children }) => {
   const [adminAuthLoading, setAdminAuthLoading] = useState(true);
   const [adminUserState, dispatch] = useReducer(reducer, adminUserInitialState);
 
-  const setAdmin = (admin) => {
-    setCurrentAdmin(admin);
-  };
+
 
   const checkAdminAuth = async () => {
     try {
@@ -63,7 +61,7 @@ export const AdminProvider = ({ children }) => {
       }
       return { success, data };
     } catch (error) {
-      const { message, success } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Login failed' };
     }
   };
@@ -75,7 +73,7 @@ export const AdminProvider = ({ children }) => {
       setCurrentAdmin(null);
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       setCurrentAdmin(null);
       return { success: false, message: message || 'Logout failed' };
     }
@@ -98,7 +96,7 @@ export const AdminProvider = ({ children }) => {
       const { success, data } = response.data;
       return { success, data };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Update failed' };
     }
   };
@@ -109,7 +107,7 @@ export const AdminProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Delete failed' };
     }
   };
@@ -127,7 +125,7 @@ export const AdminProvider = ({ children }) => {
       const { success, data } = response.data;
       return { success, data };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Create failed' };
     }
   };

@@ -76,7 +76,7 @@ const orderSchema = mongoose.Schema({
     },
     userId: {
       type: String,
-      required: true,
+      default: 'guest',
     },
   },
   paymentInfo: {
@@ -137,7 +137,7 @@ const orderSchema = mongoose.Schema({
   returnedAt: Date,
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

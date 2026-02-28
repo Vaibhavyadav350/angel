@@ -59,7 +59,7 @@ const Product = ({ image, name, price, id, category }) => {
           <h3 className="text-2xl font-editorial font-bold text-bronze truncate">{name}</h3>
           {category && (
             <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold">
-              {category} // Heritage
+              {category} {/* Heritage */}
             </p>
           )}
         </div>

@@ -8,29 +8,23 @@ import { toast } from 'react-toastify';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const sectionRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
-    setLoading(true);
     try {
       const response = await axios.post(newsletter_url, { email });
       if (response.data.success) {
         toast.success(response.data.message || 'Subscribed!', { position: 'top-center' });
-        setSubmitted(true);
         setTimeout(() => {
           setEmail('');
-          setSubmitted(false);
         }, 3000);
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Subscription failed. Please try again.';
       toast.error(message, { position: 'top-center' });
     }
-    setLoading(false);
   };
 
   // Use DRY scroll animation hook

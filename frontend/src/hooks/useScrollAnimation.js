@@ -72,7 +72,6 @@ export const useScrollAnimation = ({
     }, context);
 
     return () => {
-      const element = ref?.current;
       if (element) {
         ctx.revert();
         // Clean up ScrollTrigger instances
@@ -83,6 +82,7 @@ export const useScrollAnimation = ({
         });
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, start, JSON.stringify(from), JSON.stringify(to), duration, ease, once, stagger, contextRef, ...dependencies]);
 };
 
@@ -95,6 +95,8 @@ export const useScrollAnimation = ({
 export const useMultipleScrollAnimations = (animations, contextRef) => {
   useEffect(() => {
     if (!contextRef?.current) return;
+
+    const contextElement = contextRef?.current;
 
     const ctx = gsap.context(() => {
       animations.forEach(({ ref, start = 'top 80%', from, to, duration = 1, ease = 'power3.out', once = true }) => {
@@ -117,7 +119,7 @@ export const useMultipleScrollAnimations = (animations, contextRef) => {
           }
         );
       });
-    }, contextRef.current);
+    }, contextElement);
 
     return () => {
       ctx.revert();
@@ -131,6 +133,7 @@ export const useMultipleScrollAnimations = (animations, contextRef) => {
         }
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animations, contextRef]);
 };
 

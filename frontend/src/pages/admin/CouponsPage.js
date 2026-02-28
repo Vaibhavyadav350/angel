@@ -4,7 +4,7 @@ import { useCouponContext } from '../../context/admin_coupon_context';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CouponsPage = () => {
-    const { coupons, coupons_loading, fetchCoupons, createCoupon, deleteCoupon } = useCouponContext();
+    const { coupons, fetchCoupons, createCoupon, deleteCoupon } = useCouponContext();
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         code: '',

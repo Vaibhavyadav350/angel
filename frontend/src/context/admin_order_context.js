@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useReducer, useCallback } from 'react';
+import React, { useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import reducer from '../reducers/admin/order_reducer';
-import { useAdminContext } from './admin_context';
+
 import {
   admin_orders_url,
   admin_order_url,
@@ -39,7 +39,7 @@ const initialState = {
 const OrderContext = React.createContext();
 
 export const OrderProvider = ({ children }) => {
-  const { currentAdmin: currentUser } = useAdminContext();
+  // currentUser not needed directly here
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const fetchOrders = useCallback(async (params = {}) => {
@@ -105,7 +105,7 @@ export const OrderProvider = ({ children }) => {
       dispatch({ type: UPDATE_ORDER_STATUS, payload: data.orderStatus });
       return { success, status: data.orderStatus };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to update order status' };
     }
   };
@@ -118,7 +118,7 @@ export const OrderProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to delete order' };
     }
   };
@@ -129,7 +129,7 @@ export const OrderProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return { success: false, message: message || 'Failed to bulk update orders' };
     }
   };

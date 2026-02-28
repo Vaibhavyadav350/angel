@@ -82,7 +82,7 @@ export const UserProvider = ({ children }) => {
       const { success, data } = response.data;
       return { success, data };
     } catch (error) {
-      const { success, message } = error.response?.data || {};
+      const { message } = error.response?.data || {};
       return {
         success: false,
         message: message || 'Upload failed'

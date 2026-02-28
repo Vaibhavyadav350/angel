@@ -10,7 +10,7 @@ const WeaversChronicles = React.memo(() => {
             THE WEAVER'S<br /><span className="italic text-gold">CHRONICLES</span>
           </h2>
           <div className="max-w-xs mt-16 lg:mt-0">
-            <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold mb-8">// MATERIALITY RESEARCH</p>
+            <p className="text-xs font-bold uppercase tracking-[0.5em] text-gold mb-8">{`//`} MATERIALITY RESEARCH</p>
             <p className="text-base font-medium leading-relaxed text-bronze/70">A study on gold-thread embroidery and the tactile soul of ancestral silk and velvet textiles.</p>
           </div>
         </div>

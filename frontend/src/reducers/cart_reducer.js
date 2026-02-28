@@ -91,7 +91,7 @@ const cart_reducer = (state, action) => {
   if (action.type === COUNT_CART_TOTALS) {
     const { total_items, total_amount, shipping_fee } = state.cart.reduce(
       (total, cartItem) => {
-        const { price, amount, shipping } = cartItem;
+        const { price, amount } = cartItem;
         total.total_items += amount;
         total.total_amount += price * amount;
         // Shipping fee: $15 flat rate per order for Angel Archive, not per item

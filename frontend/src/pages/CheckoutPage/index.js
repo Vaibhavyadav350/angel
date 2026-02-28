@@ -8,9 +8,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCouponContext } from '../../context/admin_coupon_context';
 import { Country, State, City } from 'country-state-city';
-
+import { domain } from '../../utils/constants';
 const CheckoutPage = () => {
-  const { cart, total_amount, shipping_fee, clearCart } = useCartContext();
+  const { cart, total_amount, shipping_fee } = useCartContext();
   const { shipping, updateShipping } = useOrderContext();
   const { currentUser } = useUserContext();
   const location = useLocation();
@@ -37,16 +37,12 @@ const CheckoutPage = () => {
     document.title = 'Angel Fashion Studio | Secure Checkout';
     window.scrollTo(0, 0);
 
-    // Handle return from Stripe
+    // Handle return from Stripe (Cancel only, success goes to /orders)
     const params = new URLSearchParams(location.search);
-    if (params.get('success')) {
-      toast.success('Payment successful! Your exquisite archive order has been placed.');
-      clearCart();
-    }
     if (params.get('canceled')) {
       toast.error('Payment cancelled.');
     }
-  }, [location, clearCart]);
+  }, [location]);
 
   useEffect(() => {
     if (shipping.address?.country && shipping.address.country !== selectedCountry) {
@@ -87,7 +83,7 @@ const CheckoutPage = () => {
     try {
       const finalDiscount = discount.type === 'PERCENTAGE' ? (total_amount * discount.amount / 100) : discount.amount;
 
-      const response = await axios.post('/api/payment/create-checkout-session', {
+      const response = await axios.post(`${domain}/api/payment/create-checkout-session`, {
         cart,
         shipping_fee,
         total_amount,

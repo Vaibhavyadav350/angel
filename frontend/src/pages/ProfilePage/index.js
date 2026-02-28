@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { useCartContext } from '../../context/cart_context';
 import { useProductsContext } from '../../context/products_context';
 import { useOrderContext } from '../../context/order_context';
-import { formatPrice, formatDate } from '../../utils/helpers'; // Assuming formatDate exists or I will just use toDateString
-import Button from '../../components/Button';
+import { formatPrice } from '../../utils/helpers';
 
 // Reusable archive input style
 const inputClass =
@@ -14,7 +13,7 @@ const inputClass =
 
 const ProfilePage = () => {
   const {
-    currentUser: { displayName, email, photoURL },
+    currentUser,
     logoutUser,
     updateUserProfileImage,
     updateUserProfileName,
@@ -22,6 +21,7 @@ const ProfilePage = () => {
     updateUserProfilePassword,
     reauthenticateUser,
   } = useUserContext();
+  const { displayName, email, photoURL } = currentUser || {};
   const { clearCart } = useCartContext();
   const { closeSidebar } = useProductsContext();
   const { orders, fetchOrders } = useOrderContext();
@@ -231,9 +231,7 @@ const ProfilePage = () => {
                 </div>
               ) : (
                 orders.map((order) => {
-                  const { _id, createdAt, orderStatus, shippingPrice, totalPrice, orderItems } = order;
-                  // Assuming orderItems[0] exists for thumbnail
-                  const firstItem = orderItems[0];
+                  const { _id, orderStatus, totalPrice, orderItems } = order;
                   return (
                     <div key={_id} className="order-card bg-white/40 border border-gold/10 rounded-[40px] overflow-hidden">
                       <div className="p-10 flex flex-wrap items-center justify-between gap-8 border-b border-gold/5">

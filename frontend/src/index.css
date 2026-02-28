@@ -59,6 +59,28 @@ Global Styles
 html {
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-gold) var(--champagne-cream);
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--champagne-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-gold);
+  border-radius: 10px;
+  border: 2px solid var(--champagne-cream);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--deep-chocolate);
 }
 
 body {

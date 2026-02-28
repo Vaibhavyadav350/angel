@@ -228,6 +228,8 @@ exports.deleteOrder = catchAsyncError(async (req, res, next) => {
     }
   }
 
+  await Order.findByIdAndDelete(req.params.id);
+
   res.status(200).json({
     success: true,
     message: 'Order deleted and stock restored',
