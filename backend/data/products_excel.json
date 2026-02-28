@@ -1,0 +1,212 @@
+[
+    {
+        "name": "Elite Anarkali Ensemble",
+        "image": "/assets/products/anarkalisuits.webp",
+        "price": 55000,
+        "description": "A sophisticated silk anarkali with intricate threadwork, representing the grace of traditional archival silhouettes.",
+        "category": "Women",
+        "subCategory": "Salwar Kameez",
+        "productType": "Executive Ethnic",
+        "collections": [
+            "New Arrivals"
+        ],
+        "colors": [
+            "Cream",
+            "Gold"
+        ],
+        "company": "Angel Archive",
+        "stock": 8,
+        "discountPercent": 15,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/anarkalisuits.webp"
+        ]
+    },
+    {
+        "name": "Royal Gold Anarkali",
+        "image": "/assets/products/anarkalisuits2.jpg",
+        "price": 62000,
+        "description": "Premium gold-toned anarkali suite featuring heavy zari embroidery and archival detailing.",
+        "category": "Women",
+        "subCategory": "Salwar Kameez",
+        "productType": "Heritage Formal",
+        "collections": [
+            "Best Sellers"
+        ],
+        "colors": [
+            "Gold",
+            "Mustard"
+        ],
+        "company": "Angel Archive",
+        "stock": 5,
+        "discountPercent": 10,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/anarkalisuits2.jpg"
+        ]
+    },
+    {
+        "name": "Archival Bridal Lehenga",
+        "image": "/assets/products/bridallehenga.jpg",
+        "price": 225000,
+        "description": "The piece de resistance of the collection. A heavy bridal lehenga with over 10,000 hand-stitched archival pearls and crystals.",
+        "category": "Women",
+        "subCategory": "Lehengas",
+        "productType": "Bridal Couture",
+        "collections": [
+            "New Arrivals"
+        ],
+        "featured": true,
+        "colors": [
+            "Red",
+            "Maroon"
+        ],
+        "company": "Angel Archive",
+        "stock": 2,
+        "discountPercent": 20,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/bridallehenga.jpg",
+            "/assets/products/bridallehenga.2jpg.jpg"
+        ]
+    },
+    {
+        "name": "Intricate Embroidery Lehenga",
+        "image": "/assets/products/embroidrylehenga.jpg",
+        "price": 88000,
+        "description": "Modern lehenga featuring precision embroidery that showcases the pinnacle of archival craftsmanship.",
+        "category": "Women",
+        "subCategory": "Lehengas",
+        "productType": "Designer Wear",
+        "collections": [
+            "New Arrivals"
+        ],
+        "colors": [
+            "Pink",
+            "Silver"
+        ],
+        "company": "Angel Archive",
+        "stock": 4,
+        "discountPercent": 15,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/embroidrylehenga.jpg"
+        ]
+    },
+    {
+        "name": "Azure Silk Lehenga",
+        "image": "/assets/products/lehenga1.jpg",
+        "price": 75000,
+        "description": "Deep blue silk lehenga with subtle silver embroidery, ideal for archival evening receptions.",
+        "category": "Women",
+        "subCategory": "Lehengas",
+        "productType": "Formal Wear",
+        "collections": [
+            "Best Sellers"
+        ],
+        "colors": [
+            "Azure",
+            "Blue"
+        ],
+        "company": "Angel Archive",
+        "stock": 6,
+        "discountPercent": 10,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/lehenga1.jpg"
+        ]
+    },
+    {
+        "name": "Regal Pink Lehenga",
+        "image": "/assets/products/lehenga2.jpg",
+        "price": 92000,
+        "description": "A vibrant pink archival lehenga that captures the essence of modern heritage fashion.",
+        "category": "Women",
+        "subCategory": "Lehengas",
+        "productType": "Premium Couture",
+        "collections": [
+            "New Arrivals"
+        ],
+        "colors": [
+            "Pink",
+            "Gold"
+        ],
+        "company": "Angel Archive",
+        "stock": 3,
+        "discountPercent": 15,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/lehenga2.jpg"
+        ]
+    },
+    {
+        "name": "Heritage Velvet Ensemble",
+        "image": "/assets/products/P3630829.webp",
+        "price": 115000,
+        "description": "Rich velvet ensemble with deep tonal embroidery, a cornerstone of the Melbourne flagship's collection.",
+        "category": "Women",
+        "subCategory": "Lehengas",
+        "productType": "Bridal Couture",
+        "collections": [
+            "New Arrivals"
+        ],
+        "featured": true,
+        "colors": [
+            "Deep Burgundy",
+            "Gold"
+        ],
+        "company": "Angel Archive",
+        "stock": 2,
+        "discountPercent": 10,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/P3630829.webp"
+        ]
+    },
+    {
+        "name": "Classic Silk Saree",
+        "image": "/assets/products/saree.jpeg",
+        "price": 45000,
+        "description": "Timeless archival silk saree with a minimalist design, focusing on the luxury of the fabric.",
+        "category": "Women",
+        "subCategory": "Sarees",
+        "productType": "Essential Luxury",
+        "collections": [
+            "New Arrivals"
+        ],
+        "colors": [
+            "Ivory",
+            "Copper"
+        ],
+        "company": "Angel Archive",
+        "stock": 10,
+        "discountPercent": 10,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/saree.jpeg"
+        ]
+    },
+    {
+        "name": "Modern Drapery Saree",
+        "image": "/assets/products/saree2.jpg",
+        "price": 52000,
+        "description": "Archival saree with a modern twist, featuring a unique drape and contemporary gold patterns.",
+        "category": "Women",
+        "subCategory": "Sarees",
+        "productType": "Contemporary Heritage",
+        "collections": [
+            "Best Sellers"
+        ],
+        "colors": [
+            "Black",
+            "Gold"
+        ],
+        "company": "Angel Archive",
+        "stock": 7,
+        "discountPercent": 15,
+        "taxPercent": 10,
+        "images": [
+            "/assets/products/saree2.jpg"
+        ]
+    }
+]

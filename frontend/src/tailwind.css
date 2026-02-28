@@ -1,0 +1,112 @@
+@import '@fontsource/fraunces/300.css';
+@import '@fontsource/fraunces/400.css';
+@import '@fontsource/fraunces/700.css';
+@import '@fontsource/fraunces/900.css';
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --champagne-cream: #F7E7CE;
+    --sand-beige: #E1C699;
+    --deep-bronze: #7A5C41;
+    --muted-gold: #C5A059;
+    --deep-chocolate: #3D2B1F;
+    --bronze: #7A5C41;
+  }
+
+  body {
+    background-color: var(--champagne-cream);
+    color: var(--deep-bronze);
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1px var(--bronze);
+    color: transparent;
+  }
+
+  .mask-circle {
+    clip-path: circle(50% at 50% 50%);
+  }
+
+  .fine-line {
+    border-width: 0.5px;
+    border-color: rgba(122, 92, 65, 0.2);
+  }
+
+  /* Shop hotspot hover effect */
+  .shop-hotspot:hover .hotspot-card {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Nav dropdown sub-menus */
+  .nav-dropdown {
+    position: relative;
+  }
+
+  .nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background: var(--champagne-cream, #F7E7CE);
+    border: 1px solid rgba(122, 92, 65, 0.15);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(61, 43, 31, 0.12);
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    z-index: 100;
+  }
+
+  .nav-dropdown:hover .nav-dropdown-menu {
+    display: block;
+  }
+
+  .nav-dropdown-menu li a {
+    display: block;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--deep-bronze, #7A5C41);
+    text-transform: capitalize;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .nav-dropdown-menu li a:hover {
+    background: rgba(197, 160, 89, 0.12);
+    color: var(--deep-chocolate, #3D2B1F);
+  }
+}
+
+/* Custom scrollbar for premium feel - updated to new theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7E7CE;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7A5C41;
+}

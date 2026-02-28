@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Ivory Silk Kurta",
+    "price": 32499,
+    "description": "Handcrafted ivory silk kurta featuring delicate embroidery. Perfect for heritage occasions. Part of our Menswear Heritage collection.",
+    "category": "men",
+    "company": "Heritage",
+    "colors": ["#FFFFF0"],
+    "images": [
+      {
+        "public_id": "angel-archive/ivory-silk",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuB8s2sRRW-c8sYOXUGpKmRpKerm68NVEzUglltgTKV7ZpFTkDfIdNIvzHq_IMzrT2PlACZMzDdXfTqcouDm17YYw1TRHvES7jL4xOg2WUdaWq5yDPIL_RHayupFbnssYYbvVrFiW0QgM4kLTiLBm8g9-x3y_grAaTM3Fawcmvp2rAlfztblq2Gw115e_lYu95qw9JylaXCAKeKo78ETXANx8TTfPV7a24WkcLoNuYEsaKfnRNJ6IccTWLZVQomnpAyVTDaEDXPyrS4"
+      }
+    ],
+    "stock": 10,
+    "featured": true,
+    "shipping": true
+  },
+  {
+    "name": "Crimson Velvet Sherwani",
+    "price": 54999,
+    "description": "Luxurious crimson velvet sherwani with intricate zari handwork. A statement piece for weddings and grand celebrations.",
+    "category": "men",
+    "company": "Occasion",
+    "colors": ["#DC143C"],
+    "images": [
+      {
+        "public_id": "angel-archive/crimson-velvet",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDylC09MYylMlCeZZ8HTwOekEQycDH829K-mvU0whHhvrVwqgD9OMth-eEC4zzlt-rxB07VuNhujUTX_HBgKuIDuN341YajtRrxNjllSTp1zLJr31dyWHffXI3OrkqG-tMC5fExD-I9fdA7RJIxNOnqJu-66J1TVG0q6n2y0gykfgwhduyp6ieq9g-jCgtpelkwZq2E0_VUBsHmUYbFisPKA5iIFJwonn3Xlzg9DpVeVbLom7i-NyT9xlf1dCZ0_VAG0rM3wP85Z0c"
+      }
+    ],
+    "stock": 5,
+    "featured": true,
+    "shipping": true
+  },
+  {
+    "name": "The Archive Suite",
+    "price": 128000,
+    "description": "Our signature bridal ensemble. A masterpiece of craftsmanship featuring heavy zari work and premium fabrics. The ultimate wedding ensemble.",
+    "category": "women",
+    "company": "High-Fashion",
+    "colors": ["#FFD700", "#7A5C41"],
+    "images": [
+      {
+        "public_id": "angel-archive/archive-suite",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBmFScEDPw2oVIyyffyDHGtZ8bLFCMmZ2Md_iA0IwUuIxH2bfx9aE7CBAWEeGKhSH_Llbmydvl3LOlMJk-eSOpqbQG-mMpXtC1Qn1N2BeIXpsD8hsnIH_ycl-iPRvndn3mh4jWysPSOpia-M62pBXqqOepa5XOXOTFhD76ggcu6bnWyiHYXafhH8UJbDjqKt3tGhQO0x-4VpcnolC_MunD_gXKojInRS6J2S8hpa0do1Tb2Sh2FWt3JB6okwH0lvrNlYwHnva3w3B4"
+      }
+    ],
+    "stock": 2,
+    "featured": true,
+    "shipping": false
+  },
+  {
+    "name": "Sculpted Gold Saree",
+    "price": 89500,
+    "description": "A stunning textured designer saree in sculpted gold. Represents the pinnacle of modern ethnic fashion. Editorial grade.",
+    "category": "women",
+    "company": "Editorial",
+    "colors": ["#C5A059"],
+    "images": [
+      {
+        "public_id": "angel-archive/sculpted-gold",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBjB83dAYD0svZV2o7a2YYRLjibcxb6Lp7hqcipDODwhzPts6BCdQg3DE2o90F6KrV6PjlWiQix8m6wlBBZJ9dNjGzn6a_lsiihbIwuK1UPeXp4xfyZgCOXgJeeThUH5902-lf9sjP_OrTvj1R-kl_Ld5tyspAZwSclaArRFDQ9zHSFQgWkQ83weGxUz7tnqNR9rU4_zrgE17oQHWmnEHSeLcZhbd0cIVpb__KOQqIy3MIzZGkPOvUCZLUibHgFcTUqg7n6gQbxafc"
+      }
+    ],
+    "stock": 8,
+    "featured": true,
+    "shipping": true
+  },
+  {
+    "name": "Royal Blue Bandhgala",
+    "price": 42000,
+    "description": "Classic royal blue bandhgala suit. Tailored for perfection, adding a touch of nobility to your wardrobe.",
+    "category": "men",
+    "company": "Heritage",
+    "colors": ["#4169E1"],
+    "images": [
+      {
+        "public_id": "angel-archive/royal-bandhgala",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBK8YCY5t4bRLuufKriuDzblLKXumCgL1QGKP9AMobdunnlvat3jWDiKFFOA4ptHsOsP1PyKiX_59Yrp8PPFEVH1eKKpybKxYx1x3a4AwtOM6jOeFNE1jFlJEH4W5PLkuWV9U3Oko9QOJvkMYGEJ07BHvJ30wGwiD3L0Z78qe64qTWTXaT6tFevcztf9ATKpFDiMqgVvnx2LRIK-SBsTP349gd4fBahkI61pNjDaTlABrrkUCVgAM8biX_9N_rWxiZpUMzqtd6fjJY"
+      }
+    ],
+    "stock": 15,
+    "featured": false,
+    "shipping": true
+  },
+  {
+    "name": "Emerald Silk Lehenga",
+    "price": 75000,
+    "description": "Rich emerald green silk lehenga with gold embroidery. A timeless piece for the festive season.",
+    "category": "women",
+    "company": "Occasion",
+    "colors": ["#50C878"],
+    "images": [
+      {
+        "public_id": "angel-archive/emerald-lehenga",
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo"
+      }
+    ],
+    "stock": 6,
+    "featured": false,
+    "shipping": true
+  }
+]

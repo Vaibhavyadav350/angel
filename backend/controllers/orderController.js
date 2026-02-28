@@ -1,0 +1,394 @@
+const Order = require('../models/orderModel');
+const Product = require('../models/productModel');
+const ErrorHandler = require('../utils/ErrorHandler');
+const catchAsyncError = require('../middleware/CatchAsyncErrors');
+const { updateUserSpend } = require('./userController');
+const { alertAdminLowStock } = require('./restockController');
+const pdfService = require('../services/pdfService');
+const { sendStatusUpdate, sendReturnUpdate, sendOrderConfirmation } = require('../utils/emailService');
+
+// create new order
+exports.createNewOrder = catchAsyncError(async (req, res, next) => {
+  const {
+    name,
+    email,
+    shippingInfo,
+    orderItems,
+    paymentInfo,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    discountAmount,
+    couponCode,
+  } = req.body;
+
+  // Update stock for each item BEFORE creating order
+  for (let index = 0; index < orderItems.length; index++) {
+    const item = orderItems[index];
+    const success = await updateStock(item.product, item.quantity);
+    if (!success) {
+      return next(new ErrorHandler(`Product ${item.name} is out of stock`, 400));
+    }
+  }
+
+  const order = await Order.create({
+    shippingInfo,
+    orderItems,
+    paymentInfo,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    discountAmount: discountAmount || 0,
+    couponCode: couponCode || '',
+    paidAt: Date.now(),
+    user: {
+      name,
+      email,
+      userId: req.body.userId || req.body.user?.userId || ''
+    },
+  });
+
+  // Update user lifetime spend and order count
+  if (order.user.userId) {
+    await updateUserSpend(order.user.userId, totalPrice);
+  }
+
+  // If coupon used, increment its usage
+  if (couponCode) {
+    const Coupon = require('../models/couponModel');
+    await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: order,
+  });
+});
+
+// Generate PDF Invoice (Australian Tax Invoice)
+exports.getOrderInvoice = catchAsyncError(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return next(new ErrorHandler('Order not found', 404));
+
+  await pdfService.generateInvoice(order, res);
+});
+
+// Generate Warehouse Packing Slip (No Prices - Australian Standard)
+exports.getPackingSlip = catchAsyncError(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return next(new ErrorHandler('Order not found', 404));
+
+  await pdfService.generatePackingSlip(order, res);
+});
+
+// send single order
+exports.getSingleOrder = catchAsyncError(async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new ErrorHandler('Order not found', 400));
+  }
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(new ErrorHandler('Order not found', 404));
+  }
+  res.status(200).json({
+    success: true,
+    data: order,
+  });
+});
+
+// send user orders
+exports.getUserOrders = catchAsyncError(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new ErrorHandler('Order not found', 400));
+  }
+  const orders = await Order.find({ 'user.email': email });
+  res.status(200).json({
+    success: true,
+    data: orders || [], // Return empty array instead of 404
+  });
+});
+
+// send all orders (with advanced filtering)
+exports.getAllOrders = catchAsyncError(async (req, res, next) => {
+  const { status, minPrice, maxPrice, startDate, endDate, returnStatus } = req.query;
+  let query = {};
+
+  if (status) query.orderStatus = status;
+  if (returnStatus) {
+    if (returnStatus === 'exclude_returns') {
+      query.returnStatus = 'none';
+    } else if (returnStatus === 'all_returns') {
+      query.returnStatus = { $ne: 'none' };
+    } else {
+      query.returnStatus = returnStatus;
+    }
+  }
+  if (minPrice || maxPrice) {
+    query.totalPrice = {};
+    if (minPrice) query.totalPrice.$gte = Number(minPrice);
+    if (maxPrice) query.totalPrice.$lte = Number(maxPrice);
+  }
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) query.createdAt.$gte = new Date(startDate);
+    if (endDate) query.createdAt.$lte = new Date(endDate);
+  }
+
+  const orders = await Order.find(query).sort({ createdAt: -1 });
+  res.status(200).json({
+    success: true,
+    data: orders,
+  });
+});
+
+// update order status
+exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new ErrorHandler('Order not found', 400));
+  }
+  if (!req.body.status) {
+    return next(new ErrorHandler('Invalid request', 400));
+  }
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(new ErrorHandler('Order not found', 404));
+  }
+
+  // Define valid state progression hierarchy
+  const statusHierarchy = {
+    'processing': 0,
+    'confirmed': 1,
+    'shipped': 2,
+    'delivered': 3,
+    'returned': 4,
+    'cancelled': 4
+  };
+
+  const currentLevel = statusHierarchy[order.orderStatus];
+  const requestedLevel = statusHierarchy[req.body.status];
+
+  // Prevent backtracking or updating terminal states unless it's an admin override that makes sense 
+  // (In our strict model, no backtracking is allowed via this UI).
+  if (order.orderStatus === 'delivered' || order.orderStatus === 'returned' || order.orderStatus === 'cancelled') {
+    return next(new ErrorHandler(`Cannot modify a ${order.orderStatus} order.`, 400));
+  }
+
+  if (requestedLevel <= currentLevel) {
+    return next(new ErrorHandler(`Invalid state transition. Cannot move from ${order.orderStatus} to ${req.body.status}.`, 400));
+  }
+
+  // Stock was already decremented when the order was created (createNewOrder).
+  // No need to decrement again when confirming.
+  order.orderStatus = req.body.status;
+  if (req.body.status === 'shipped') {
+    order.shippingInfo.trackingNumber = req.body.trackingNumber || '';
+    order.shippingInfo.carrier = req.body.carrier || 'Australia Post';
+  }
+  if (req.body.status === 'delivered') {
+    order.deliveredAt = Date.now();
+  }
+  await order.save({ validateBeforeSave: false });
+
+  // Send Email Notification
+  try {
+    if (['shipped', 'delivered', 'cancelled'].includes(req.body.status)) {
+      await sendStatusUpdate({ name: order.user.name, email: order.user.email }, order, req.body.status === 'shipped' ? req.body.trackingNumber : null);
+    }
+  } catch (emailError) {
+    console.error('Failed to send status update email', emailError);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: order,
+  });
+});
+
+// delete order
+exports.deleteOrder = catchAsyncError(async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new ErrorHandler('Order not found', 400));
+  }
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(new ErrorHandler('Order not found', 404));
+  }
+
+  // Restore stock for each item in the order
+  // Stock is decreased when order is created, so restore it when deleted
+  for (let index = 0; index < order.orderItems.length; index++) {
+    const item = order.orderItems[index];
+    const product = await Product.findById(item.product);
+    if (product) {
+      product.stock += item.quantity;
+      await product.save({ validateBeforeSave: false });
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Order deleted and stock restored',
+  });
+});
+
+// Bulk Update Orders (Admin)
+exports.bulkUpdateOrders = catchAsyncError(async (req, res, next) => {
+  const { orderIds, status } = req.body;
+  if (!orderIds || !Array.isArray(orderIds) || !status) {
+    return next(new ErrorHandler('Invalid request data', 400));
+  }
+
+  const statusHierarchy = {
+    'processing': 0,
+    'confirmed': 1,
+    'shipped': 2,
+    'delivered': 3
+  };
+
+  const requestedLevel = statusHierarchy[status];
+
+  if (requestedLevel === undefined) {
+    return next(new ErrorHandler('Invalid status provided for bulk update', 400));
+  }
+
+  // Build a query that only selects orders whose current level is less than the requested level
+  // This physically prevents backtracking even in a bulk query.
+  // E.g., if status is "shipped" (level 2), only update "processing" (0) or "confirmed" (1).
+  const validCurrentStatuses = Object.keys(statusHierarchy).filter(s => statusHierarchy[s] < requestedLevel);
+
+  // Update multiple orders, ensuring they are valid targets for this transition
+  const result = await Order.updateMany(
+    {
+      _id: { $in: orderIds },
+      orderStatus: { $in: validCurrentStatuses }
+    },
+    { $set: { orderStatus: status, deliveredAt: status === 'delivered' ? Date.now() : undefined } }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: `${result.modifiedCount} orders updated successfully (${orderIds.length - result.modifiedCount} skipped due to invalid state transition)`
+  });
+});
+
+// Export Orders to Excel/CSV (Admin)
+exports.exportOrdersExcel = catchAsyncError(async (req, res, next) => {
+  const orders = await Order.find().sort({ createdAt: -1 });
+  const XLSX = require('xlsx');
+
+  const data = orders.map(order => ({
+    OrderID: order._id.toString(),
+    CustomerEmail: order.user.email,
+    CustomerName: order.user.name,
+    Status: order.orderStatus,
+    TotalPrice: order.totalPrice,
+    Items: order.orderItems.map(i => `${i.name} (${i.quantity})`).join(', '),
+    Date: new Date(order.createdAt).toLocaleDateString()
+  }));
+
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+
+  const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename=orders_archive.xlsx');
+  res.send(buffer);
+});
+
+// Request Return
+exports.requestReturn = catchAsyncError(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return next(new ErrorHandler('Order not found', 404));
+
+  if (order.orderStatus !== 'delivered') {
+    return next(new ErrorHandler('Only delivered orders can be returned', 400));
+  }
+
+  if (order.returnStatus !== 'none') {
+    return next(new ErrorHandler('Return already requested for this order', 400));
+  }
+
+  order.returnStatus = 'requested';
+  order.returnReason = req.body.reason;
+  order.returnRequestedAt = Date.now();
+
+  await order.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Return requested successfully',
+  });
+});
+
+// Update Return Status (Admin)
+exports.updateReturnStatus = catchAsyncError(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return next(new ErrorHandler('Order not found', 404));
+
+  const { status } = req.body;
+
+  // Return State Machine Validation
+  const returnHierarchy = { 'requested': 1, 'approved': 2, 'processing': 3, 'completed': 4, 'rejected': 4 };
+  const currentReturnLevel = returnHierarchy[order.returnStatus] || 0;
+  const requestedReturnLevel = returnHierarchy[status] || 0;
+
+  if (requestedReturnLevel <= currentReturnLevel) {
+    return next(new ErrorHandler(`Invalid return state transition from ${order.returnStatus} to ${status}`, 400));
+  }
+
+  if (!['approved', 'rejected', 'processing', 'completed', 'none'].includes(status)) {
+    return next(new ErrorHandler('Invalid return status', 400));
+  }
+
+  order.returnStatus = status;
+  if (status === 'completed') {
+    order.orderStatus = 'returned'; // Special status for finalized returns
+    order.returnedAt = Date.now();
+
+    // Restore stock for each item in the order
+    for (let index = 0; index < order.orderItems.length; index++) {
+      const item = order.orderItems[index];
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save({ validateBeforeSave: false });
+      }
+    }
+  }
+
+  await order.save();
+
+  try {
+    if (['approved', 'rejected', 'completed'].includes(status)) {
+      await sendReturnUpdate({ name: order.user.name, email: order.user.email }, order, status);
+    }
+  } catch (emailError) {
+    console.error('Failed to send return update email', emailError);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: `Return status updated to ${status}`,
+  });
+});
+
+const updateStock = async (id, quantity) => {
+  const product = await Product.findById(id);
+  if (product.stock < quantity) {
+    return false;
+  }
+  product.stock -= quantity;
+  await product.save({ validateBeforeSave: false });
+
+  // Alert admin if stock falls below threshold (e.g., 5)
+  if (product.stock < 5) {
+    await alertAdminLowStock(product);
+  }
+
+  return true;
+};
