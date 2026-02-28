@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { useProductsContext } from '../../context/products_context';
 import { useUserContext } from '../../context/user_context';
 import ReviewStars from '../ReviewStars/';
-import Button from '../Button';
 
 function ReviewModal({ product }) {
   const { _id: id, reviews } = product;
