@@ -83,7 +83,7 @@ exports.deleteProduct = catchAsyncError(async (req, res, next) => {
   for (let i = 0; i < product.images.length; i++) {
     await cloudinary.uploader.destroy(product.images[i].public_id);
   }
-  await product.remove();
+  await product.deleteOne();
 
   console.info(`[CATALOG DELETION] Product permanently removed from database: ${product.name} (SKU: ${product._id}).`);
 

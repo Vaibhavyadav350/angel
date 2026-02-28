@@ -32,7 +32,7 @@ const order_reducer = (state, action) => {
     return {
       ...state,
       orders_loading: false,
-      orders: action.payload.reverse(),
+      orders: action.payload, // Backend already sorts by createdAt: -1 (newest first)
     };
   }
   if (action.type === GET_SINGLE_ORDER_BEGIN) {

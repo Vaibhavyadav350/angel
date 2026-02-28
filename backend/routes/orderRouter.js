@@ -2,8 +2,8 @@ const router = require('express').Router();
 
 const orderController = require('../controllers/orderController');
 
-// create new order
-router.route('/new').post(orderController.createNewOrder);
+// Order creation is handled exclusively by the Stripe webhook (webhookController.js)
+// No public REST endpoint for order creation — prevents duplicate orders and unauthorized access
 
 // send user orders
 router.route('/').post(orderController.getUserOrders);

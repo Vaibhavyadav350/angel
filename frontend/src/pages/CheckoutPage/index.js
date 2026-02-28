@@ -155,7 +155,7 @@ const CheckoutPage = () => {
                   <label className={labelClasses}>Phone Number</label>
                   <input
                     className={inputClasses}
-                    placeholder="+91..."
+                    placeholder="+61..."
                     type="tel"
                     name="phone_number"
                     value={shipping.phone_number || ''}

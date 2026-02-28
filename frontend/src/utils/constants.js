@@ -131,9 +131,9 @@ export const services = [
 export const domain = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:5000';
 export const products_url = `${domain}/api/products`;
 export const single_product_url = `${domain}/api/products/`;
-export const create_order_url = `${domain}/api/orders/new`;
+// Order creation URL removed — orders are created exclusively by the Stripe webhook (webhookController.js)
 export const get_order_url = `${domain}/api/orders`;
-export const payment_url = `${domain}/api/payment/create-payment-intent`;
+// payment_url removed — checkout uses /api/payment/create-checkout-session directly
 export const upload_url = `${domain}/api/upload/`;
 export const newsletter_url = `${domain}/api/newsletter/subscribe`;
 export const user_profile_url = `${domain}/api/users/profile`;

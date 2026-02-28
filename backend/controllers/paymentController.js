@@ -44,7 +44,7 @@ const paymentController = async (req, res) => {
   try {
     console.info(`[STRIPE CHECKOUT INITIATED] User: ${req.user?.email || req.body.email || 'Guest'}, Items: ${cart.length}, Total: $${total_amount}, Shipping: $${shipping_fee}`);
 
-    const allowedShippingFees = [0, 100, 200];
+    const allowedShippingFees = [0, 15]; // $15 flat rate standard shipping from cart_reducer
     if (!allowedShippingFees.includes(shipping_fee)) {
       console.warn(`[STRIPE CHECKOUT WARN] Client sent non-standard shipping fee: ${shipping_fee}`);
     }
@@ -110,9 +110,8 @@ const paymentController = async (req, res) => {
           }
         }
       ] : [],
-      shipping_address_collection: {
-        allowed_countries: ['AU'], // strictly confined to Australian market as per localization strategy
-      },
+      // Shipping address is collected on our CheckoutPage and injected via metadata below.
+      // Do NOT enable shipping_address_collection — it forces users to re-enter their address on the Stripe page.
       metadata: {
         userId: req.user?.id || req.body.userId || '',
         userName: req.user?.name || req.body.shipping?.name || 'Guest User',

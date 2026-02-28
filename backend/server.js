@@ -49,7 +49,7 @@ process.on('uncaughtException', async (err) => {
 // using middlewares
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3000'];
+  : ['http://localhost:3000', 'http://admin.localhost:3000'];
 
 app.use(
   cors({

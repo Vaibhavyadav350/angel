@@ -7,72 +7,16 @@ const { alertAdminLowStock } = require('./restockController');
 const pdfService = require('../services/pdfService');
 const { sendStatusUpdate, sendReturnUpdate, sendOrderConfirmation } = require('../utils/emailService');
 
-// create new order
-exports.createNewOrder = catchAsyncError(async (req, res, next) => {
-  const {
-    name,
-    email,
-    shippingInfo,
-    orderItems,
-    paymentInfo,
-    itemsPrice,
-    taxPrice,
-    shippingPrice,
-    totalPrice,
-    discountAmount,
-    couponCode,
-  } = req.body;
+// ============================================================================
+// ORDER CREATION IS HANDLED EXCLUSIVELY BY webhookController.js
+// ============================================================================
+// The Stripe webhook (checkout.session.completed) is the SINGLE source of truth
+// for creating orders. This prevents:
+//   1. Duplicate orders (webhook + REST endpoint both firing)
+//   2. Unauthorized order creation (the old /api/orders/new had no auth)
+//   3. Data inconsistency (webhook uses verified Stripe payment data)
+// ============================================================================
 
-  // Step 1: Check if ALL items have sufficient stock before doing anything
-  for (let index = 0; index < orderItems.length; index++) {
-    const item = orderItems[index];
-    const product = await Product.findById(item.product);
-    if (!product || product.stock < item.quantity) {
-      return next(new ErrorHandler(`Product ${item.name} is currently out of stock`, 400));
-    }
-  }
-
-  // Step 2: Create the Order first. If this crashes due to validation errors, no stock is lost.
-  const order = await Order.create({
-    shippingInfo,
-    orderItems,
-    paymentInfo,
-    itemsPrice,
-    taxPrice,
-    shippingPrice,
-    totalPrice,
-    discountAmount: discountAmount || 0,
-    couponCode: couponCode || '',
-    paidAt: Date.now(),
-    user: {
-      name,
-      email,
-      userId: req.body.userId || req.body.user?.userId || ''
-    },
-  });
-
-  // Update user lifetime spend and order count
-  if (order.user.userId) {
-    await updateUserSpend(order.user.userId, totalPrice);
-  }
-
-  // Step 3: Now safely decrement stock
-  for (let index = 0; index < orderItems.length; index++) {
-    const item = orderItems[index];
-    await updateStock(item.product, item.quantity);
-  }
-
-  // If coupon used, increment its usage
-  if (couponCode) {
-    const Coupon = require('../models/couponModel');
-    await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } });
-  }
-
-  res.status(200).json({
-    success: true,
-    data: order,
-  });
-});
 
 // Generate PDF Invoice (Australian Tax Invoice)
 exports.getOrderInvoice = catchAsyncError(async (req, res, next) => {
@@ -111,7 +55,7 @@ exports.getUserOrders = catchAsyncError(async (req, res, next) => {
   if (!email) {
     return next(new ErrorHandler('Order not found', 400));
   }
-  const orders = await Order.find({ 'user.email': email });
+  const orders = await Order.find({ 'user.email': email }).sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
     data: orders || [], // Return empty array instead of 404
@@ -187,7 +131,7 @@ exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler(`Invalid state transition. Cannot move from ${order.orderStatus} to ${req.body.status}.`, 400));
   }
 
-  // Stock was already decremented when the order was created (createNewOrder).
+  // Stock was already decremented when the order was created (webhookController.js).
   // No need to decrement again when confirming.
   // If transitioning to cancelled, restore stock
   if (req.body.status === 'cancelled' && order.orderStatus !== 'cancelled') {

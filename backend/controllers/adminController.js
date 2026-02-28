@@ -145,7 +145,7 @@ exports.deleteAdmin = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler('Cannot delete self', 400));
   }
   console.info(`[ADMIN DELETED] Admin '${admin.name}' (${admin.email}) permanently deleted by ${req.user.email}`);
-  await admin.remove();
+  await admin.deleteOne();
   res.status(200).json({
     success: true,
     message: 'Admin deleted',

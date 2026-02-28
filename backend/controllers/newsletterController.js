@@ -58,7 +58,7 @@ exports.deleteSubscriber = catchAsyncError(async (req, res, next) => {
     }
 
     console.info(`[NEWSLETTER UNSUBSCRIBED] ${subscriber.email} removed by admin.`);
-    await subscriber.remove();
+    await subscriber.deleteOne();
 
     res.status(200).json({
         success: true,

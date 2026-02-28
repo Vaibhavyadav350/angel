@@ -26,7 +26,7 @@ exports.deleteCoupon = catchAsyncErrors(async (req, res, next) => {
     const coupon = await Coupon.findById(req.params.id);
     if (!coupon) return next(new ErrorHandler('Coupon not found', 404));
     console.info(`[COUPON DELETED] Code: ${coupon.code}`);
-    await coupon.remove();
+    await coupon.deleteOne();
     res.status(200).json({
         success: true,
         message: 'Coupon deleted successfully'

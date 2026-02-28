@@ -10,10 +10,9 @@ import {
   GET_SINGLE_ORDER_ERROR,
 } from '../actions';
 import { useUserContext } from './user_context';
-import { useCartContext } from './cart_context';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { get_order_url, create_order_url, domain } from '../utils/constants';
+import { get_order_url, domain } from '../utils/constants';
 
 const initialState = {
   orders_loading: false,
@@ -29,7 +28,7 @@ const initialState = {
       postal_code: '',
       city: '',
       state: '',
-      country: 'IN',
+      country: 'AU',
     },
   },
 };
@@ -39,7 +38,6 @@ const OrderContext = React.createContext();
 export const OrderProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { currentUser } = useUserContext();
-  const { cart, total_amount, shipping_fee } = useCartContext();
   const fetchOrders = React.useCallback(async (url = get_order_url) => {
     if (!currentUser?.email) return;
     dispatch({ type: GET_ORDERS_BEGIN });
@@ -64,49 +62,8 @@ export const OrderProvider = ({ children }) => {
     }
   }, []);
 
-  const placeOrder = React.useCallback(async (paymentIntentId) => {
-    const shippingInfo = {
-      address: state.shipping.address.line1,
-      city: state.shipping.address.city,
-      state: state.shipping.address.state,
-      country: state.shipping.address.country,
-      pinCode: state.shipping.address.postal_code, // Keep as String
-      phoneNumber: state.shipping.phone_number, // Keep as String
-    };
-    const orderItems = cart.map((item) => {
-      return {
-        name: item.name,
-        price: item.price,
-        quantity: item.amount,
-        image: item.image,
-        color: item.color,
-        size: item.size,
-        product: item.productId || item.id, // Use stored productId
-      };
-    });
-    const paymentInfo = {
-      id: paymentIntentId || 'dummy_id_12345', // Use actual payment intent ID
-      status: 'paid',
-    };
-    const body = {
-      name: state.shipping.name,
-      email: currentUser.email,
-      userId: currentUser.uid, // Add userId
-      shippingInfo,
-      orderItems,
-      paymentInfo,
-      itemsPrice: total_amount,
-      taxPrice: 0, // Add explicit taxPrice
-      shippingPrice: shipping_fee,
-      totalPrice: total_amount + shipping_fee,
-    };
-    try {
-      await axios.post(create_order_url, body);
-      toast.success('Order placed');
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }, [state.shipping, cart, currentUser, total_amount, shipping_fee]);
+  // Order creation is handled exclusively by the Stripe webhook (webhookController.js).
+  // No client-side order creation — prevents duplicate orders.
 
   const requestReturn = React.useCallback(async (orderId, reason) => {
     try {
@@ -134,7 +91,7 @@ export const OrderProvider = ({ children }) => {
   }, [currentUser, fetchOrders]);
 
   return (
-    <OrderContext.Provider value={{ ...state, updateShipping, placeOrder, fetchOrders, fetchSingleOrder, requestReturn }}>
+    <OrderContext.Provider value={{ ...state, updateShipping, fetchOrders, fetchSingleOrder, requestReturn }}>
       {children}
     </OrderContext.Provider>
   );

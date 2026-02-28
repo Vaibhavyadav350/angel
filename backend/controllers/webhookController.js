@@ -81,33 +81,14 @@ const webhookController = async (req, res) => {
                 }
             }
 
-            // Parse shipping details — 4-layer fallback for Stripe API compatibility
-            // Stripe API 2025-02-24+ moved shipping_details to collected_information.shipping_details
-            let shippingSource = session.collected_information?.shipping_details
-                || session.shipping_details;
-
-            if (!shippingSource || !shippingSource.address) {
-                console.warn(`[WEBHOOK] shipping_details not in event payload. Retrieving full session from Stripe API...`);
-                try {
-                    const fullSession = await stripe.checkout.sessions.retrieve(session.id);
-                    shippingSource = fullSession.collected_information?.shipping_details
-                        || fullSession.shipping_details;
-                    if (shippingSource?.address) {
-                        console.info(`[WEBHOOK] Successfully retrieved shipping_details from Stripe API.`);
-                    }
-                } catch (retrieveErr) {
-                    console.warn(`[WEBHOOK] Could not retrieve session: ${retrieveErr.message}. Using metadata fallback.`);
-                }
-            }
-
-            // Final fallback: use our own metadata if Stripe doesn't provide shipping
-            const addr = shippingSource?.address || {};
+            // Shipping address comes exclusively from our CheckoutPage metadata
+            // (shipping_address_collection was removed from the Stripe session)
             const shippingAddress = {
-                address: addr.line1 || session.metadata.shippingLine1 || 'N/A',
-                city: addr.city || session.metadata.shippingCity || 'N/A',
-                state: addr.state || session.metadata.shippingState || 'N/A',
-                country: addr.country || 'AU',
-                pinCode: addr.postal_code || session.metadata.shippingPostalCode || '000000',
+                address: session.metadata.shippingLine1 || 'N/A',
+                city: session.metadata.shippingCity || 'N/A',
+                state: session.metadata.shippingState || 'N/A',
+                country: 'AU',
+                pinCode: session.metadata.shippingPostalCode || '000000',
                 phoneNumber: session.customer_details?.phone || session.metadata.shippingPhone || '0000000000',
             };
 
