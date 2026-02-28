@@ -92,7 +92,21 @@ Now we map your professional domain names to Vercel.
 
 ---
 
-### 🚀 Launch Complete!
+### Step 5: Configure Firebase Authorized Domains
+
+Firebase Authentication explicitly blocks login attempts from unknown domains to prevent phishing. Now that your custom domains are active, you must authorize them:
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/) and open your project.
+2. In the left sidebar, click **Authentication**, then select the **Settings** tab.
+3. Click on **Authorized domains**.
+4. Click **Add domain**.
+5. Type exactly: `angelfashionstudio.org` and click Add.
+6. Click **Add domain** again.
+7. Type exactly: `www.angelfashionstudio.org` and click Add.
+
+---
+
+### 🚀 6. Launch Complete!
 When you are ready to start selling for real money in the future, all you have to do is:
 1. Turn off "Test Mode" in Stripe.
 2. Replace the `pk_test` and `sk_test` keys with `live` keys in Koyeb and Vercel.
