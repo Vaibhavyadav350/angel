@@ -50,9 +50,8 @@ export const NewsletterProvider = ({ children }) => {
         }
     }, [fetchSubscribers]);
 
-    useEffect(() => {
-        fetchSubscribers();
-    }, [fetchSubscribers]);
+    // Removed global auto-fetch. The newsletter page calls fetchSubscribers() explicitly.
+    // This prevents unauthenticated API calls on every page load including customer routes.
 
     return (
         <NewsletterContext.Provider

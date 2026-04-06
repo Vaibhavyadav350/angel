@@ -24,6 +24,23 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [emailValid, setEmailValid] = useState(false);
+
+  const validateEmail = (value) => /\S+@\S+\.\S+/.test(value);
+
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    setEmailError('');
+    setEmailValid(validateEmail(val));
+  };
+
+  const handleEmailBlur = () => {
+    if (email && !validateEmail(email)) {
+      setEmailError('This email format seems incomplete.');
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -78,14 +95,25 @@ function LoginPage() {
               <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold block">
                 Email Address
               </label>
-              <input
-                type="email"
-                name="email"
-                className={inputClass}
-                placeholder="YOURNAME@EMAIL.COM"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  name="email"
+                  className={`${inputClass} pr-10`}
+                  placeholder="YOURNAME@EMAIL.COM"
+                  value={email}
+                  onChange={handleEmailChange}
+                  onBlur={handleEmailBlur}
+                />
+                {emailValid && (
+                  <span className="absolute right-0 top-1/2 -translate-y-1/2 text-emerald-500 material-symbols-outlined text-lg opacity-80" aria-label="Valid email">
+                    check_circle
+                  </span>
+                )}
+              </div>
+              {emailError && (
+                <p className="text-[10px] text-bronze/60 italic animate-fade-in">{emailError}</p>
+              )}
             </div>
 
             {/* Password */}

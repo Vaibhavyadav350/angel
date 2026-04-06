@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { COMPANY_INFO, FOOTER_LINKS, SOCIAL_LINKS } from '../../constants/archiveConstants';
 import { footerHeadingClasses, containerPaddingClasses, sectionPaddingClasses } from '../../utils/responsiveText';
 
 const ArchiveFooter = () => {
+  const [isHighContrast, setIsHighContrast] = useState(false);
+
+  useEffect(() => {
+    setIsHighContrast(document.documentElement.classList.contains('high-contrast'));
+  }, []);
+
+  const toggleHighContrast = () => {
+    document.documentElement.classList.toggle('high-contrast');
+    setIsHighContrast((prev) => !prev);
+  };
+
   return (
     <footer className={`bg-chocolate ${sectionPaddingClasses} pb-16 sm:pb-20 lg:pb-24 border-t fine-line border-champagne/10`}>
       <div className={`container mx-auto ${containerPaddingClasses}`}>
@@ -52,7 +63,7 @@ const ArchiveFooter = () => {
             </h5>
             <ul className="space-y-4 sm:space-y-5 lg:space-y-6 text-[10px] sm:text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.4em] text-champagne/60">
               {FOOTER_LINKS.studio.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <Link to={link.href} className="hover:text-gold transition-colors">
                     {link.label}
                   </Link>
@@ -69,9 +80,9 @@ const ArchiveFooter = () => {
             <ul className="space-y-4 sm:space-y-5 lg:space-y-6 text-[10px] sm:text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.4em] text-champagne/60">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="hover:text-gold transition-colors">
+                  <Link to={link.href} className="hover:text-gold transition-colors">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -85,9 +96,9 @@ const ArchiveFooter = () => {
             <ul className="space-y-4 sm:space-y-5 lg:space-y-6 text-[10px] sm:text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.4em] text-champagne/60">
               {FOOTER_LINKS.clientCare.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="hover:text-gold transition-colors">
+                  <Link to={link.href} className="hover:text-gold transition-colors">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -100,10 +111,16 @@ const ArchiveFooter = () => {
             </h5>
             <ul className="space-y-4 sm:space-y-5 lg:space-y-6 text-[10px] sm:text-[11px] lg:text-[12px] font-bold uppercase tracking-[0.4em] text-champagne/60">
               {FOOTER_LINKS.legal.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} className="hover:text-gold transition-colors">
-                    {link.label}
-                  </a>
+                <li key={link.label}>
+                  {link.href.startsWith('http') ? (
+                    <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.href} className="hover:text-gold transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -112,11 +129,17 @@ const ArchiveFooter = () => {
 
         <div className="pt-12 sm:pt-16 lg:pt-20 border-t border-champagne/10 flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-8 lg:gap-12">
           <p className="text-[9px] sm:text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.5em] sm:tracking-[0.6em] text-champagne/30 text-center sm:text-left">
-            <p className="text-[9px] sm:text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.5em] sm:tracking-[0.6em] text-champagne/30 text-center sm:text-left">
-              © {new Date().getFullYear()} Angel Fashion Studio. All Rights Reserved.
-            </p>
+            © {new Date().getFullYear()} Angel Fashion Studio. All Rights Reserved.
           </p>
-          <div className="flex gap-8 sm:gap-12 lg:gap-20 text-[9px] sm:text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.5em] sm:tracking-[0.6em] text-champagne/30">
+          <div className="flex gap-8 sm:gap-12 lg:gap-20 text-[9px] sm:text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.5em] sm:tracking-[0.6em] text-champagne/30 items-center">
+            <button
+              onClick={toggleHighContrast}
+              aria-label="Toggle High Contrast Mode"
+              className={`hover:text-gold transition-colors flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-gold p-1 rounded ${isHighContrast ? 'text-gold' : ''}`}
+            >
+              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">contrast</span>
+              <span className="hidden sm:inline">A11Y Mode</span>
+            </button>
             <span>MUMBAI, IN</span>
             <span>LONDON, UK</span>
           </div>

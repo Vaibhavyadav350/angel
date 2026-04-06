@@ -79,18 +79,18 @@ const AboutPage = () => {
                   className="text-6xl lg:text-8xl font-editorial font-black text-bronze leading-[0.9] uppercase">
                   OUR<br />STORY</h2>
               </div>
-              <div className="space-y-8">
-                <p className="text-lg font-medium leading-relaxed text-bronze/80">
+              <div className="space-y-12 pr-0 lg:pr-12">
+                <p className="text-xl font-medium leading-loose text-bronze/90">
                   Born in the heart of India, Angel Archive began as a curated vision to preserve the
                   vanishing techniques of traditional South Asian artisanship while defining a new era of global luxury.
                 </p>
-                <p className="text-base leading-relaxed text-bronze/70">
+                <p className="text-lg leading-loose text-bronze/70">
                   As a premier India-based archive, we specialize in high-fashion heritage that
                   transcends seasons. Our journey is one of preservation—archiving the techniques of
                   master weavers and reimagining them for the modern connoisseur. Every garment in our
                   collection is a testament to the enduring beauty of heritage textiles.
                 </p>
-                <div className="pt-8 border-t fine-line">
+                <div className="pt-12 border-t border-bronze/10">
                   <span className="text-[11px] font-bold tracking-[0.4em] uppercase text-gold">MELBOURNE —
                     SYDNEY — LONDON</span>
                 </div>
@@ -106,10 +106,10 @@ const AboutPage = () => {
               <div className="space-y-8">
                 <h3 className="text-4xl font-editorial font-bold text-bronze uppercase tracking-tight">The
                   Mission</h3>
-                <p className="text-2xl font-editorial italic text-bronze/90 leading-snug">
+                <blockquote className="text-4xl lg:text-5xl font-editorial font-light italic text-gold border-l-4 border-gold pl-8 my-16 leading-tight">
                   "To democratize high-fashion heritage by providing uncompromising quality and artisanal
                   craftsmanship at accessible price points."
-                </p>
+                </blockquote>
               </div>
               <div className="grid grid-cols-2 gap-12 pt-12 border-t fine-line">
                 <div>

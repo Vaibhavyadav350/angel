@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -35,7 +35,9 @@ export const useScrollAnimation = ({
   contextRef = null,
   dependencies = [],
 }) => {
-  useEffect(() => {
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+  useIsomorphicLayoutEffect(() => {
     if (!ref.current) return;
 
     const element = ref.current;
@@ -53,6 +55,7 @@ export const useScrollAnimation = ({
         duration,
         ease,
         scrollTrigger,
+        force3D: true,
       };
 
       if (stagger !== null) {
@@ -93,7 +96,9 @@ export const useScrollAnimation = ({
  * @param {React.RefObject} contextRef - Context ref for cleanup
  */
 export const useMultipleScrollAnimations = (animations, contextRef) => {
-  useEffect(() => {
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+  useIsomorphicLayoutEffect(() => {
     if (!contextRef?.current) return;
 
     const contextElement = contextRef?.current;
@@ -116,6 +121,7 @@ export const useMultipleScrollAnimations = (animations, contextRef) => {
             duration,
             ease,
             scrollTrigger,
+            force3D: true,
           }
         );
       });

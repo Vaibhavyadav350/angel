@@ -11,6 +11,10 @@ import {
   FaUserTie,
   FaTicketAlt,
   FaUndo,
+  FaImages,
+  FaLayerGroup,
+  FaTags,
+  FaBoxes,
 } from 'react-icons/fa';
 
 export const links = [
@@ -146,7 +150,11 @@ export const default_profile_image =
 export const LinkItems = [
   { name: 'Home', url: '/admin', icon: <FaHome /> },
   { name: 'Products', url: '/admin/products', icon: <FaProductHunt /> },
+  { name: 'Inventory', url: '/admin/inventory', icon: <FaBoxes /> },
   { name: 'Orders', url: '/admin/orders', icon: <FaShoppingCart /> },
+  { name: 'Banners', url: '/admin/banners', icon: <FaImages /> },
+  { name: 'Collections', url: '/admin/collections', icon: <FaLayerGroup /> },
+  { name: 'Categories', url: '/admin/categories', icon: <FaTags /> },
   { name: 'Newsletter', url: '/admin/newsletter', icon: <GiStabbedNote /> },
   { name: 'Promotions', url: '/admin/coupons', icon: <FaTicketAlt /> },
   { name: 'Customers', url: '/admin/customers', icon: <FaUserTie /> },
@@ -180,6 +188,10 @@ export const admin_order_url = `${domain}/api/admin/order/`;
 export const admin_single_order_url = `${domain}/api/admin/order/`; // For fetching single order
 export const admin_delete_review_url = `${domain}/api/admin/product/review/`;
 export const admin_newsletter_url = `${domain}/api/newsletter`;
+export const admin_banners_url = `${domain}/api/banners`;
+export const admin_collections_url = `${domain}/api/featured-collections`;
+export const admin_categories_url = `${domain}/api/admin/categories`;
+export const admin_inventory_url = `${domain}/api/admin/inventory`;
 
 // Analytics URLs
 export const admin_analytics_sales_url = `${domain}/api/analytics/sales`;

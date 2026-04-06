@@ -32,6 +32,7 @@ const initialState = {
     images: [],
     colors: [],
     sizes: [],
+    variants: [], // Required for E-commerce variant matrix
     category: '',
     subCategory: '',
     productType: '',
@@ -41,6 +42,10 @@ const initialState = {
     featured: false,
     discountPercent: 20,
     taxPercent: 10,
+    badgeText: '',
+    leadTimeDays: '',
+    composition: '',
+    careInstructions: '',
   },
   single_product_loading: false,
   single_product_error: false,
@@ -49,14 +54,22 @@ const initialState = {
 
 const ProductContext = React.createContext();
 
+let lastProductsFetch = 0;
+const CACHE_TTL = 60000; // 60 seconds
+
 export const ProductProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const fetchProducts = React.useCallback(async () => {
+  const fetchProducts = React.useCallback(async (force = false) => {
+    const now = Date.now();
+    if (!force && lastProductsFetch > 0 && (now - lastProductsFetch < CACHE_TTL)) {
+      return;
+    }
     dispatch({ type: GET_PRODUCTS_BEGIN });
     try {
       const response = await axios.get(products_url); // Customer endpoint for reading
       const { data } = response.data;
+      lastProductsFetch = Date.now();
       dispatch({ type: GET_PRODUCTS_SUCCESS, payload: data });
     } catch (error) {
       dispatch({ type: GET_PRODUCTS_ERROR });
@@ -187,9 +200,8 @@ export const ProductProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  // Removed global auto-fetch. Admin pages call fetchProducts() explicitly.
+  // This prevents unauthenticated API calls on every page load including customer routes.
 
   return (
     <ProductContext.Provider

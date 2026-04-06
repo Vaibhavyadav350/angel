@@ -38,11 +38,19 @@ const initialState = {
 
 const OrderContext = React.createContext();
 
+let lastOrdersFetch = 0;
+const CACHE_TTL = 60000; // 60 seconds
+
 export const OrderProvider = ({ children }) => {
   // currentUser not needed directly here
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const fetchOrders = useCallback(async (params = {}) => {
+  const fetchOrders = useCallback(async (params = {}, force = false) => {
+    const isDefault = Object.keys(params).length === 0;
+    const now = Date.now();
+    if (isDefault && !force && lastOrdersFetch > 0 && (now - lastOrdersFetch < CACHE_TTL)) {
+      return;
+    }
     dispatch({ type: GET_ORDERS_BEGIN });
     try {
       const response = await axios.get(admin_orders_url, {
@@ -51,6 +59,7 @@ export const OrderProvider = ({ children }) => {
       });
       if (response.data.success) {
         const { data } = response.data;
+        if (isDefault) lastOrdersFetch = Date.now();
         dispatch({ type: GET_ORDERS_SUCCESS, payload: data || [] });
       } else {
         dispatch({ type: GET_ORDERS_ERROR });

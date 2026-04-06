@@ -73,12 +73,24 @@ const productSchema = mongoose.Schema({
     enum: ['New Arrivals', 'Ready To Ship', 'Best Sellers', 'Sale', 'Plus Sizes'],
     default: [],
   },
+  // True E-commerce Variant Matrix
+  variants: [
+    {
+      size: { type: String, required: true },
+      color: { type: String, required: true },
+      stock: {
+        type: Number,
+        required: true,
+        min: [0, 'Variant stock cannot be negative'],
+        default: 0
+      },
+      sku: { type: String } // Optional specific SKU for this variant
+    }
+  ],
+  // Keep a global virtual or derived field for simple front-end 'is in stock' checks if needed
   stock: {
     type: Number,
-    required: [true, 'Please enter product stock'],
-    max: [9999, 'Stock cannot exceed 9999'],
-    min: 0,
-    default: 1,
+    default: 0,
   },
   numberOfReviews: {
     type: Number,
@@ -112,6 +124,32 @@ const productSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isTrending: {
+    type: Boolean,
+    default: false,
+  },
+  badgeText: {
+    type: String,
+    default: '',
+  },
+  leadTimeDays: {
+    type: Number,
+    default: 0,
+  },
+  composition: {
+    type: String,
+    default: '',
+  },
+  careInstructions: {
+    type: String,
+    default: '',
+  },
+  crossSellProducts: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Product',
+    },
+  ],
   admin: {
     type: mongoose.Schema.ObjectId,
     ref: 'Admin',

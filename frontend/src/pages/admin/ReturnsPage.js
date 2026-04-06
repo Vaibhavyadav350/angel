@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SidebarWithHeader, OrdersTable } from '../../components/admin';
 import { useOrderContext } from '../../context/admin_order_context';
 import { MdRefresh, MdFilterList } from 'react-icons/md';
@@ -13,19 +13,16 @@ function ReturnsPage() {
     const [error, setError] = useState(false);
 
     const [filters, setFilters] = useState({
-        returnStatus: 'all_returns', // Default to all returns for a comprehensive view
+        returnStatus: 'all_returns',
     });
 
-    const handleRefresh = async () => {
-        await applyFilters(filters);
-    };
-
     const handleFilterChange = (e) => {
-        setFilters({ ...filters, [e.target.name]: e.target.value });
+        setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const applyFilters = async (overrideFilters) => {
-        const activeFilters = overrideFilters || filters;
+    // Memoized to prevent new reference on every render → infinite loop with OrdersTable onRefresh
+    const applyFilters = useCallback(async (overrideFilters) => {
+        const activeFilters = overrideFilters || { returnStatus: 'all_returns' };
         setLoading(true);
         const res = await fetchFilteredOrders(activeFilters);
         if (res.success) {
@@ -35,7 +32,12 @@ function ReturnsPage() {
             setError(true);
         }
         setLoading(false);
-    };
+        // eslint-disable-next-line
+    }, []);
+
+    const handleRefresh = useCallback(() => {
+        applyFilters({ returnStatus: 'all_returns' });
+    }, [applyFilters]);
 
     const clearFilters = () => {
         const defaultFilters = { returnStatus: 'all_returns' };
@@ -43,7 +45,7 @@ function ReturnsPage() {
         applyFilters(defaultFilters);
     };
 
-    // Initial fetch with default returnStatus filter
+    // Initial fetch
     useEffect(() => {
         applyFilters({ returnStatus: 'all_returns' });
         // eslint-disable-next-line
@@ -120,7 +122,7 @@ function ReturnsPage() {
                     <p className="text-lg font-editorial text-red-500">There was an error loading return requests</p>
                 </div>
             ) : (
-                <OrdersTable orders={returnOrders} onRefresh={() => applyFilters(filters)} />
+                <OrdersTable orders={returnOrders} onRefresh={handleRefresh} />
             )}
         </SidebarWithHeader>
     );

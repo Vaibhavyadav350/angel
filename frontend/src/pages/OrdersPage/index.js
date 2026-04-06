@@ -5,6 +5,7 @@ import { useOrderContext } from '../../context/order_context';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useCartContext } from '../../context/cart_context';
 import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const OrdersPage = () => {
   const {
@@ -15,6 +16,7 @@ const OrdersPage = () => {
 
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [isSuccessOrder, setIsSuccessOrder] = useState(false);
 
   const openReturnModal = (id) => {
     setSelectedOrderId(id);
@@ -31,10 +33,15 @@ const OrdersPage = () => {
     // Check if coming back from a successful Stripe checkout
     const params = new URLSearchParams(location.search);
     if (params.get('success') === 'true') {
-      toast.success('Payment successful! Your exquisite archive order has been placed. It may take a few moments to appear.', { position: 'top-center', autoClose: 5000 });
+      setIsSuccessOrder(true);
       clearCart();
       // Remove query param to prevent multiple toasts on refresh using React Router v5's history
       history.replace(location.pathname);
+
+      // Auto-hide the canvas after setting a lasting impression
+      setTimeout(() => {
+        setIsSuccessOrder(false);
+      }, 7000);
     }
   }, [location, clearCart, history]);
 
@@ -66,6 +73,44 @@ const OrdersPage = () => {
 
   return (
     <main className="bg-champagne font-body min-h-screen">
+      <AnimatePresence>
+        {isSuccessOrder && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] bg-chocolate flex flex-col items-center justify-center p-8 overflow-hidden"
+          >
+            {/* Ambient Background Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gold/20 via-chocolate to-chocolate pointer-events-none"></div>
+
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6, duration: 1 }}
+              className="relative z-10 text-center space-y-8 max-w-2xl"
+            >
+              <span className="material-symbols-outlined text-gold text-7xl mb-4 block animate-bounce" style={{ animationDuration: '4s' }}>workspace_premium</span>
+              <h2 className="text-5xl lg:text-7xl font-editorial font-black text-champagne uppercase leading-[0.9] tracking-tighter">
+                The Archive<br />Awaits
+              </h2>
+              <div className="h-px w-24 bg-gold/30 mx-auto"></div>
+              <p className="text-xl font-editorial text-champagne/80 italic leading-snug">
+                Your exceptional order has been secured. Our master artisans are now preparing your pieces for their journey.
+              </p>
+
+              <button
+                onClick={() => setIsSuccessOrder(false)}
+                className="mt-12 px-12 py-5 border border-gold text-gold text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-gold hover:text-chocolate transition-all duration-700"
+              >
+                Enter Your Vault
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <section className="pt-40 pb-12 px-8 lg:px-24">
         <div className="container mx-auto max-w-7xl">
           <span className="text-gold text-[10px] font-bold uppercase tracking-[0.6em] block mb-6">
@@ -112,7 +157,7 @@ const OrdersPage = () => {
 };
 
 const OrderCard = ({ order, openReturnModal }) => {
-  const { _id, createdAt, totalPrice, orderStatus, orderItems } = order;
+  const { _id, createdAt, totalPrice, orderStatus, orderItems, returnStatus } = order;
   const statusColor = getOrderStatusColor(orderStatus);
 
   return (
@@ -163,7 +208,7 @@ const OrderCard = ({ order, openReturnModal }) => {
             >
               Order Details
             </Link>
-            {orderStatus === 'delivered' && (
+            {orderStatus === 'delivered' && (!returnStatus || returnStatus === 'none') && (
               <button
                 onClick={() => openReturnModal(_id)}
                 className="px-8 py-4 bg-bronze text-champagne text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-gold transition-all shadow-xl shadow-bronze/10"

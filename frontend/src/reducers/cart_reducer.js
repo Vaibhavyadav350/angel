@@ -10,6 +10,14 @@ const cart_reducer = (state, action) => {
   if (action.type === ADD_TO_CART) {
     const { id, color, size, amount, product } = action.payload;
     const tempItem = state.cart.find((item) => item.id === id + color + size);
+
+    // Find variant stock if available
+    let maxStock = product.stock || 0;
+    if (product.variants && product.variants.length > 0) {
+      const match = product.variants.find(v => v.size === size && v.color === color);
+      if (match) maxStock = match.stock;
+    }
+
     if (tempItem) {
       const tempCart = state.cart.map((cartItem) => {
         if (cartItem.id === id + color + size) {
@@ -47,7 +55,7 @@ const cart_reducer = (state, action) => {
         discountPercent: discount,
         taxPercent: tax,
         shipping: product.shipping || false,
-        max: product.stock || 0,
+        max: maxStock,
       };
       return { ...state, cart: [...state.cart, newItem] };
     }

@@ -23,6 +23,11 @@ const analyticsRouter = require('./routes/analyticsRouter');
 const couponRouter = require('./routes/couponRouter');
 const userRouter = require('./routes/userRouter');
 const restockRouter = require('./routes/restockRouter');
+const bannerRouter = require('./routes/bannerRouter');
+const featuredCollectionRouter = require('./routes/featuredCollectionRouter');
+const testimonialRouter = require('./routes/testimonialRouter');
+const settingsRouter = require('./routes/settingsRouter');
+const categoryRouter = require('./routes/categoryRouter');
 
 // requiring middlewares
 const errorMiddleware = require('./middleware/Error');
@@ -129,6 +134,11 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/users', userRouter);
 app.use('/api/restock', restockRouter);
+app.use('/api/banners', bannerRouter);
+app.use('/api/featured-collections', featuredCollectionRouter);
+app.use('/api/testimonials', testimonialRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/categories', categoryRouter);
 
 // using other middlewares
 app.use(errorMiddleware);

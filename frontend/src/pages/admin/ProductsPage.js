@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ProductsTable,
   SidebarWithHeader,
@@ -18,6 +18,8 @@ function ProductsPage() {
   } = useProductContext();
 
   const [exporting, setExporting] = React.useState(false);
+
+  useEffect(() => { fetchProducts(); }, []);
 
   const handleRefresh = async () => {
     await fetchProducts();
