@@ -30,7 +30,7 @@ const OrdersPage = () => {
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Orders';
 
-    // Check if coming back from a successful Stripe checkout
+    // Check if coming back from a successful eWAY checkout
     const params = new URLSearchParams(location.search);
     if (params.get('success') === 'true') {
       setIsSuccessOrder(true);

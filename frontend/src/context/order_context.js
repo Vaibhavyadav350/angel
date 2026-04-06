@@ -62,7 +62,7 @@ export const OrderProvider = ({ children }) => {
     }
   }, []);
 
-  // Order creation is handled exclusively by the Stripe webhook (webhookController.js).
+  // Order creation is handled exclusively by the eWAY callback (webhookController.js).
   // No client-side order creation — prevents duplicate orders.
 
   const requestReturn = React.useCallback(async (orderId, reason) => {

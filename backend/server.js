@@ -108,9 +108,9 @@ const strictLimiter = rateLimit({
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 
-// Stripe Webhooks need the raw body, so express.raw must come BEFORE express.json
-const webhookController = require('./controllers/webhookController');
-app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), strictLimiter, webhookController);
+// eWAY callback route (redirect-based, no raw body needed unlike Stripe webhooks)
+const ewayCallbackController = require('./controllers/webhookController');
+app.get('/api/payment/callback', ewayCallbackController);
 
 app.use(express.json({ limit: '20mb' }));
 app.use(cookieParser());

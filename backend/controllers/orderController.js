@@ -10,11 +10,11 @@ const { sendStatusUpdate, sendReturnUpdate, sendOrderConfirmation } = require('.
 // ============================================================================
 // ORDER CREATION IS HANDLED EXCLUSIVELY BY webhookController.js
 // ============================================================================
-// The Stripe webhook (checkout.session.completed) is the SINGLE source of truth
+// The eWAY callback (redirect after payment) is the SINGLE source of truth
 // for creating orders. This prevents:
-//   1. Duplicate orders (webhook + REST endpoint both firing)
+//   1. Duplicate orders (callback + REST endpoint both firing)
 //   2. Unauthorized order creation (the old /api/orders/new had no auth)
-//   3. Data inconsistency (webhook uses verified Stripe payment data)
+//   3. Data inconsistency (callback uses verified eWAY payment data)
 // ============================================================================
 
 

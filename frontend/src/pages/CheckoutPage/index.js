@@ -49,7 +49,7 @@ const CheckoutPage = () => {
       updateShipping({ target: { name: 'country', value: 'AU' } });
     }
 
-    // Handle return from Stripe (Cancel only, success goes to /orders)
+    // Handle return from eWAY (Cancel only, success goes to /orders)
     const params = new URLSearchParams(location.search);
     if (params.get('canceled')) {
       toast.error('Payment cancelled.');
@@ -98,7 +98,7 @@ const CheckoutPage = () => {
       });
 
       if (response.data.success && response.data.url) {
-        window.location.href = response.data.url; // Redirect to Stripe Hosted Checkout
+        window.location.href = response.data.url; // Redirect to eWAY Shared Payment Page
       } else {
         setError('Failed to initiate secure checkout session.');
         setProcessing(false);
@@ -221,7 +221,7 @@ const CheckoutPage = () => {
                     disabled={processing}
                     className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
                   >
-                    <span>{processing ? 'Connecting securely to Stripe...' : 'Proceed to Secure Payment'}</span>
+                    <span>{processing ? 'Connecting securely to eWAY...' : 'Proceed to Secure Payment'}</span>
                     {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
                   </button>
                   {error && (
@@ -231,7 +231,7 @@ const CheckoutPage = () => {
                   )}
                   <p className="text-center text-[9px] uppercase tracking-widest text-bronze/50 mt-4 font-bold flex items-center justify-center gap-2">
                     <span className="material-symbols-outlined text-[10px]">shield_check</span>
-                    100% Secure Checkout powered by Stripe
+                    100% Secure Checkout powered by eWAY
                   </p>
                 </div>
               </form>

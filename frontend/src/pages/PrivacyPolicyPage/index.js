@@ -29,7 +29,7 @@ const PrivacyPolicyPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Data Security</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            We use industry-standard encryption (SSL/TLS) to protect your data during transmission. Payment processing is handled securely through Stripe — we never store your full card details on our servers.
+                            We use industry-standard encryption (SSL/TLS) to protect your data during transmission. Payment processing is handled securely through eWAY — we never store your full card details on our servers.
                         </p>
                     </div>
                     <div className="h-px bg-bronze/10" />
