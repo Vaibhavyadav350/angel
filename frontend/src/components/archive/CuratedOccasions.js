@@ -2,31 +2,32 @@ import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionContainer } from './shared';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import taxonomy from '../../utils/taxonomy.json';
 
 const occasions = [
     {
         title: "The Wedding Edit",
         subtitle: "Bridal Lehengas & Heavy Sarees",
-        img: "/assets/landing/lehenga-3.jpg",
-        link: "/products?category=Women",
+        img: "/assets/landing/occ-wedding.jpg",
+        link: `/products${taxonomy.landing_page_mappings.occasions_wedding_edit}`,
     },
     {
         title: "Haldi & Mehendi",
         subtitle: "Vibrant Yellows & Greens",
-        img: "/assets/landing/salwar-2.jpg",
-        link: "/products?category=Women",
+        img: "/assets/landing/occ-haldi.jpg",
+        link: `/products${taxonomy.landing_page_mappings.occasions_haldi_mehendi}`,
     },
     {
         title: "Evening Soirée",
         subtitle: "Contemporary Gowns & Drape Sarees",
-        img: "/assets/landing/lehenga-2.jpg",
-        link: "/products?category=Women",
+        img: "/assets/landing/occ-evening.jpg",
+        link: `/products${taxonomy.landing_page_mappings.occasions_evening_soiree}`,
     },
     {
         title: "Mens Heritage",
         subtitle: "Classic Sherwanis & Kurtas",
-        img: "/assets/landing/hero-men.jpg",
-        link: "/products?category=Men",
+        img: "/assets/landing/occ-mens.jpg",
+        link: `/products${taxonomy.landing_page_mappings.occasions_mens_heritage}`,
     }
 ];
 

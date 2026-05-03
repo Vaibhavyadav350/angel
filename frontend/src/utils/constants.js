@@ -1,4 +1,5 @@
 import React from 'react';
+import taxonomy from './taxonomy.json';
 import { GiCompass, GiDiamondHard, GiStabbedNote } from 'react-icons/gi';
 import {
   AiFillLinkedin,
@@ -50,13 +51,13 @@ export const links = [
   },
 ];
 
+
+
 // Sub-category mapping for navigation dropdown menus
-export const navCategories = {
-  Women: ['Salwar Kameez', 'Sarees', 'Lehengas'],
-  Men: ['Sherwanis', 'Jacket', 'Kurtas'],
-  Kids: ['Girls', 'Boys'],
-  Jewelry: ['Bridal', 'Casual'],
-};
+export const navCategories = Object.keys(taxonomy.categories).reduce((acc, cat) => {
+  acc[cat] = Object.keys(taxonomy.categories[cat]);
+  return acc;
+}, {});
 
 export const socialLinks = [
   {

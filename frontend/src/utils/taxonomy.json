@@ -1,0 +1,91 @@
+{
+  "categories": {
+    "Women": {
+      "Salwar Kameez": [
+        "Anarkali suits",
+        "Gharara suit",
+        "Palazzo suits",
+        "Pant suits",
+        "Punjabi suits",
+        "Sharara suits",
+        "Pakistani suits",
+        "Kurti"
+      ],
+      "Sarees": [
+        "Lehenga Sarees",
+        "Partywear",
+        "Wedding Sarees",
+        "Casual wear"
+      ],
+      "Lehengas": [
+        "Bridal Lehengas",
+        "Bridesmaid Lehengas",
+        "Cocktail Lehengas",
+        "Engagement Lehenga",
+        "Mehendi Ceremony",
+        "Partywear Lehengas"
+      ]
+    },
+    "Men": {
+      "Sherwanis": [
+        "Classic Sherwani",
+        "Indowestern Sherwani"
+      ],
+      "Jacket": [
+        "Jacket sets",
+        "Jodhpuri jacket sets"
+      ],
+      "Kurtas": [
+        "Kurta pajama sets",
+        "Long kurta set",
+        "Short kurta set"
+      ]
+    },
+    "Kids": {
+      "Girls": [
+        "Girls kidswear"
+      ],
+      "Boys": [
+        "Boys kidswear"
+      ]
+    },
+    "Jewelry": {
+      "Bridal": [
+        "Bridal wear jewelery"
+      ],
+      "Casual": [
+        "Casual Wear jewelery"
+      ]
+    }
+  },
+  "collections": [
+    "New Arrivals",
+    "Ready To Ship",
+    "Best Sellers",
+    "Sale",
+    "Plus Sizes"
+  ],
+  "landing_page_mappings": {
+    "hero_bridal_edit": "?subCategory=Lehengas",
+    "hero_royal_drapes": "?subCategory=Sarees",
+    "hero_mens_heritage": "?category=Men",
+    "circular_lehenga": "?subCategory=Lehengas",
+    "circular_anarkali": "?subCategory=Lehengas",
+    "circular_saree": "?subCategory=Sarees",
+    "circular_women": "?category=Women",
+    "directory_bridal_lehengas": "?category=Women&subCategory=Lehengas",
+    "directory_pure_silk_sarees": "?category=Women&subCategory=Sarees",
+    "directory_sherwanis": "?category=Men&subCategory=Sherwanis",
+    "directory_anarkali_suits": "?category=Women&subCategory=Salwar%20Kameez",
+    "directory_jewellery": "?category=Jewelry",
+    "directory_kids": "?category=Kids",
+    "occasions_wedding_edit": "?category=Women",
+    "occasions_haldi_mehendi": "?category=Women",
+    "occasions_evening_soiree": "?category=Women",
+    "occasions_mens_heritage": "?category=Men",
+    "bridal_edit_main": "?category=Women&subCategory=Lehengas",
+    "salwar_lookbook": "?category=Women&subCategory=Salwar%20Kameez",
+    "lehenga_bento": "?category=Women&subCategory=Lehengas",
+    "saree_archival": "?category=Women&subCategory=Sarees"
+  }
+}

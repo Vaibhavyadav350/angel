@@ -54,7 +54,7 @@ const EleganceSection = React.memo(() => {
                 alt="High-contrast portrait of a male model wearing a premium gold-toned designer ethnic Kurta"
                 loading="lazy"
                 className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-[2000ms] brightness-110"
-                src="/assets/archive/elegance_male.jpg"
+                src="/assets/landing/elegance-portrait.jpg"
                 width="700"
                 height="700"
               />

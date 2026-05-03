@@ -1,16 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import taxonomy from '../../utils/taxonomy.json';
 
 // Placeholder elegant texture/fabric images for categories
 const categories = [
-    { label: 'A-LINE', img: '/assets/landing/cat-lehenga.jpg', link: '/products?subCategory=Lehengas' },
-    { label: 'FISHTAIL', img: '/assets/landing/cat-anarkali.jpg', link: '/products?subCategory=Lehengas' },
-    { label: 'BANARASI', img: '/assets/landing/cat-saree.jpg', link: '/products?subCategory=Sarees' },
-    { label: 'SILK', img: '/assets/landing/hero-saree.jpg', link: '/products?category=Women' },
-    { label: 'VELVET', img: '/assets/landing/hero-lehenga.jpg', link: '/products?category=Women' },
-    { label: 'GEORGETTE', img: '/assets/landing/saree-2.jpg', link: '/products?category=Women' },
-    { label: 'NET', img: '/assets/landing/lehenga-1.jpg', link: '/products?category=Women' },
-    { label: 'ORGANZA', img: '/assets/landing/salwar-4.jpg', link: '/products?category=Women' },
+    { label: 'A-LINE', img: '/assets/landing/circ-aline.jpg', link: `/products${taxonomy.landing_page_mappings.circular_lehenga}` },
+    { label: 'FISHTAIL', img: '/assets/landing/circ-fishtail.jpg', link: `/products${taxonomy.landing_page_mappings.circular_anarkali}` },
+    { label: 'BANARASI', img: '/assets/landing/circ-banarasi.jpg', link: `/products${taxonomy.landing_page_mappings.circular_saree}` },
+    { label: 'SILK', img: '/assets/landing/circ-silk.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
+    { label: 'VELVET', img: '/assets/landing/circ-velvet.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
+    { label: 'GEORGETTE', img: '/assets/landing/circ-georgette.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
+    { label: 'NET', img: '/assets/landing/circ-net.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
+    { label: 'ORGANZA', img: '/assets/landing/circ-organza.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
 ];
 
 const CircularCategories = () => {

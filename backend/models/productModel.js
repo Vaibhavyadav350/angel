@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const taxonomy = require('../../frontend/src/utils/taxonomy.json');
+
+const validCategories = Object.keys(taxonomy.categories);
+let validSubCategories = [];
+Object.values(taxonomy.categories).forEach(subCatObj => {
+  validSubCategories = [...validSubCategories, ...Object.keys(subCatObj)];
+});
+const validCollections = taxonomy.collections;
 
 const productSchema = mongoose.Schema({
   name: {
@@ -52,17 +60,12 @@ const productSchema = mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Please enter product category'],
-    enum: ['Women', 'Men', 'Kids', 'Jewelry'],
+    enum: validCategories,
   },
   subCategory: {
     type: String,
     required: [true, 'Please enter product sub-category'],
-    enum: [
-      'Salwar Kameez', 'Sarees', 'Lehengas',
-      'Sherwanis', 'Jacket', 'Kurtas',
-      'Girls', 'Boys',
-      'Bridal', 'Casual'
-    ],
+    enum: validSubCategories,
   },
   productType: {
     type: String,
@@ -70,7 +73,8 @@ const productSchema = mongoose.Schema({
   },
   collections: {
     type: [String],
-    enum: ['New Arrivals', 'Ready To Ship', 'Best Sellers', 'Sale', 'Plus Sizes'],
+    enum: validCollections,
+
     default: [],
   },
   // True E-commerce Variant Matrix

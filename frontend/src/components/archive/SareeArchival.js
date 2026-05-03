@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionContainer, OptimizedImage } from './shared';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import taxonomy from '../../utils/taxonomy.json';
 
 const SareeArchival = ({ products = [] }) => {
     const sectionRef = useRef(null);
@@ -43,7 +44,7 @@ const SareeArchival = ({ products = [] }) => {
                     </div>
                     <div className="flex items-center gap-6">
                         <Link
-                            to="/products?category=Women&subCategory=Sarees"
+                            to={`/products${taxonomy.landing_page_mappings.saree_archival}`}
                             className="mr-8 inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-gold hover:text-champagne transition-colors pb-2 border-b border-gold/30 hover:border-champagne"
                         >
                             View Archives
@@ -69,7 +70,7 @@ const SareeArchival = ({ products = [] }) => {
                 {products.map((product, idx) => (
                     <Link
                         key={product.id || idx}
-                        to={product.id ? `/products/${product.id}` : '/products?category=Women&subCategory=Sarees'}
+                        to={product.id ? `/products/${product.id}` : `/products${taxonomy.landing_page_mappings.saree_archival}`}
                         className="group relative snap-center shrink-0 w-[85vw] sm:w-[50vw] lg:w-[35vw] xl:w-[28vw] aspect-[3/4] overflow-hidden rounded-[30px] sm:rounded-[40px] block bg-chocolate cursor-pointer shadow-2xl border border-champagne/10 hover:border-gold/30 transition-colors duration-700"
                     >
                         <OptimizedImage

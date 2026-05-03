@@ -73,7 +73,7 @@ const BrandPhilosophy = React.memo(() => {
         <div className="w-full lg:w-7/12 relative" ref={imageRef}>
           <div className="relative w-full h-[600px] sm:h-[700px] lg:h-[850px] rounded-t-[40px] sm:rounded-t-[60px] lg:rounded-tr-none lg:rounded-tl-[80px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border-[1px] border-gold/20 border-b-0">
             <OptimizedImage
-              src="/assets/landing/philosophy.jpg"
+              src="/assets/landing/festive-hero.jpg"
               alt="Model wearing festive designer outfit"
               className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-[3000ms]"
               width={1000}

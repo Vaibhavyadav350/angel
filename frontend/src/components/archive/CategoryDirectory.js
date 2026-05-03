@@ -1,41 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import taxonomy from '../../utils/taxonomy.json';
 
 const categories = [
     {
         label: 'BRIDAL LEHENGAS',
         sublabel: 'Wedding Trousseau',
-        url: '/products?category=Women&subCategory=Lehengas',
+        url: `/products${taxonomy.landing_page_mappings.directory_bridal_lehengas}`,
         image: '/assets/landing/cat-lehenga.jpg',
     },
     {
         label: 'PURE SILK SAREES',
         sublabel: 'Heritage & Editorial',
-        url: '/products?category=Women&subCategory=Sarees',
+        url: `/products${taxonomy.landing_page_mappings.directory_pure_silk_sarees}`,
         image: '/assets/landing/cat-saree.jpg',
     },
     {
         label: 'SHERWANIS',
         sublabel: 'Menswear Heritage',
-        url: '/products?category=Men&subCategory=Sherwanis',
+        url: `/products${taxonomy.landing_page_mappings.directory_sherwanis}`,
         image: '/assets/landing/cat-sherwani.jpg',
     },
     {
         label: 'ANARKALI SUITS',
         sublabel: 'Festive & Celebration',
-        url: '/products?category=Women&subCategory=Salwar Kameez',
+        url: `/products${taxonomy.landing_page_mappings.directory_anarkali_suits}`,
         image: '/assets/landing/cat-anarkali.jpg',
     },
     {
         label: 'JEWELLERY',
         sublabel: 'Bridal & Occasional',
-        url: '/products?category=Jewelry',
+        url: `/products${taxonomy.landing_page_mappings.directory_jewellery}`,
         image: '/assets/landing/cat-jewelry.jpg',
     },
     {
         label: 'KIDS',
         sublabel: 'Little Royals',
-        url: '/products?category=Kids',
+        url: `/products${taxonomy.landing_page_mappings.directory_kids}`,
         image: '/assets/landing/cat-kids.jpg',
     },
 ];

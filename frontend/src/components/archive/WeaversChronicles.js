@@ -33,7 +33,7 @@ const WeaversChronicles = React.memo(() => {
                 alt="Bridal Jewelry Craftsmanship"
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
-                src="/assets/landing/cat-jewelry.jpg"
+                src="/assets/landing/jewelry-main.jpg"
                 width="1200"
                 height="750"
               />
@@ -53,7 +53,7 @@ const WeaversChronicles = React.memo(() => {
                   alt="Kundan Necklaces"
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  src="/assets/landing/saree-4.jpg"
+                  src="/assets/landing/jewelry-kundan.jpg"
                   width="400"
                   height="400"
                 />
@@ -69,7 +69,7 @@ const WeaversChronicles = React.memo(() => {
                   alt="Polki Earrings"
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  src="/assets/landing/salwar-3.jpg"
+                  src="/assets/landing/jewelry-polki.jpg"
                   width="400"
                   height="400"
                 />
@@ -85,7 +85,7 @@ const WeaversChronicles = React.memo(() => {
                   alt="Temple Jewelry"
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  src="/assets/landing/hero-men.jpg"
+                  src="/assets/landing/jewelry-temple.jpg"
                   width="400"
                   height="400"
                 />

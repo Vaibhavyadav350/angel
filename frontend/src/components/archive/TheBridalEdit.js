@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionContainer } from './shared';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import taxonomy from '../../utils/taxonomy.json';
 
 const TheBridalEdit = () => {
     const sectionRef = useRef(null);
@@ -39,10 +40,10 @@ const TheBridalEdit = () => {
 
                     {/* Left Column: Floating Details */}
                     <div className="md:col-span-3 flex flex-col gap-12 lg:mt-32">
-                        <Link to="/products" className="group block relative overflow-hidden rounded-[30px] shadow-2xl bg-champagne aspect-[3/4]">
+                        <Link to={`/products${taxonomy.landing_page_mappings.bridal_edit_main}`} className="group block relative overflow-hidden rounded-[30px] shadow-2xl bg-champagne aspect-[3/4]">
                             <img
-                                src="/assets/landing/saree-2.jpg"
-                                alt="Ivory Pearl Lehenga Detail"
+                                src="/assets/landing/bridal-edit-left.jpg"
+                                alt="Intricate Embroidery Detail"
                                 className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-105 filter brightness-95 group-hover:brightness-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-70 group-hover:opacity-100 transition-opacity"></div>
@@ -69,8 +70,8 @@ const TheBridalEdit = () => {
                     <div className="md:col-span-6 md:-mt-24 lg:-mt-40 z-10 w-full">
                         <div className="relative aspect-[3/4] lg:aspect-[4/5] overflow-hidden rounded-[40px] lg:rounded-[60px] shadow-[0_30px_60px_rgba(122,92,65,0.2)] group cursor-pointer border-[1px] border-solid border-gold/10">
                             <img
-                                src="/assets/landing/hero-lehenga.jpg"
-                                alt="Premium Bridal Lehenga in Crimson Red - The Royal Zardozi"
+                                src="/assets/landing/bridal-edit-center.jpg"
+                                alt="Premium Bridal Lehenga in Crimson Red"
                                 className="w-full h-full object-cover object-top transition-transform duration-[4000ms] group-hover:scale-105"
                             />
                             {/* Inner glow frame */}
@@ -93,10 +94,10 @@ const TheBridalEdit = () => {
 
                     {/* Right Column: Text & CTA */}
                     <div className="md:col-span-3 flex flex-col gap-12 lg:-mt-20">
-                        <Link to="/products" className="group block relative overflow-hidden rounded-[30px] shadow-2xl bg-champagne aspect-[4/5]">
+                        <Link to={`/products${taxonomy.landing_page_mappings.bridal_edit_main}`} className="group block relative overflow-hidden rounded-[30px] shadow-2xl bg-champagne aspect-[4/5]">
                             <img
-                                src="/assets/landing/salwar-1.jpg"
-                                alt="Emerald Velvet Drape Detail"
+                                src="/assets/landing/bridal-edit-right.jpg"
+                                alt="Emerald Velvet Groom Sherwani"
                                 className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-105 filter brightness-95 group-hover:brightness-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-70 group-hover:opacity-100 transition-opacity"></div>
@@ -110,7 +111,7 @@ const TheBridalEdit = () => {
 
                         <div className="h-full flex items-center justify-center p-6">
                             <Link
-                                to="/products"
+                                to={`/products${taxonomy.landing_page_mappings.bridal_edit_main}`}
                                 className="group flex flex-col items-center gap-6"
                             >
                                 <div className="size-24 rounded-full border border-gold/40 flex items-center justify-center group-hover:bg-gold transition-colors duration-700 shadow-xl overflow-hidden relative">

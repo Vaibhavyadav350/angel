@@ -5,28 +5,28 @@ const diaries = [
     {
         name: "Aanya & Rahul",
         location: "Udaipur, India",
-        img: "/assets/landing/cinematic.jpg",
+        img: "/assets/landing/client-udaipur.jpg",
         colSpan: "col-span-1 md:col-span-2",
         aspect: "aspect-[4/3]"
     },
     {
         name: "The Royal Mehendi",
         location: "Jaipur, India",
-        img: "/assets/landing/saree-3.jpg",
+        img: "/assets/landing/client-mehendi.jpg",
         colSpan: "col-span-1",
         aspect: "aspect-[3/4]"
     },
     {
         name: "Priya's Sangeet",
         location: "London, UK",
-        img: "/assets/landing/lehenga-4.jpg",
+        img: "/assets/landing/client-sangeet.jpg",
         colSpan: "col-span-1",
         aspect: "aspect-[3/4]"
     },
     {
         name: "Bespoke Sherwani",
         location: "Mumbai, India",
-        img: "/assets/landing/cat-sherwani.jpg",
+        img: "/assets/landing/client-groomsquad.jpg",
         colSpan: "col-span-1 md:col-span-2",
         aspect: "aspect-[4/3]"
     }

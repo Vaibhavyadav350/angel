@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionContainer, OptimizedImage } from './shared';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import taxonomy from '../../utils/taxonomy.json';
 
 const LehengaBento = ({ products = [] }) => {
     const sectionRef = useRef(null);
@@ -38,7 +39,7 @@ const LehengaBento = ({ products = [] }) => {
                         </h2>
                     </div>
                     <Link
-                        to="/products?category=Women&subCategory=Lehengas"
+                        to={`/products${taxonomy.landing_page_mappings.lehenga_bento}`}
                         className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-bronze hover:text-gold transition-colors pb-2 border-b border-bronze/20 hover:border-gold"
                     >
                         View Collection
@@ -53,7 +54,7 @@ const LehengaBento = ({ products = [] }) => {
                     {/* Item 0: Hero Square (2x2) */}
                     {displayProducts[0] && (
                         <Link
-                            to={displayProducts[0].id ? `/products/${displayProducts[0].id}` : '/products?category=Women&subCategory=Lehengas'}
+                            to={displayProducts[0].id ? `/products/${displayProducts[0].id}` : `/products${taxonomy.landing_page_mappings.lehenga_bento}`}
                             className="group relative md:col-span-2 md:row-span-2 h-[400px] md:h-full overflow-hidden rounded-[24px] sm:rounded-[32px] block bg-champagne"
                         >
                             <OptimizedImage
@@ -84,7 +85,7 @@ const LehengaBento = ({ products = [] }) => {
                     {/* Item 1: Tall Rectangle (1x2) */}
                     {displayProducts[1] && (
                         <Link
-                            to={displayProducts[1].id ? `/products/${displayProducts[1].id}` : '/products?category=Women&subCategory=Lehengas'}
+                            to={displayProducts[1].id ? `/products/${displayProducts[1].id}` : `/products${taxonomy.landing_page_mappings.lehenga_bento}`}
                             className="group relative md:col-span-1 md:row-span-2 h-[400px] md:h-full overflow-hidden rounded-[24px] sm:rounded-[32px] block bg-champagne"
                         >
                             <OptimizedImage
@@ -109,7 +110,7 @@ const LehengaBento = ({ products = [] }) => {
                     {/* Item 2: Small Square Top (1x1) */}
                     {displayProducts[2] && (
                         <Link
-                            to={displayProducts[2].id ? `/products/${displayProducts[2].id}` : '/products?category=Women&subCategory=Lehengas'}
+                            to={displayProducts[2].id ? `/products/${displayProducts[2].id}` : `/products${taxonomy.landing_page_mappings.lehenga_bento}`}
                             className="group relative md:col-span-1 md:row-span-1 h-[300px] md:h-full overflow-hidden rounded-[24px] sm:rounded-[32px] block bg-champagne"
                         >
                             <OptimizedImage
@@ -134,7 +135,7 @@ const LehengaBento = ({ products = [] }) => {
                     {/* Item 3: Small Square Bottom (1x1) */}
                     {displayProducts[3] && (
                         <Link
-                            to={displayProducts[3].id ? `/products/${displayProducts[3].id}` : '/products?category=Women&subCategory=Lehengas'}
+                            to={displayProducts[3].id ? `/products/${displayProducts[3].id}` : `/products${taxonomy.landing_page_mappings.lehenga_bento}`}
                             className="group relative md:col-span-1 md:row-span-1 h-[300px] md:h-full overflow-hidden rounded-[24px] sm:rounded-[32px] block bg-champagne"
                         >
                             <OptimizedImage

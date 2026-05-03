@@ -1,3 +1,4 @@
+/* global eCrypt */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCartContext } from '../../context/cart_context';
@@ -40,21 +41,25 @@ const CheckoutPage = () => {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
 
+  // Card Details (CSE)
+  const [cardDetails, setCardDetails] = useState({
+    number: '',
+    expiryMonth: '',
+    expiryYear: '',
+    cvn: '',
+    nameOnCard: ''
+  });
+
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Secure Checkout';
     window.scrollTo(0, 0);
-
-    // Ensure strictly AU context in context state if not present
-    if (!shipping.address?.country || shipping.address.country !== 'AU') {
-      updateShipping({ target: { name: 'country', value: 'AU' } });
-    }
 
     // Handle return from eWAY (Cancel only, success goes to /orders)
     const params = new URLSearchParams(location.search);
     if (params.get('canceled')) {
       toast.error('Payment cancelled.');
     }
-  }, [location, shipping.address, updateShipping]);
+  }, [location]);
 
   useEffect(() => {
     if (shipping.address?.state && shipping.address.state !== selectedState) {
@@ -67,14 +72,27 @@ const CheckoutPage = () => {
     updateShipping(e);
   };
 
+  const handleCardChange = (e) => {
+    const { name, value } = e.target;
+    setCardDetails({ ...cardDetails, [name]: value });
+  };
+
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setProcessing(true);
     setError(null);
 
-    const { name, phone_number, address: { line1, postal_code, city, state } } = shipping;
-    if (!name || !phone_number || !line1 || !postal_code || !city || !state) {
+    const finalName = shipping.name || currentUser?.displayName;
+    const { phone_number, address: { line1, postal_code, city, state } } = shipping;
+    if (!finalName || !phone_number || !line1 || !postal_code || !city || !state) {
       toast.error('Please fill all shipping fields completely', { position: 'top-center' });
+      setProcessing(false);
+      return;
+    }
+
+    // Validate Card Details
+    if (!cardDetails.number || !cardDetails.expiryMonth || !cardDetails.expiryYear || !cardDetails.cvn) {
+      toast.error('Please enter complete credit card details');
       setProcessing(false);
       return;
     }
@@ -83,28 +101,50 @@ const CheckoutPage = () => {
       const rawDiscount = discount.type === 'PERCENTAGE' ? (total_amount * discount.amount / 100) : discount.amount;
       const finalDiscount = Number(rawDiscount.toFixed(2));
 
+      // Client Side Encryption (CSE) — eWAY docs: use eCrypt.encryptValue()
+      if (typeof eCrypt === 'undefined' || !eCrypt.encryptValue) {
+        throw new Error('eWAY eCrypt library not loaded. Please refresh the page.');
+      }
+
+      const encryptionKey = process.env.REACT_APP_EWAY_ENCRYPTION_KEY;
+      const encryptedCard = {
+        number: eCrypt.encryptValue(cardDetails.number, encryptionKey),
+        cvn: eCrypt.encryptValue(cardDetails.cvn, encryptionKey),
+        expiryMonth: cardDetails.expiryMonth,
+        expiryYear: cardDetails.expiryYear,
+        nameOnCard: cardDetails.nameOnCard || finalName || 'Cardholder',
+      };
+
       const response = await axios.post(`${domain}/api/payment/create-checkout-session`, {
         cart,
         shipping_fee,
         total_amount,
         shipping: {
-          name,
+          name: finalName || 'Guest',
+          phone_number: phone_number,
           address: { line1, postal_code, city, state, country: 'AU' }
         },
         discountAmount: finalDiscount,
         couponCode: discount.code,
         email: currentUser?.email,
-        userId: currentUser?.uid
+        userId: currentUser?.uid,
+        eway_encrypted_card: encryptedCard
       });
 
-      if (response.data.success && response.data.url) {
-        window.location.href = response.data.url; // Redirect to eWAY Shared Payment Page
+      if (response.data.success) {
+        // Direct payment success — transactionId is returned
+        if (response.data.transactionId) {
+          window.location.href = '/orders?success=true';
+        } else if (response.data.url) {
+          // Responsive Shared Page fallback
+          window.location.href = response.data.url;
+        }
       } else {
-        setError('Failed to initiate secure checkout session.');
+        setError(response.data.message || 'Failed to process payment.');
         setProcessing(false);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Server error initiating checkout.');
+      setError(err.response?.data?.message || err.message || 'Server error initiating checkout.');
       setProcessing(false);
     }
   };
@@ -137,7 +177,7 @@ const CheckoutPage = () => {
                 Fulfillment Details
               </h2>
 
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit}>
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit} data-eway-encrypt-key={process.env.REACT_APP_EWAY_ENCRYPTION_KEY}>
                 <div className="col-span-2">
                   <label className={labelClasses}>Full Name</label>
                   <input
@@ -145,7 +185,7 @@ const CheckoutPage = () => {
                     placeholder="Recipient Name"
                     type="text"
                     name="name"
-                    value={shipping.name || ''}
+                    value={shipping.name || currentUser?.displayName || ''}
                     onChange={updateShipping}
                     required
                   />
@@ -215,25 +255,83 @@ const CheckoutPage = () => {
                   />
                 </div>
 
-                <div className="col-span-2 pt-8">
-                  <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
-                  >
-                    <span>{processing ? 'Connecting securely to eWAY...' : 'Proceed to Secure Payment'}</span>
-                    {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
-                  </button>
-                  {error && (
-                    <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
-                      {error}
+                  <div className="col-span-2 pt-12 border-t border-bronze/10">
+                    <h3 className="text-xl font-editorial font-bold text-bronze uppercase mb-8">Payment Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                      <div className="col-span-4">
+                        <label className={labelClasses}>Name on Card</label>
+                        <input
+                          className={inputClasses}
+                          placeholder="As it appears on your card"
+                          type="text"
+                          name="nameOnCard"
+                          value={cardDetails.nameOnCard}
+                          onChange={handleCardChange}
+                          required
+                        />
+                      </div>
+                      <div className="col-span-1 md:col-span-3">
+                        <label className={labelClasses}>Card Number</label>
+                        <input
+                          className={inputClasses}
+                          placeholder="4444 3333 2222 1111"
+                          type="text"
+                          name="number"
+                          value={cardDetails.number}
+                          onChange={handleCardChange}
+                          autoComplete="off"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className={labelClasses}>CVN</label>
+                        <input
+                          className={inputClasses}
+                          placeholder="123"
+                          type="text"
+                          name="cvn"
+                          value={cardDetails.cvn}
+                          onChange={handleCardChange}
+                          autoComplete="off"
+                          required
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className={labelClasses}>Expiry Month</label>
+                        <select className={inputClasses} name="expiryMonth" value={cardDetails.expiryMonth} onChange={handleCardChange} required>
+                          <option value="">MM</option>
+                          {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => <option key={m} value={m}>{m}</option>)}
+                        </select>
+                      </div>
+                      <div className="col-span-2">
+                        <label className={labelClasses}>Expiry Year</label>
+                        <select className={inputClasses} name="expiryYear" value={cardDetails.expiryYear} onChange={handleCardChange} required>
+                          <option value="">YY</option>
+                          {Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString()).map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                      </div>
                     </div>
-                  )}
-                  <p className="text-center text-[9px] uppercase tracking-widest text-bronze/50 mt-4 font-bold flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-[10px]">shield_check</span>
-                    100% Secure Checkout powered by eWAY
-                  </p>
-                </div>
+                  </div>
+
+                  <div className="col-span-2 pt-12">
+                    <button
+                      type="submit"
+                      disabled={processing}
+                      className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
+                    >
+                      <span>{processing ? 'Processing Payment...' : 'Authorize Secure Payment'}</span>
+                      {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
+                    </button>
+                    {error && (
+                      <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
+                        {error}
+                      </div>
+                    )}
+                    <p className="text-center text-[9px] uppercase tracking-widest text-bronze/50 mt-4 font-bold flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-[10px]">shield_check</span>
+                      Secured by eWAY Client-Side Encryption
+                    </p>
+                  </div>
               </form>
             </section>
           </div>

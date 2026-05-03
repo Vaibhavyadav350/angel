@@ -30,24 +30,24 @@ const HomePage = () => {
 
   // Static Mock Data to simulate Backend until ready (Allows visual testing)
   const salwarData = [
-    { name: "Georgette Anarkali", material: "Pure Georgette", originalPrice: "₹18,500", price: "₹11,336", image: "/assets/landing/salwar-1.jpg", isBespoke: true },
-    { name: "Art Silk Sequence", material: "Art Silk", originalPrice: "₹14,000", price: "₹9,186", image: "/assets/landing/salwar-2.jpg", isNew: true },
-    { name: "Chiffon Palazzo Suit", material: "Luxe Chiffon", price: "₹10,500", image: "/assets/landing/salwar-3.jpg" },
-    { name: "Organza Embroidered", material: "Organza & Net", price: "₹10,945", image: "/assets/landing/salwar-4.jpg", isBespoke: true },
+    { name: "Georgette Anarkali", material: "Pure Georgette", originalPrice: "₹18,500", price: "₹11,336", image: "/assets/landing/salwar-lookbook-1.jpg", isBespoke: true },
+    { name: "Art Silk Sequence", material: "Art Silk", originalPrice: "₹14,000", price: "₹9,186", image: "/assets/landing/salwar-lookbook-2.jpg", isNew: true },
+    { name: "Chiffon Palazzo Suit", material: "Luxe Chiffon", price: "₹10,500", image: "/assets/landing/salwar-lookbook-3.jpg" },
+    { name: "Organza Embroidered", material: "Organza & Net", price: "₹10,945", image: "/assets/landing/salwar-lookbook-4.jpg", isBespoke: true },
   ];
 
   const lehengaData = [
-    { name: "Sequines Lehenga", material: "Heavy Net", price: "₹16,500", image: "/assets/landing/lehenga-1.jpg", isNew: true, isBespoke: true },
-    { name: "Floral Threadwork", material: "Raw Silk", price: "₹22,000", image: "/assets/landing/lehenga-2.jpg" },
-    { name: "Bridal Zardozi", material: "Pure Velvet", originalPrice: "₹1,10,000", price: "₹85,000", image: "/assets/landing/lehenga-3.jpg", isBespoke: true },
-    { name: "Mirror Work Lehenga", material: "Georgette", price: "₹18,200", image: "/assets/landing/lehenga-4.jpg" },
+    { name: "Sequines Lehenga", material: "Heavy Net", price: "₹16,500", image: "/assets/landing/lehenga-bento-1.jpg", isNew: true, isBespoke: true },
+    { name: "Floral Threadwork", material: "Raw Silk", price: "₹22,000", image: "/assets/landing/lehenga-bento-2.jpg" },
+    { name: "Bridal Zardozi", material: "Pure Velvet", originalPrice: "₹1,10,000", price: "₹85,000", image: "/assets/landing/lehenga-bento-3.jpg", isBespoke: true },
+    { name: "Mirror Work Lehenga", material: "Georgette", price: "₹18,200", image: "/assets/landing/lehenga-bento-4.jpg" },
   ];
 
   const sareeData = [
-    { name: "Banarasi Handloom", material: "Pure Silk", originalPrice: "₹45,000", price: "₹38,000", image: "/assets/landing/saree-1.jpg", isBespoke: true },
-    { name: "Ruffle Drape", material: "Crepe Silk", price: "₹12,000", image: "/assets/landing/saree-2.jpg", isNew: true },
-    { name: "Zari Border Silk", material: "Kanjeevaram", price: "₹55,000", image: "/assets/landing/saree-3.jpg", isBespoke: true },
-    { name: "Sequin Cocktail Saree", material: "Net & Satin", price: "₹15,400", image: "/assets/landing/saree-4.jpg" },
+    { name: "Banarasi Handloom", material: "Pure Silk", originalPrice: "₹45,000", price: "₹38,000", image: "/assets/landing/saree-archival-1.jpg", isBespoke: true },
+    { name: "Ruffle Drape", material: "Crepe Silk", price: "₹12,000", image: "/assets/landing/saree-archival-2.jpg", isNew: true },
+    { name: "Zari Border Silk", material: "Kanjeevaram", price: "₹55,000", image: "/assets/landing/saree-archival-3.jpg", isBespoke: true },
+    { name: "Sequin Cocktail Saree", material: "Net & Satin", price: "₹15,400", image: "/assets/landing/saree-archival-4.jpg" },
   ];
 
   return (

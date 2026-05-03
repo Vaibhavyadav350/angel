@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SectionContainer, OptimizedImage } from './shared';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import taxonomy from '../../utils/taxonomy.json';
 
 const SalwarKameezLookbook = ({ products = [] }) => {
     const sectionRef = useRef(null);
@@ -41,7 +42,7 @@ const SalwarKameezLookbook = ({ products = [] }) => {
                         </p>
                     </div>
                     <Link
-                        to="/products?category=Women&subCategory=Salwar+Kameez"
+                        to={`/products${taxonomy.landing_page_mappings.salwar_lookbook}`}
                         className="group flex flex-col items-center gap-3 shrink-0"
                     >
                         <div className="size-16 rounded-full border border-bronze text-bronze flex items-center justify-center group-hover:bg-bronze group-hover:text-champagne transition-all duration-500 overflow-hidden relative">
@@ -60,7 +61,7 @@ const SalwarKameezLookbook = ({ products = [] }) => {
                     {/* Column 1: Vertically Centered */}
                     <div className="flex flex-col justify-center">
                         {displayProducts[0] && (
-                            <Link to={displayProducts[0].id ? `/products/${displayProducts[0].id}` : '/products?category=Women&subCategory=Salwar+Kameez'} className="group relative block w-full aspect-[3/4] overflow-hidden rounded-[20px] shadow-xl">
+                            <Link to={displayProducts[0].id ? `/products/${displayProducts[0].id}` : `/products${taxonomy.landing_page_mappings.salwar_lookbook}`} className="group relative block w-full aspect-[3/4] overflow-hidden rounded-[20px] shadow-xl">
                                 <OptimizedImage src={displayProducts[0].image} alt={displayProducts[0].name} className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-105" width={600} height={800} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="absolute bottom-6 left-6 right-6">
@@ -74,7 +75,7 @@ const SalwarKameezLookbook = ({ products = [] }) => {
                     {/* Column 2: Stacked (Top and Bottom) */}
                     <div className="flex flex-col gap-6 lg:gap-12">
                         {displayProducts[1] && (
-                            <Link to={displayProducts[1].id ? `/products/${displayProducts[1].id}` : '/products?category=Women&subCategory=Salwar+Kameez'} className="group relative block w-full h-[350px] lg:h-[400px] overflow-hidden rounded-[20px] shadow-xl">
+                            <Link to={displayProducts[1].id ? `/products/${displayProducts[1].id}` : `/products${taxonomy.landing_page_mappings.salwar_lookbook}`} className="group relative block w-full h-[350px] lg:h-[400px] overflow-hidden rounded-[20px] shadow-xl">
                                 <OptimizedImage src={displayProducts[1].image} alt={displayProducts[1].name} className="w-full h-full object-cover object-top transition-transform duration-[3000ms] group-hover:scale-105" width={600} height={400} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="absolute bottom-6 left-6 right-6">
@@ -84,7 +85,7 @@ const SalwarKameezLookbook = ({ products = [] }) => {
                             </Link>
                         )}
                         {displayProducts[2] && (
-                            <Link to={displayProducts[2].id ? `/products/${displayProducts[2].id}` : '/products?category=Women&subCategory=Salwar+Kameez'} className="group relative block w-full flex-grow overflow-hidden rounded-[20px] shadow-xl">
+                            <Link to={displayProducts[2].id ? `/products/${displayProducts[2].id}` : `/products${taxonomy.landing_page_mappings.salwar_lookbook}`} className="group relative block w-full flex-grow overflow-hidden rounded-[20px] shadow-xl">
                                 <OptimizedImage src={displayProducts[2].image} alt={displayProducts[2].name} className="w-full h-full object-cover object-center transition-transform duration-[3000ms] group-hover:scale-105" width={600} height={600} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="absolute bottom-6 left-6 right-6">
@@ -98,7 +99,7 @@ const SalwarKameezLookbook = ({ products = [] }) => {
                     {/* Column 3: Aligned to Bottom */}
                     <div className="flex flex-col justify-end">
                         {displayProducts[3] && (
-                            <Link to={displayProducts[3].id ? `/products/${displayProducts[3].id}` : '/products?category=Women&subCategory=Salwar+Kameez'} className="group relative block w-full aspect-[4/5] overflow-hidden rounded-[20px] shadow-xl">
+                            <Link to={displayProducts[3].id ? `/products/${displayProducts[3].id}` : `/products${taxonomy.landing_page_mappings.salwar_lookbook}`} className="group relative block w-full aspect-[4/5] overflow-hidden rounded-[20px] shadow-xl">
                                 <OptimizedImage src={displayProducts[3].image} alt={displayProducts[3].name} className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-105" width={600} height={800} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-chocolate/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
                                 <div className="absolute bottom-6 left-6 right-6">
