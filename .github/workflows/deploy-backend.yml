@@ -5,7 +5,6 @@ name: Deploy Backend to DigitalOcean
 on:
   push:
     branches:
-      - feature/ui-redesign-ecommerce
       - main
     paths:
       - 'backend/**'  # Only runs when backend code actually changes
@@ -27,7 +26,7 @@ jobs:
           script: |
             echo "--- Pulling latest code ---"
             cd /home/deploy/angel
-            git pull origin feature/ui-redesign-ecommerce
+            git pull origin main
 
             echo "--- Installing dependencies ---"
             cd backend
