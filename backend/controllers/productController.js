@@ -7,17 +7,19 @@ const { notifySubscribers } = require('../controllers/restockController');
 // create a new product
 exports.createProduct = catchAsyncError(async (req, res, next) => {
   req.body.admin = req.user.id;
-  let images = req.body.images;
   let newImages = [];
-  for (let i = 0; i < images.length; i++) {
-    const { public_id, url } = await cloudinary.uploader.upload(images[i], {
-      folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
-      fetch_format: 'auto',
-      quality: 'auto'
-    });
-    newImages.push({ public_id, url });
+  if (req.body.images && Array.isArray(req.body.images)) {
+    let images = req.body.images;
+    for (let i = 0; i < images.length; i++) {
+      const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+        folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
+        fetch_format: 'auto',
+        quality: 'auto'
+      });
+      newImages.push({ public_id, url });
+    }
   }
-  req.body.images = [...newImages];
+  req.body.images = newImages;
 
   // Calculate global stock from variants
   if (req.body.variants && Array.isArray(req.body.variants)) {
@@ -43,21 +45,26 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
   if (!product) {
     return next(new ErrorHandler('Product Not Found', 404));
   }
-  let images = req.body.images;
   let newImages = [];
-  for (let i = 0; i < images.length; i++) {
-    if (typeof images[i] === 'string') {
-      const { public_id, url } = await cloudinary.uploader.upload(images[i], {
-        folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
-        fetch_format: 'auto',
-        quality: 'auto'
-      });
-      newImages.push({ public_id, url });
-    } else {
-      newImages.push(images[i]);
+  if (req.body.images && Array.isArray(req.body.images)) {
+    let images = req.body.images;
+    for (let i = 0; i < images.length; i++) {
+      if (typeof images[i] === 'string') {
+        const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+          folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
+          fetch_format: 'auto',
+          quality: 'auto'
+        });
+        newImages.push({ public_id, url });
+      } else {
+        newImages.push(images[i]);
+      }
     }
+    req.body.images = [...newImages];
+  } else {
+    // If no new images array is sent, preserve existing images by not overwriting req.body.images
+    delete req.body.images;
   }
-  req.body.images = [...newImages];
 
   // Recalculate global stock from variants on update
   if (req.body.variants && Array.isArray(req.body.variants)) {

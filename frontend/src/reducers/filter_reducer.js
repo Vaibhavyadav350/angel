@@ -102,33 +102,33 @@ const filter_reducer = (state, action) => {
       });
     }
     //category
-    if (category !== 'all') {
+    if (category && category.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.category === category;
+        return product.category && product.category.toLowerCase() === category.toLowerCase();
       });
     }
     //subCategory
-    if (state.filters.subCategory !== 'all') {
+    if (state.filters.subCategory && state.filters.subCategory.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.subCategory === state.filters.subCategory;
+        return product.subCategory && product.subCategory.toLowerCase() === state.filters.subCategory.toLowerCase();
       });
     }
     //productType
-    if (state.filters.productType !== 'all') {
+    if (state.filters.productType && state.filters.productType.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.productType === state.filters.productType;
+        return product.productType && product.productType.toLowerCase() === state.filters.productType.toLowerCase();
       });
     }
     //company
-    if (company !== 'all') {
+    if (company && company.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.company === company;
+        return product.company && product.company.toLowerCase() === company.toLowerCase();
       });
     }
     //collection (checks product.collections array)
-    if (collection !== 'all') {
+    if (collection && collection.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.collections && product.collections.includes(collection);
+        return product.collections && product.collections.some(c => c.toLowerCase() === collection.toLowerCase());
       });
     }
     //color

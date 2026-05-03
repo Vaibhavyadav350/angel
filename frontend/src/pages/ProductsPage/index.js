@@ -38,17 +38,30 @@ const ProductsPage = () => {
     document.title = 'Angel Archive | Collections';
   }, []);
 
-  // Parse query params to set initial filters
+  // Parse query params to set initial filters, ensuring one-way sync to prevent overriding sidebar interactions
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const category = searchParams.get('category');
-    const subCategory = searchParams.get('subCategory');
-    const collection = searchParams.get('collection');
+    
+    if (!location.search) {
+      clearFilters();
+      return;
+    }
 
-    if (category && filters.category !== category) setFilterValue('category', category);
-    if (subCategory && filters.subCategory !== subCategory) setFilterValue('subCategory', subCategory);
-    if (collection && filters.collection !== collection) setFilterValue('collection', collection);
-  }, [location.search, setFilterValue, filters.category, filters.subCategory, filters.collection]);
+    const category = searchParams.get('category') || 'all';
+    const subCategory = searchParams.get('subCategory') || 'all';
+    const collection = searchParams.get('collection') || 'all';
+
+    setFilterValue('category', category);
+    
+    // Small timeout ensures the category cascade-reset (which sets subCategory to 'all') 
+    // completes before we apply the specific subCategory from the URL.
+    setTimeout(() => {
+      if (subCategory !== 'all') setFilterValue('subCategory', subCategory);
+      if (collection !== 'all') setFilterValue('collection', collection);
+    }, 10);
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;

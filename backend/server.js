@@ -101,10 +101,9 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Stricter Rate Limiting for Auth/Payment routes
 const strictLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 20, // 20 requests
+  max: 20, // Back to production standard
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 

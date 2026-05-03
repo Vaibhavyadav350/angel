@@ -1,23 +1,24 @@
 {
   "categories": {
     "Women": {
-      "Salwar Kameez": [
+      "SALWAR KAMEEZ": [
         "Anarkali suits",
         "Gharara suit",
-        "Palazzo suits",
-        "Pant suits",
-        "Punjabi suits",
-        "Sharara suits",
-        "Pakistani suits",
-        "Kurti"
+        "palazzo suits",
+        "pant suits",
+        "punjabi suits",
+        "sharara suits",
+        "pakistani suits",
+        "kurti",
+        "sale"
       ],
-      "Sarees": [
-        "Lehenga Sarees",
-        "Partywear",
-        "Wedding Sarees",
-        "Casual wear"
+      "SAREES": [
+        "LEHENGA SAREES",
+        "PARTYWEAR",
+        "WEDDIND SAREES",
+        "casual wear"
       ],
-      "Lehengas": [
+      "LEHENGAS": [
         "Bridal Lehengas",
         "Bridesmaid Lehengas",
         "Cocktail Lehengas",
@@ -27,31 +28,31 @@
       ]
     },
     "Men": {
-      "Sherwanis": [
+      "SHERWANIS": [
         "Classic Sherwani",
         "Indowestern Sherwani"
       ],
-      "Jacket": [
-        "Jacket sets",
-        "Jodhpuri jacket sets"
+      "JACKET": [
+        "jacket sets",
+        "jodhpuri jaket sets"
       ],
-      "Kurtas": [
-        "Kurta pajama sets",
-        "Long kurta set",
-        "Short kurta set"
+      "KURTAS": [
+        "kurta pajama sets",
+        "long kurta set",
+        "short kurta set"
       ]
     },
     "Kids": {
       "Girls": [
-        "Girls kidswear"
+        "girls kidswear"
       ],
       "Boys": [
-        "Boys kidswear"
+        "boys kidswear"
       ]
     },
     "Jewelry": {
       "Bridal": [
-        "Bridal wear jewelery"
+        "bridal wear jewelery"
       ],
       "Casual": [
         "Casual Wear jewelery"
@@ -59,11 +60,11 @@
     }
   },
   "collections": [
-    "New Arrivals",
-    "Ready To Ship",
-    "Best Sellers",
-    "Sale",
-    "Plus Sizes"
+    "new arrivals",
+    "ready to ship",
+    "best sellers",
+    "sale",
+    "plus sizes"
   ],
   "landing_page_mappings": {
     "hero_bridal_edit": "?subCategory=Lehengas",
