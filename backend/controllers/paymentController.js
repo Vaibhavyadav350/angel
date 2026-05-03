@@ -9,6 +9,10 @@ const client = rapid.createClient(
   process.env.EWAY_ENDPOINT || 'Sandbox'
 );
 
+// Public URLs used for eWAY callbacks (must be accessible from the internet, not localhost)
+const BACKEND_PUBLIC_URL = process.env.BACKEND_PUBLIC_URL || 'https://prod-api.angelfashionstudio.org';
+const FRONTEND_PUBLIC_URL = process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org';
+
 const paymentController = async (req, res) => {
   const { cart, shipping_fee, total_amount, shipping, eway_encrypted_card } = req.body;
 
@@ -44,8 +48,9 @@ const paymentController = async (req, res) => {
       orderItemsMeta.push({ id: productId, q: item.amount, c: item.color || 'Standard', s: item.size || 'M' });
     }
 
-    const FRONTEND_URL = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',')[0] : 'http://localhost:3000';
-    const BACKEND_URL = `http://localhost:${process.env.PORT || 5000}`;
+    // Use public URLs for eWAY callbacks — localhost won't work as eWAY needs to reach these
+    const FRONTEND_URL = FRONTEND_PUBLIC_URL;
+    const BACKEND_URL = BACKEND_PUBLIC_URL;
 
     // --- Calculate Amounts ---
     const discountAmount = Number(req.body.discountAmount) || 0;
@@ -107,7 +112,7 @@ const paymentController = async (req, res) => {
         InvoiceDescription: `Angel Fashion Studio - ${cart.length} item(s)`.substring(0, 64),
       },
       Options: options,
-      TransactionType: 'MOTO',
+      TransactionType: 'Purchase', // 'Purchase' = e-commerce (3DS eligible). 'MOTO' bypasses 3DS entirely.
     };
 
     // =============================================
@@ -152,6 +157,31 @@ const paymentController = async (req, res) => {
         return res.status(400).json({ success: false, message: `Payment Error: ${humanErrors}` });
       }
 
+      // --- Check for 3DS challenge requirement ---
+      // eWAY returns Verification.ACSURL when the card requires OTP authentication
+      const verification = response.get('Verification') || {};
+      const acsUrl = verification.ACSURL;
+
+      if (acsUrl) {
+        // 3DS required — fall back to eWAY Responsive Shared Page which handles 3DS/OTP internally
+        console.info(`[EWAY 3DS] Card requires 3DS authentication. Falling back to Responsive Shared Page.`);
+        payload.RedirectUrl = `${BACKEND_URL}/api/payment/callback`;
+        payload.CancelUrl = `${FRONTEND_URL}/checkout?canceled=true`;
+
+        const rspResponse = await client.createTransaction(rapid.Enum.Method.RESPONSIVE_SHARED, payload);
+        const rspErrors = rspResponse.get('Errors') || '';
+        if (rspErrors) {
+          const humanErrors = rspErrors.split(',').filter(Boolean).map(code => {
+            try { return rapid.getMessage(code.trim(), 'en'); } catch { return code; }
+          }).join('; ');
+          return res.status(500).json({ success: false, message: `Payment Error: ${humanErrors}` });
+        }
+
+        const sharedUrl = rspResponse.get('SharedPaymentUrl');
+        console.info(`[EWAY 3DS RSP] Redirecting to eWAY hosted page for 3DS. URL: ${sharedUrl}`);
+        return res.status(200).json({ success: true, url: sharedUrl, requires_3ds: true });
+      }
+
       if (txnStatus) {
         console.info(`[EWAY DIRECT SUCCESS] Transaction ${txnId} approved. ResponseCode: ${responseCode}`);
 
@@ -180,7 +210,7 @@ const paymentController = async (req, res) => {
     }
 
     // =============================================
-    // RESPONSIVE SHARED PAGE (fallback — no card data)
+    // RESPONSIVE SHARED PAGE (fallback — no card data sent)
     // =============================================
     payload.RedirectUrl = `${BACKEND_URL}/api/payment/callback`;
     payload.CancelUrl = `${FRONTEND_URL}/checkout?canceled=true`;
@@ -208,4 +238,58 @@ const paymentController = async (req, res) => {
   }
 };
 
-module.exports = paymentController;
+// =============================================
+// 3DS / RSP CALLBACK — eWAY redirects here after payment on hosted page
+// GET /api/payment/callback?AccessCode=xxx
+// =============================================
+const callbackController = async (req, res) => {
+  const { AccessCode } = req.query;
+
+  if (!AccessCode) {
+    console.error('[EWAY CALLBACK] Missing AccessCode in callback');
+    return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true`);
+  }
+
+  try {
+    console.info(`[EWAY CALLBACK] Received AccessCode: ${AccessCode}`);
+
+    // Query eWAY for final transaction result
+    const result = await client.queryTransaction(AccessCode);
+    const txnStatus = result.get('TransactionStatus');
+    const txnId = result.get('TransactionID');
+    const responseCode = result.get('ResponseCode') || '';
+    const errors = result.get('Errors') || '';
+
+    console.info(`[EWAY CALLBACK RESULT] Status: ${txnStatus}, ID: ${txnId}, Code: ${responseCode}`);
+
+    if (!txnStatus) {
+      const reason = errors || responseCode || 'Transaction declined';
+      console.warn(`[EWAY CALLBACK DECLINED] ${reason}`);
+      return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true&reason=${encodeURIComponent(reason)}`);
+    }
+
+    // Transaction approved — create order
+    const options = result.get('Options') || [];
+    const totalAmount = result.get('TotalAmount') || 0;
+
+    try {
+      await createOrderFromTransaction({
+        TransactionID: txnId,
+        TotalAmount: totalAmount,
+        Options: options,
+      });
+      console.info(`[EWAY CALLBACK SUCCESS] Order created for Transaction ${txnId}`);
+    } catch (orderErr) {
+      console.error(`[EWAY CALLBACK ORDER ERROR] ${orderErr.message}`);
+      // Payment went through — redirect to orders page regardless
+    }
+
+    return res.redirect(`${FRONTEND_PUBLIC_URL}/orders?success=true`);
+
+  } catch (err) {
+    console.error(`[EWAY CALLBACK FATAL] ${err.message}`);
+    return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true`);
+  }
+};
+
+module.exports = { paymentController, callbackController };
