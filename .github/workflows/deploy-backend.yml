@@ -1,0 +1,40 @@
+name: Deploy Backend to DigitalOcean
+
+# Triggers on any push to the main branch that changes backend files.
+# First run will fail until you set up the Droplet and GitHub Secrets.
+on:
+  push:
+    branches:
+      - feature/ui-redesign-ecommerce
+      - main
+    paths:
+      - 'backend/**'  # Only runs when backend code actually changes
+
+jobs:
+  deploy:
+    name: SSH Deploy to Droplet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to DigitalOcean Droplet via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          # Timeout in seconds for the SSH connection
+          timeout: 60s
+          script: |
+            echo "--- Pulling latest code ---"
+            cd /home/deploy/angel
+            git pull origin feature/ui-redesign-ecommerce
+
+            echo "--- Installing dependencies ---"
+            cd backend
+            npm install --production --prefer-offline
+
+            echo "--- Restarting server with PM2 ---"
+            pm2 restart angel-backend --update-env
+
+            echo "--- Deployment complete! ---"
+            pm2 status angel-backend
