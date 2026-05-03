@@ -154,13 +154,11 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
         await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } });
     }
 
-    // Send Confirmation Email
-    try {
-        const pdfBuffer = await pdfService.generateInvoiceBuffer(newOrder);
-        await sendOrderConfirmation(newOrder.user, newOrder, pdfBuffer);
-    } catch (emailError) {
-        console.error(`[ORDER SERVICE EMAIL ERROR] ${emailError.message}`);
-    }
+    // Send Confirmation Email (non-blocking — fire and forget)
+    // Do NOT await this — SMTP timeout was causing 504 Gateway Timeout on DigitalOcean
+    pdfService.generateInvoiceBuffer(newOrder)
+        .then(pdfBuffer => sendOrderConfirmation(newOrder.user, newOrder, pdfBuffer))
+        .catch(emailError => console.error(`[EMAIL FAILED] To: ${newOrder.user?.email || 'unknown'} | Subject: "Order Confirmation - Angel Fashion Studio (#${newOrder._id?.toString().slice(-7).toUpperCase()})" | Error: ${emailError.message}`));
 
     return newOrder;
 };
