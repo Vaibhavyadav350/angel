@@ -19,7 +19,7 @@ function ProductsPage() {
 
   const [exporting, setExporting] = React.useState(false);
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const handleRefresh = async () => {
     await fetchProducts();

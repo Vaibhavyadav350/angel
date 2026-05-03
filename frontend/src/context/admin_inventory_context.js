@@ -1,5 +1,5 @@
 import React, { useContext, useReducer } from 'react';
-import { useProductsContext } from './products_context';
+
 
 // Derives flat inventory rows from the products array
 const deriveInventoryRows = (products) => {

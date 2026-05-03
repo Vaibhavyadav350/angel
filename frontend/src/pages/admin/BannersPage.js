@@ -119,7 +119,7 @@ const BannersPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingBanner, setEditingBanner] = useState(null);
 
-    useEffect(() => { getBanners(); }, []);
+    useEffect(() => { getBanners(); }, [getBanners]);
 
     const handleSave = (data) => {
         if (editingBanner?._id) {

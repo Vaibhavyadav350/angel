@@ -8,9 +8,8 @@ import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import { formatPrice } from '../../utils/helpers';
 import { FilterButton } from './shared';
 import { OptimizedImage } from './shared';
-import { SectionContainer } from './shared';
 import { FILTER_OPTIONS } from '../../constants/archiveConstants';
-import { mediumHeadingClasses, containerPaddingClasses, sectionPaddingClasses } from '../../utils/responsiveText';
+import { containerPaddingClasses, sectionPaddingClasses } from '../../utils/responsiveText';
 
 const WishlistHeart = ({ productId, className = '' }) => {
   const { wishlist, toggleWishlistItem, currentUser } = useUserContext();

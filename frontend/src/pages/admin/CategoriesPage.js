@@ -133,7 +133,7 @@ const CategoriesPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
 
-    useEffect(() => { getCategories(); }, []);
+    useEffect(() => { getCategories(); }, [getCategories]);
 
     const handleSave = (data) => {
         if (editingCategory?._id) {

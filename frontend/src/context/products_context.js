@@ -7,7 +7,6 @@ import {
   SIDEBAR_CLOSE,
   GET_PRODUCTS_BEGIN,
   GET_PRODUCTS_SUCCESS,
-  GET_PRODUCTS_ERROR,
   GET_SINGLE_PRODUCT_BEGIN,
   GET_SINGLE_PRODUCT_SUCCESS,
   GET_SINGLE_PRODUCT_ERROR,
@@ -16,6 +15,16 @@ import {
   GET_SINGLE_PRODUCT_REVIEWS_SUCCESS,
 } from '../actions';
 import { useUserContext } from './user_context';
+const fallbackProducts = [
+  { id: '1', name: 'Zardozi Banarasi Saree', category: 'Women', subCategory: 'Sarees', price: 85000, image: '/assets/landing/saree-1.jpg', shipping: true, featured: true, description: 'Handloom Banarasi pure silk saree with heavy zari border.' },
+  { id: '2', name: 'Royal Velvet Lehenga', category: 'Women', subCategory: 'Lehengas', price: 125000, image: '/assets/landing/lehenga-3.jpg', shipping: true, featured: true, description: 'Deep maroon velvet bridal lehenga with zardozi hand embroidery.' },
+  { id: '3', name: 'Classic Silk Sherwani', category: 'Men', subCategory: 'Sherwanis', price: 75000, image: '/assets/landing/hero-men.jpg', shipping: true, featured: true, description: 'Ivory raw silk sherwani for the modern groom.' },
+  { id: '4', name: 'Organza Bridal Suite', category: 'Women', subCategory: 'Salwar Kameez', price: 95000, image: '/assets/landing/salwar-1.jpg', shipping: true, featured: false, description: 'Lightweight organza anarkali suit set.' },
+  { id: '5', name: 'Heritage Jadau Necklace', category: 'Jewelry', subCategory: 'Bridal', price: 250000, image: '/assets/landing/cat-jewelry.jpg', shipping: true, featured: true, description: '22k gold hand-crafted jadau set.' },
+  { id: '6', name: 'Raw Silk Kurta Set', category: 'Men', subCategory: 'Kurtas', price: 35000, image: '/assets/landing/cat-sherwani.jpg', shipping: true, featured: false, description: 'Minimalist festive kurta in raw silk.' },
+  { id: '7', name: 'Georgette Lehenga Choli', category: 'Women', subCategory: 'Lehengas', price: 88000, image: '/assets/landing/lehenga-1.jpg', shipping: true, featured: false, description: 'Flowing georgette lehenga with mirror work.' },
+  { id: '8', name: 'Polki Earrings', category: 'Jewelry', subCategory: 'Bridal', price: 55000, image: '/assets/landing/cat-jewelry.jpg', shipping: true, featured: false, description: 'Uncut diamond polki drop earrings.' }
+];
 
 const initialState = {
   isSidebarOpen: false,
@@ -44,18 +53,9 @@ export const ProductsProvider = ({ children }) => {
     dispatch({ type: SIDEBAR_CLOSE });
   };
 
-  const fallbackProducts = [
-    { id: '1', name: 'Zardozi Banarasi Saree', category: 'Women', subCategory: 'Sarees', price: 85000, image: '/assets/landing/saree-1.jpg', shipping: true, featured: true, description: 'Handloom Banarasi pure silk saree with heavy zari border.' },
-    { id: '2', name: 'Royal Velvet Lehenga', category: 'Women', subCategory: 'Lehengas', price: 125000, image: '/assets/landing/lehenga-3.jpg', shipping: true, featured: true, description: 'Deep maroon velvet bridal lehenga with zardozi hand embroidery.' },
-    { id: '3', name: 'Classic Silk Sherwani', category: 'Men', subCategory: 'Sherwanis', price: 75000, image: '/assets/landing/hero-men.jpg', shipping: true, featured: true, description: 'Ivory raw silk sherwani for the modern groom.' },
-    { id: '4', name: 'Organza Bridal Suite', category: 'Women', subCategory: 'Salwar Kameez', price: 95000, image: '/assets/landing/salwar-1.jpg', shipping: true, featured: false, description: 'Lightweight organza anarkali suit set.' },
-    { id: '5', name: 'Heritage Jadau Necklace', category: 'Jewelry', subCategory: 'Bridal', price: 250000, image: '/assets/landing/cat-jewelry.jpg', shipping: true, featured: true, description: '22k gold hand-crafted jadau set.' },
-    { id: '6', name: 'Raw Silk Kurta Set', category: 'Men', subCategory: 'Kurtas', price: 35000, image: '/assets/landing/cat-sherwani.jpg', shipping: true, featured: false, description: 'Minimalist festive kurta in raw silk.' },
-    { id: '7', name: 'Georgette Lehenga Choli', category: 'Women', subCategory: 'Lehengas', price: 88000, image: '/assets/landing/lehenga-1.jpg', shipping: true, featured: false, description: 'Flowing georgette lehenga with mirror work.' },
-    { id: '8', name: 'Polki Earrings', category: 'Jewelry', subCategory: 'Bridal', price: 55000, image: '/assets/landing/cat-jewelry.jpg', shipping: true, featured: false, description: 'Uncut diamond polki drop earrings.' }
-  ];
 
-  const fetchProducts = async (url) => {
+
+  const fetchProducts = React.useCallback(async (url) => {
     dispatch({ type: GET_PRODUCTS_BEGIN });
     try {
       const response = await axios.get(url);
@@ -66,7 +66,7 @@ export const ProductsProvider = ({ children }) => {
       // Fallback injection so UI renders beautifully without backend
       dispatch({ type: GET_PRODUCTS_SUCCESS, payload: fallbackProducts });
     }
-  };
+  }, []);
 
   const fetchSingleProduct = async (url) => {
     dispatch({ type: GET_SINGLE_PRODUCT_BEGIN });
@@ -123,7 +123,7 @@ export const ProductsProvider = ({ children }) => {
 
   useEffect(() => {
     fetchProducts(url);
-  }, []);
+  }, [fetchProducts]);
 
   return (
     <ProductsContext.Provider

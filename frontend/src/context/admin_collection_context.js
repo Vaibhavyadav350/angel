@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useEffect } from 'react';
+import React, { useContext, useReducer } from 'react';
 import axios from 'axios';
 import { admin_collections_url } from '../utils/constants';
 

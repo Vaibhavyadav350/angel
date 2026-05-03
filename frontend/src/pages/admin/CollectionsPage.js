@@ -88,7 +88,7 @@ const CollectionsPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingCollection, setEditingCollection] = useState(null);
 
-    useEffect(() => { getCollections(); }, []);
+    useEffect(() => { getCollections(); }, [getCollections]);
 
     const handleSave = (data) => {
         if (editingCollection?._id) {

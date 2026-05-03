@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useOrderContext } from '../../context/order_context';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useCartContext } from '../../context/cart_context';
-import { toast } from 'react-toastify';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 const OrdersPage = () => {
