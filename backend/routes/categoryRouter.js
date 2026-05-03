@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const categoryController = require('../controllers/categoryController');
-const { isAuthenticatedAdmin, checkAdminPrivileges } = require('../middleware/auth');
+const { isAuthenticatedAdmin, checkAdminPrivileges } = require('../middleware/Auth');
 
 router.route('/active').get(categoryController.getActiveCategories);
 
