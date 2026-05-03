@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { largeHeadingClasses, containerPaddingClasses, sectionPaddingClasses } from '../../utils/responsiveText';
+import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const EleganceSection = React.memo(() => {
+  const sectionRef = useRef(null);
+  const contentRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useScrollAnimation({
+    ref: contentRef,
+    from: { y: 60, opacity: 0 },
+    to: { y: 0, opacity: 1 },
+    duration: 1.2,
+    ease: 'power3.out',
+    contextRef: sectionRef
+  });
+
+  useScrollAnimation({
+    ref: imageRef,
+    from: { opacity: 0, scale: 0.9 },
+    to: { opacity: 1, scale: 1 },
+    duration: 1.5,
+    ease: 'power2.out',
+    contextRef: sectionRef
+  });
   return (
-    <section className={`w-full bg-bronze ${sectionPaddingClasses} overflow-hidden relative`}>
+    <section ref={sectionRef} className={`w-full bg-bronze ${sectionPaddingClasses} overflow-hidden relative`}>
       <div className={`container mx-auto ${containerPaddingClasses} flex flex-col lg:flex-row items-center justify-between gap-16 sm:gap-24 lg:gap-40`}>
-        <div className="w-full lg:w-1/2 flex flex-col justify-center space-y-12 sm:space-y-16 lg:space-y-20 relative z-10">
+        <div ref={contentRef} className="w-full lg:w-1/2 flex flex-col justify-center space-y-12 sm:space-y-16 lg:space-y-20 relative z-10">
           <h2
             className={`${largeHeadingClasses} font-editorial font-black text-champagne uppercase leading-[0.8] tracking-tighter`}
             style={{
@@ -25,14 +47,14 @@ const EleganceSection = React.memo(() => {
             <span className="text-[11px] font-bold uppercase tracking-[0.5em] text-gold">Archival Edition 2024</span>
           </div>
         </div>
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end relative">
+        <div ref={imageRef} className="w-full lg:w-1/2 flex justify-center lg:justify-end relative">
           <div className="relative w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] xl:w-[700px] xl:h-[700px]">
             <div className="w-full h-full rounded-full overflow-hidden bg-bronze relative z-10 border-[1px] border-gold/30 shadow-[0_40px_80px_rgba(0,0,0,0.3)]">
               <img
                 alt="High-contrast portrait of a male model wearing a premium gold-toned designer ethnic Kurta"
                 loading="lazy"
                 className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-[2000ms] brightness-110"
-                src="/assets/archive/elegance_male.jpg"
+                src="/assets/landing/elegance-portrait.jpg"
                 width="700"
                 height="700"
               />

@@ -1,4 +1,5 @@
 import React from 'react';
+import taxonomy from './taxonomy.json';
 import { GiCompass, GiDiamondHard, GiStabbedNote } from 'react-icons/gi';
 import {
   AiFillLinkedin,
@@ -11,6 +12,10 @@ import {
   FaUserTie,
   FaTicketAlt,
   FaUndo,
+  FaImages,
+  FaLayerGroup,
+  FaTags,
+  FaBoxes,
 } from 'react-icons/fa';
 
 export const links = [
@@ -46,13 +51,13 @@ export const links = [
   },
 ];
 
+
+
 // Sub-category mapping for navigation dropdown menus
-export const navCategories = {
-  Women: ['Salwar Kameez', 'Sarees', 'Lehengas'],
-  Men: ['Sherwanis', 'Jacket', 'Kurtas'],
-  Kids: ['Girls', 'Boys'],
-  Jewelry: ['Bridal', 'Casual'],
-};
+export const navCategories = Object.keys(taxonomy.categories).reduce((acc, cat) => {
+  acc[cat] = Object.keys(taxonomy.categories[cat]);
+  return acc;
+}, {});
 
 export const socialLinks = [
   {
@@ -131,7 +136,7 @@ export const services = [
 export const domain = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:5000';
 export const products_url = `${domain}/api/products`;
 export const single_product_url = `${domain}/api/products/`;
-// Order creation URL removed — orders are created exclusively by the Stripe webhook (webhookController.js)
+// Order creation URL removed — orders are created exclusively by the eWAY callback (webhookController.js)
 export const get_order_url = `${domain}/api/orders`;
 // payment_url removed — checkout uses /api/payment/create-checkout-session directly
 export const upload_url = `${domain}/api/upload/`;
@@ -146,7 +151,11 @@ export const default_profile_image =
 export const LinkItems = [
   { name: 'Home', url: '/admin', icon: <FaHome /> },
   { name: 'Products', url: '/admin/products', icon: <FaProductHunt /> },
+  { name: 'Inventory', url: '/admin/inventory', icon: <FaBoxes /> },
   { name: 'Orders', url: '/admin/orders', icon: <FaShoppingCart /> },
+  { name: 'Banners', url: '/admin/banners', icon: <FaImages /> },
+  { name: 'Collections', url: '/admin/collections', icon: <FaLayerGroup /> },
+  { name: 'Categories', url: '/admin/categories', icon: <FaTags /> },
   { name: 'Newsletter', url: '/admin/newsletter', icon: <GiStabbedNote /> },
   { name: 'Promotions', url: '/admin/coupons', icon: <FaTicketAlt /> },
   { name: 'Customers', url: '/admin/customers', icon: <FaUserTie /> },
@@ -180,6 +189,10 @@ export const admin_order_url = `${domain}/api/admin/order/`;
 export const admin_single_order_url = `${domain}/api/admin/order/`; // For fetching single order
 export const admin_delete_review_url = `${domain}/api/admin/product/review/`;
 export const admin_newsletter_url = `${domain}/api/newsletter`;
+export const admin_banners_url = `${domain}/api/banners`;
+export const admin_collections_url = `${domain}/api/featured-collections`;
+export const admin_categories_url = `${domain}/api/admin/categories`;
+export const admin_inventory_url = `${domain}/api/admin/inventory`;
 
 // Analytics URLs
 export const admin_analytics_sales_url = `${domain}/api/analytics/sales`;

@@ -23,6 +23,11 @@ const analyticsRouter = require('./routes/analyticsRouter');
 const couponRouter = require('./routes/couponRouter');
 const userRouter = require('./routes/userRouter');
 const restockRouter = require('./routes/restockRouter');
+const bannerRouter = require('./routes/bannerRouter');
+const featuredCollectionRouter = require('./routes/featuredCollectionRouter');
+const testimonialRouter = require('./routes/testimonialRouter');
+const settingsRouter = require('./routes/settingsRouter');
+const categoryRouter = require('./routes/categoryRouter');
 
 // requiring middlewares
 const errorMiddleware = require('./middleware/Error');
@@ -96,16 +101,15 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Stricter Rate Limiting for Auth/Payment routes
 const strictLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 20, // 20 requests
+  max: 20, // Back to production standard
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 
-// Stripe Webhooks need the raw body, so express.raw must come BEFORE express.json
-const webhookController = require('./controllers/webhookController');
-app.post('/api/payment/webhook', express.raw({ type: 'application/json' }), strictLimiter, webhookController);
+// eWAY callback route (redirect-based, no raw body needed unlike Stripe webhooks)
+const ewayCallbackController = require('./controllers/webhookController');
+app.get('/api/payment/callback', ewayCallbackController);
 
 app.use(express.json({ limit: '20mb' }));
 app.use(cookieParser());
@@ -129,6 +133,11 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/users', userRouter);
 app.use('/api/restock', restockRouter);
+app.use('/api/banners', bannerRouter);
+app.use('/api/featured-collections', featuredCollectionRouter);
+app.use('/api/testimonials', testimonialRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/categories', categoryRouter);
 
 // using other middlewares
 app.use(errorMiddleware);

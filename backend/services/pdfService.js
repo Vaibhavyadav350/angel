@@ -158,10 +158,10 @@ exports.generateInvoice = async (order, res) => {
     doc.fillColor(colors.gray).fontSize(8).font('Helvetica')
         .text(`${order.user.email} | ${order.shippingInfo.phoneNumber || ''}`, shipInnerX, shipInnerY + 100);
 
-    // Stripe
+    // eWAY
     if (order.paymentInfo && order.paymentInfo.id) {
         doc.fillColor(colors.bronze).fontSize(7).font('Helvetica-Bold')
-            .text(`STRIPE TXN: ${order.paymentInfo.id.toUpperCase()}`, shipInnerX, shipInnerY + 114);
+            .text(`EWAY TXN: ${order.paymentInfo.id.toUpperCase()}`, shipInnerX, shipInnerY + 114);
     }
 
     // ============================================
@@ -288,7 +288,7 @@ exports.generateInvoiceBuffer = (order) => {
 
             if (order.paymentInfo && order.paymentInfo.id) {
                 doc.fillColor(colors.bronze).fontSize(7).font('Helvetica-Bold')
-                    .text(`STRIPE TXN: ${order.paymentInfo.id.toUpperCase()}`, shipInnerX, shipInnerY + 114);
+                    .text(`EWAY TXN: ${order.paymentInfo.id.toUpperCase()}`, shipInnerX, shipInnerY + 114);
             }
 
             let itemPos = startY + 185;

@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const orderController = require('../controllers/orderController');
 
-// Order creation is handled exclusively by the Stripe webhook (webhookController.js)
+// Order creation is handled exclusively by the eWAY callback (webhookController.js)
 // No public REST endpoint for order creation — prevents duplicate orders and unauthorized access
 
 // send user orders

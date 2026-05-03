@@ -15,12 +15,22 @@ export default function SidebarContent({ onClose, className = '' }) {
       setLinks(LinkItems);
     }
     if (privilege === 'moderate') {
-      const tempLinks = LinkItems.filter((link) => link.name !== 'Admins' && link.name !== 'Customers');
+      const tempLinks = LinkItems.filter((link) =>
+        link.name !== 'Admins' && link.name !== 'Customers'
+      );
       setLinks(tempLinks);
     }
     if (privilege === 'low') {
       const tempLinks = LinkItems.filter(
-        (link) => link.name !== 'Admins' && link.name !== 'Products' && link.name !== 'Newsletter' && link.name !== 'Customers'
+        (link) =>
+          link.name !== 'Admins' &&
+          link.name !== 'Products' &&
+          link.name !== 'Newsletter' &&
+          link.name !== 'Customers' &&
+          link.name !== 'Banners' &&
+          link.name !== 'Collections' &&
+          link.name !== 'Categories' &&
+          link.name !== 'Inventory'
       );
       setLinks(tempLinks);
     }
@@ -70,8 +80,12 @@ export default function SidebarContent({ onClose, className = '' }) {
         ))}
       </nav>
 
-      {/* Bottom branding */}
-      <div className="px-6 py-4 border-t border-bronze/10">
+      {/* Bottom branding & Subdomain Link */}
+      <div className="px-6 py-4 border-t border-bronze/10 flex flex-col gap-3">
+        <a href="https://angelfashionstudio.org" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 hover:text-gold transition-colors">
+          <span className="material-symbols-outlined text-sm">storefront</span>
+          Back to Store
+        </a>
         <p className="text-[8px] font-bold uppercase tracking-[0.4em] text-bronze/20">
           Admin Console
         </p>

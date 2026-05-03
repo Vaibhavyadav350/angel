@@ -68,6 +68,7 @@ export const FOOTER_LINKS = {
     { label: 'Privacy Policy', href: '/privacy-policy' },
     { label: 'Refund Policy', href: '/refund-policy' },
     { label: 'Terms & Condition', href: '/terms' },
+    { label: 'Admin Portal', href: 'https://admin.angelfashionstudio.org', external: true },
   ],
 };
 

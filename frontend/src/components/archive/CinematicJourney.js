@@ -29,7 +29,7 @@ const CinematicJourney = React.memo(() => {
           alt="Model in lehenga walking through a royal corridor"
           className="w-full h-full object-cover"
           style={{ opacity: 0.6 }}
-          src="/assets/archive/hero_main.jpg"
+          src="/assets/landing/cinematic.jpg"
           loading="lazy"
           width="1920"
           height="1080"

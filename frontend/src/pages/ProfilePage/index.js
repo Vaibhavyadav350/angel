@@ -6,6 +6,7 @@ import { useCartContext } from '../../context/cart_context';
 import { useProductsContext } from '../../context/products_context';
 import { useOrderContext } from '../../context/order_context';
 import { formatPrice } from '../../utils/helpers';
+import { NewArrivalsCarousel } from '../../components/archive';
 
 // Reusable archive input style
 const inputClass =
@@ -225,9 +226,14 @@ const ProfilePage = () => {
               </div>
 
               {orders.length < 1 ? (
-                <div className="p-20 text-center border border-dashed border-bronze/20 rounded-[40px]">
-                  <h4 className="text-2xl font-editorial text-bronze/50 mb-6">Your archive is empty</h4>
-                  <Link to="/products" className="inline-block px-10 py-4 bg-bronze text-champagne text-[10px] font-bold uppercase tracking-widest rounded-full hover:bg-gold transition-colors">Start Curating</Link>
+                <div className="space-y-16 mt-10">
+                  <div className="p-20 text-center border border-dashed border-bronze/20 rounded-[40px]">
+                    <h4 className="text-2xl font-editorial text-bronze/50 mb-6">Your archive is empty</h4>
+                    <Link to="/products" className="inline-block px-10 py-4 bg-bronze text-champagne text-[10px] font-bold uppercase tracking-widest rounded-full hover:bg-gold transition-colors">Start Curating</Link>
+                  </div>
+                  <div className="border-t border-bronze/10 pt-8">
+                    <NewArrivalsCarousel />
+                  </div>
                 </div>
               ) : (
                 orders.map((order) => {

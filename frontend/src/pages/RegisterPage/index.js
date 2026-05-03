@@ -52,19 +52,19 @@ function RegisterPage() {
         <div className="space-y-10">
           <div className="space-y-4">
             <span className="text-gold text-[10px] font-bold uppercase tracking-[0.6em] block">
-              Join The Archive
+              Private Client Registration
             </span>
-            <h1 className="text-[14vw] lg:text-[9rem] font-editorial font-black leading-[0.8] text-bronze tracking-tighter uppercase">
-              REGIS<br />TER
+            <h1 className="text-[14vw] lg:text-[7rem] font-editorial font-black leading-[0.8] text-bronze tracking-tighter uppercase mb-6">
+              The<br />Archivist<br />Circle
             </h1>
           </div>
           <div className="max-w-md space-y-6">
             <p className="text-sm font-medium leading-relaxed text-bronze/60 italic">
-              Create your profile and gain access to our curated heritage collections and concierge services.
+              "We invite you to become part of an exclusive heritage. An Archivist Circle membership grants priority access to bespoke tailoring, private viewings, and limited-edition editorial drops."
             </p>
             <div className="flex items-center gap-6">
               <div className="h-px w-16 bg-gold/40" />
-              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-bronze/30">Est. 1994</span>
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-bronze/30">White-Glove Service</span>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ function RegisterPage() {
                 disabled={isSubmitting}
                 className="w-full bg-bronze text-champagne py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-chocolate transition-all duration-500 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed rounded-none"
               >
-                Create Profile
+                Apply For Membership
                 <span className="material-symbols-outlined text-sm">east</span>
               </Button>
 

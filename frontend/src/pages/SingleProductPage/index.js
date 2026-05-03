@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useProductsContext } from '../../context/products_context';
 import { single_product_url as url } from '../../utils/constants';
@@ -12,11 +12,29 @@ import {
   UserReview,
   NotifyMeModal,
 } from '../../components';
+import { BespokeStitchingForm } from '../../components/archive';
 import { Link } from 'react-router-dom';
 import { useUserContext } from '../../context/user_context';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { OptimizedImage } from '../../components/archive/shared'; // Reuse for Complete The Look
+import { OptimizedImage } from '../../components/archive/shared';
+import { motion, useScroll, useTransform } from 'framer-motion';
+
+// Archival Add-ons options
+const ADD_ONS = [
+  { key: 'priority', label: 'Prioritized Archival Delivery', desc: 'Ready in 7 working days', price: 3500 },
+  { key: 'hemming', label: 'Hand-Embroidered Dupatta Hemming', desc: 'Finished edge with matching zari', price: 800 },
+  { key: 'petticoat', label: 'Pre-Stitched Petticoat', desc: 'Custom colour-matched', price: 600 },
+  { key: 'giftbox', label: 'Archival Gift Packaging', desc: 'Heritage box + monogram tag', price: 400 },
+];
+
+// Accordion data builder
+const buildAccordionSections = (name, description, careInstructions) => [
+  { id: 'craft', title: 'THE CRAFT', content: `Every piece of "${name}" is a testament to the enduring legacy of Indian craftsmanship. Hand-woven by master artisans in Varanasi and embellished in our Mumbai atelier, every silhouette tells a story of heritage reimagined. ${description}` },
+  { id: 'fabric', title: 'FABRIC & MATERIALITY', content: careInstructions ? careInstructions : 'Pure hand-woven silk with 22K gold zari thread embroidery. Fabric weight: ~120gsm. Fully lined in pure silk. Dry clean only. Country of Origin: India.' },
+  { id: 'size', title: 'SIZE & STITCHING GUIDE', content: 'Standard sizes: XS (Bust 32"), S (34"), M (36"), L (38"), XL (40"), 2XL (42"), 3XL (44"). Custom stitching adds 15–21 days to delivery.' },
+  { id: 'shipping', title: 'SHIPPING & RETURNS', content: 'Complimentary domestic shipping on all orders. International shipping from ₹1,200. Delivery: 5–7 days standard, 1–2 days priority. 30-day free exchanges on unworn items. Custom-stitched orders are non-returnable.' },
+];
 
 const SingleProductPage = () => {
   const { id } = useParams();
@@ -29,8 +47,20 @@ const SingleProductPage = () => {
     products,
   } = useProductsContext();
 
-  const [isNotifyModalOpen, setIsNotifyModalOpen] = React.useState(false);
+  const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+  const [_measurements, setMeasurements] = useState({});  // eslint-disable-line no-unused-vars
+  const [selectedAddOns, setSelectedAddOns] = useState([]);
+  const [openAccordion, setOpenAccordion] = useState(null);
   const { wishlist, toggleWishlistItem, currentUser } = useUserContext();
+
+  const toggleAddOn = (key) => setSelectedAddOns(prev =>
+    prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+  );
+  const toggleAccordion = (id) => setOpenAccordion(prev => prev === id ? null : id);
+
+  const { scrollYProgress } = useScroll();
+  const stickyOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const stickyY = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
 
   useEffect(() => {
     fetchSingleProduct(`${url}${id}`);
@@ -51,6 +81,7 @@ const SingleProductPage = () => {
     images = [],
     category = '',
     subCategory = '',
+    careInstructions = '',
   } = product || {};
 
   useEffect(() => {
@@ -219,6 +250,9 @@ const SingleProductPage = () => {
                 </div>
               </div>
 
+              {/* Bespoke Stitching Form */}
+              <BespokeStitchingForm onMeasurementsChange={setMeasurements} />
+
               {/* Add to Cart or Notify Me */}
               <div className="pt-8">
                 {stock > 0 ? (
@@ -227,11 +261,11 @@ const SingleProductPage = () => {
                   <div className="space-y-4">
                     <div className="p-4 bg-red-50 border border-red-100 rounded-lg">
                       <p className="text-[10px] font-black uppercase tracking-widest text-red-600">Archival Availability: Out of Stock</p>
-                      <p className="text-[9px] text-red-500/60 font-bold mt-1">This heritage piece is temporarily unavailable. We are working on its recovery.</p>
+                      <p className="text-[9px] text-red-500/60 font-bold mt-1">This heritage piece is temporarily unavailable.</p>
                     </div>
                     <button
                       onClick={() => setIsNotifyModalOpen(true)}
-                      className="w-full py-5 bg-bronze text-champagne text-[11px] font-black uppercase tracking-[0.2em] rounded hover:bg-gold transition-all duration-500 active:scale-[0.98] shadow-2xl shadow-bronze/10"
+                      className="w-full py-5 bg-bronze text-champagne text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gold transition-all duration-500 active:scale-[0.98]"
                     >
                       Back to Archive Alert
                     </button>
@@ -240,19 +274,61 @@ const SingleProductPage = () => {
               </div>
 
               {isNotifyModalOpen && (
-                <NotifyMeModal
-                  productId={id}
-                  productName={name}
-                  onClose={() => setIsNotifyModalOpen(false)}
-                />
+                <NotifyMeModal productId={id} productName={name} onClose={() => setIsNotifyModalOpen(false)} />
               )}
 
-              {/* Accordion / Details (Simulated with simple spacing for now) */}
+              {/* Archival Add-Ons Upsells */}
+              <div className="border border-bronze/10 p-6 bg-white/30 space-y-5">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-gold">
+                  Archival Add-Ons
+                </h3>
+                {ADD_ONS.map((addon) => (
+                  <label key={addon.key} className="flex items-start gap-4 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedAddOns.includes(addon.key)}
+                      onChange={() => toggleAddOn(addon.key)}
+                      className="mt-0.5 w-4 h-4 border-bronze/20 accent-gold"
+                    />
+                    <div className="flex-1">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bronze group-hover:text-gold transition-colors">
+                        {addon.label}
+                      </span>
+                      <p className="text-[9px] text-bronze/50 mt-0.5">{addon.desc}</p>
+                    </div>
+                    <span className="text-[10px] font-bold text-gold whitespace-nowrap">
+                      +{formatPrice(addon.price)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Product Detail Accordion */}
               <div className="space-y-0 border-t border-bronze/10">
                 {/* Review Modal Trigger */}
                 <div className="py-6 border-b border-bronze/10">
                   <ReviewModal product={product} />
                 </div>
+
+                {/* Accordion Sections */}
+                {buildAccordionSections(name, description, careInstructions).map((section) => (
+                  <div key={section.id} className="border-b border-bronze/10">
+                    <button
+                      onClick={() => toggleAccordion(section.id)}
+                      className="w-full flex items-center justify-between py-5 text-left group"
+                    >
+                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-bronze group-hover:text-gold transition-colors">
+                        {section.title}
+                      </span>
+                      <span className={`material-symbols-outlined text-gold text-base transition-transform duration-300 ${openAccordion === section.id ? 'rotate-45' : 'rotate-0'}`}>
+                        add
+                      </span>
+                    </button>
+                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${openAccordion === section.id ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'}`}>
+                      <p className="text-sm text-bronze/70 leading-relaxed font-medium">{section.content}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Reviews Preview */}
@@ -346,6 +422,24 @@ const SingleProductPage = () => {
             </div>
           </div>
         </section>
+      )}
+      {/* Sticky Affirmation CTA */}
+      {stock > 0 && isProductValid && (
+        <motion.div
+          style={{ opacity: stickyOpacity, y: stickyY }}
+          className="fixed bottom-0 left-0 w-full z-50 bg-white/90 backdrop-blur-xl border-t border-bronze/10 p-4 lg:py-6 lg:px-12 shadow-[0_-10px_40px_-15px_rgba(122,92,65,0.2)] md:hidden flex items-center justify-between pointer-events-auto"
+        >
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-bronze truncate w-32">{name}</p>
+            <p className="text-[11px] font-editorial font-bold text-bronze">{formatPrice(price)}</p>
+          </div>
+          <button
+            onClick={() => window.scrollTo({ top: 300, behavior: 'smooth' })}
+            className="px-6 py-4 bg-bronze text-champagne text-[9px] font-bold uppercase tracking-[0.3em] rounded-none hover:bg-gold transition-colors shadow-lg"
+          >
+            Add To Collection
+          </button>
+        </motion.div>
       )}
     </main>
   );

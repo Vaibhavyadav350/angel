@@ -1,10 +1,8 @@
 const router = require('express').Router();
 
 const paymentController = require('../controllers/paymentController');
-const webhookController = require('../controllers/webhookController');
-const express = require('express');
 
-// creating checkout session
+// creating checkout session (eWAY Responsive Shared Page)
 router.post('/create-checkout-session', paymentController);
 
 module.exports = router;

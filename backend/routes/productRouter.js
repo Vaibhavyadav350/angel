@@ -5,6 +5,10 @@ const productController = require('../controllers/productController');
 // send all product detaisl
 router.route('/').get(productController.getAllProducts);
 
+// get dynamic collections
+router.route('/trending').get(productController.getTrendingProducts);
+router.route('/new-arrivals').get(productController.getNewArrivals);
+
 // send a single product
 router.route('/:id').get(productController.getSingleProduct);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SidebarWithHeader, OrdersTable } from '../../components/admin';
 import { useOrderContext } from '../../context/admin_order_context';
 import { MdRefresh, MdFilterList } from 'react-icons/md';
@@ -17,10 +17,6 @@ function OrdersPage() {
 
   const [exporting, setExporting] = useState(false);
 
-  const handleRefresh = async () => {
-    await applyFilters(filters);
-  };
-
   const handleExport = async () => {
     setExporting(true);
     const res = await exportOrdersToExcel();
@@ -38,10 +34,12 @@ function OrdersPage() {
   });
 
   const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const applyFilters = async (overrideFilters) => {
+  // Memoized so the reference stays stable across re-renders.
+  // This prevents the infinite loop where OrdersTable calling onRefresh → setState → new onRefresh ref → re-call
+  const applyFilters = useCallback(async (overrideFilters) => {
     const activeFilters = overrideFilters || filters;
     setLoading(true);
     const res = await fetchFilteredOrders(activeFilters);
@@ -52,7 +50,12 @@ function OrdersPage() {
       setError(true);
     }
     setLoading(false);
-  };
+    // eslint-disable-next-line
+  }, []); // Empty deps — intentional: we read from param, not from stale closure
+
+  const handleRefresh = useCallback(() => {
+    applyFilters({ status: '', minPrice: '', maxPrice: '', startDate: '', endDate: '', returnStatus: 'exclude_returns' });
+  }, [applyFilters]);
 
   const clearFilters = () => {
     const defaultFilters = { status: '', minPrice: '', maxPrice: '', startDate: '', endDate: '', returnStatus: 'exclude_returns' };
@@ -60,7 +63,7 @@ function OrdersPage() {
     applyFilters(defaultFilters);
   };
 
-  // Aggressively claim the Orders context (overwriting any Returns memory cache)
+  // Initial fetch on mount only
   useEffect(() => {
     applyFilters({ returnStatus: 'exclude_returns' });
     // eslint-disable-next-line
@@ -171,7 +174,7 @@ function OrdersPage() {
           <p className="text-lg font-editorial text-red-500">There was an error loading orders</p>
         </div>
       ) : (
-        <OrdersTable orders={pageOrders} onRefresh={() => applyFilters(filters)} />
+        <OrdersTable orders={pageOrders} onRefresh={handleRefresh} />
       )}
     </SidebarWithHeader>
   );

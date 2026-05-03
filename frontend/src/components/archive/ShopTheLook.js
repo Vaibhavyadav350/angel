@@ -52,7 +52,7 @@ const ShopTheLook = React.memo(() => {
         alt="High-fashion couple in premium ethnic wear"
         className="w-full h-full object-cover brightness-75"
         style={{ opacity: 0.9 }}
-        src="/assets/archive/product_archive_suite.jpg"
+        src="/assets/landing/shop-the-look.jpg"
         loading="lazy"
         width="1920"
         height="1200"

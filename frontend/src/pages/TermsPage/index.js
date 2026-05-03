@@ -22,7 +22,7 @@ const TermsPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Orders & Payment</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            All prices are displayed in Indian Rupees (INR) and include applicable taxes unless stated otherwise. We reserve the right to cancel any order due to product availability, pricing errors, or suspected fraud. Payment is processed securely via Stripe.
+                            All prices are displayed in Indian Rupees (INR) and include applicable taxes unless stated otherwise. We reserve the right to cancel any order due to product availability, pricing errors, or suspected fraud. Payment is processed securely via eWAY.
                         </p>
                     </div>
                     <div className="h-px bg-bronze/10" />

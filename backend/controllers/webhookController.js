@@ -1,165 +1,62 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Order = require('../models/orderModel');
-const Product = require('../models/productModel');
-const { updateUserSpend } = require('./userController');
+const rapid = require('eway-rapid');
+const { createOrderFromTransaction } = require('../services/orderService');
 
-// In-memory lock to prevent race conditions from concurrent duplicate webhooks
-const processingWebhooks = new Set();
+// Initialize eWAY Rapid client — endpoint must be 'Sandbox' or 'Production'
+const client = rapid.createClient(
+  process.env.EWAY_API_KEY,
+  process.env.EWAY_PASSWORD,
+  process.env.EWAY_ENDPOINT || 'Sandbox'
+);
 
-const webhookController = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
+// In-memory lock to prevent race conditions
+const processingCallbacks = new Set();
 
-    try {
-        // Determine secret properly
-        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const ewayCallbackController = async (req, res) => {
+    const accessCode = req.query.AccessCode;
+    const FRONTEND_URL = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',')[0] : 'http://localhost:3000';
 
-        // Express raw body is required here
-        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-        console.info(`[WEBHOOK RECEIVED] Successfully verified signature for event type: ${event.type}`);
-    } catch (err) {
-        console.error(`[WEBHOOK FATAL] Signature verification failed. Error: ${err.message}`);
-        // We can safely return a 400 here because if the signature is invalid, it's a hard reject.
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+    if (!accessCode) {
+        console.error('[EWAY CALLBACK FATAL] No AccessCode received in callback.');
+        return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
     }
 
-    // Acknowledge receipt of the event IMMEDIATELY to prevent Stripe CLI from timing out and retrying
-    // while we do heavy processing (PDF generation, Emails)
-    res.status(200).json({ received: true });
+    try {
+        const result = await client.queryTransaction(accessCode);
 
-    // Handle the checkout.session.completed event asynchronously
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-
-        // --- RACE CONDITION PREVENTION ---
-        // If we are currently processing this exact payment, skip it to prevent double-orders.
-        if (processingWebhooks.has(session.payment_intent)) {
-            console.warn(`[WEBHOOK WARN] Already processing Payment Intent: ${session.payment_intent}. Ignoring concurrent retry.`);
-            return;
+        // SDK uses .get() method for responses
+        const transactions = result.get('Transactions');
+        if (!transactions || transactions.length === 0) {
+            console.error('[EWAY CALLBACK FATAL] No transaction data returned from eWAY query.');
+            return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
         }
-        processingWebhooks.add(session.payment_intent);
 
-        console.info(`[WEBHOOK PROCESSING] Handling checkout.session.completed for Payment Intent: ${session.payment_intent}`);
+        const transaction = transactions[0];
+        const transactionId = String(transaction.TransactionID);
+        const txnStatus = transaction.TransactionStatus;
+        const responseCode = transaction.ResponseCode;
 
-        try {
-            // Ensure idempotency (check if order already exists in DB from a past successful run)
-            const existingOrder = await Order.findOne({ 'paymentInfo.id': session.payment_intent });
-            if (existingOrder) {
-                console.warn(`[WEBHOOK WARN] Order already exists in DB for Payment Intent: ${session.payment_intent}. Silently skipping.`);
-                return;
-            }
+        if (!txnStatus || responseCode !== '00') {
+            console.error(`[EWAY CALLBACK FAILED] Payment declined. ResponseCode: ${responseCode}`);
+            return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
+        }
 
-            // Parse our injected metadata
-            const {
-                userId,
-                userName,
-                userEmail,
-                discountAmount,
-                couponCode,
-                shippingFee,
-                itemsPrice,
-                taxPrice,
-            } = session.metadata;
+        if (processingCallbacks.has(transactionId)) {
+            return res.redirect(`${FRONTEND_URL}/orders?success=true`);
+        }
+        processingCallbacks.add(transactionId);
 
-            // Parse expanded order items from compressed metadata (stringified JSON)
-            const compressedItems = JSON.parse(session.metadata.orderItems);
+        // Fulfill order
+        await createOrderFromTransaction(transaction);
 
-            // Re-hydrate full order items structure directly from MongoDB to bypass Stripe limits
-            const orderItems = [];
-            for (const cItem of compressedItems) {
-                const product = await Product.findById(cItem.id);
-                if (product) {
-                    orderItems.push({
-                        name: product.name,
-                        price: product.price,
-                        quantity: cItem.q,
-                        image: product.images[0]?.url || 'default_image.jpg',
-                        color: cItem.c,
-                        size: cItem.s,
-                        product: cItem.id
-                    });
-                }
-            }
-
-            // Shipping address comes exclusively from our CheckoutPage metadata
-            // (shipping_address_collection was removed from the Stripe session)
-            const shippingAddress = {
-                address: session.metadata.shippingLine1 || 'N/A',
-                city: session.metadata.shippingCity || 'N/A',
-                state: session.metadata.shippingState || 'N/A',
-                country: 'AU',
-                pinCode: session.metadata.shippingPostalCode || '000000',
-                phoneNumber: session.customer_details?.phone || session.metadata.shippingPhone || '0000000000',
-            };
-
-            // Stock decrement moved *AFTER* Order creation below to prevent infinite drain on webhook retries!
-
-            // Create the order finally
-            const newOrder = await Order.create({
-                shippingInfo: shippingAddress,
-                orderItems,
-                paymentInfo: {
-                    id: session.payment_intent,
-                    status: 'succeeded'
-                },
-                itemsPrice: Number(itemsPrice),
-                taxPrice: Number(taxPrice),
-                shippingPrice: Number(shippingFee),
-                totalPrice: session.amount_total / 100, // Stripe stores in cents
-                discountAmount: Number(discountAmount || 0),
-                couponCode: couponCode || '',
-                paidAt: Date.now(),
-                user: {
-                    name: userName,
-                    email: userEmail,
-                    userId: userId || ''
-                },
-            });
-
-            console.info(`[WEBHOOK SUCCESS] Order created successfully in Database. Order ID: ${newOrder._id}`);
-
-            // Decrement Stock SAFELY now that Order is guaranteed to be created
-            for (let index = 0; index < orderItems.length; index++) {
-                const item = orderItems[index];
-                const product = await Product.findById(item.product);
-                if (product && product.stock >= item.quantity) {
-                    product.stock -= item.quantity;
-                    await product.save({ validateBeforeSave: false });
-                    console.info(`[WEBHOOK STOCK] Decremented ${item.quantity} units for Product: ${product.name}`);
-                } else {
-                    console.error(`[WEBHOOK INVENTORY ALERT] Not enough stock to decrement for Product ID: ${item.product}. Current Stock: ${product?.stock}, Requested: ${item.quantity}`);
-                }
-            }
-
-            // Update user lifetime spend 
-            if (userId) {
-                await updateUserSpend(userId, newOrder.totalPrice);
-            }
-
-            // If coupon used, increment its usage
-            if (couponCode) {
-                const Coupon = require('../models/couponModel');
-                await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } });
-            }
-
-            // Generate PDF and Send Confirmation Email
-            try {
-                const pdfService = require('../services/pdfService');
-                const { sendOrderConfirmation } = require('../utils/emailService');
-                const pdfBuffer = await pdfService.generateInvoiceBuffer(newOrder);
-                await sendOrderConfirmation(newOrder.user, newOrder, pdfBuffer);
-                console.info(`[WEBHOOK EMAIL] Order confirmation email with PDF invoice dispatched to ${newOrder.user.email}`);
-            } catch (emailError) {
-                console.error(`[WEBHOOK EMAIL FATAL] Failed to send order confirmation email to ${newOrder.user.email}. Error: ${emailError.message}`);
-            }
-
-        } catch (dbError) {
-            console.error(`[WEBHOOK DB FATAL] Failed creating order for Payment Intent ${session.payment_intent}. Error: ${dbError.message}`);
-        } finally {
-            // Remove from lock after a reasonable time (10 minutes) so memory doesn't leak
-            setTimeout(() => processingWebhooks.delete(session.payment_intent), 10 * 60 * 1000);
+        return res.redirect(`${FRONTEND_URL}/orders?success=true`);
+    } catch (error) {
+        console.error(`[EWAY CALLBACK FATAL] Error: ${error.message}`);
+        return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
+    } finally {
+        if (accessCode) {
+            setTimeout(() => processingCallbacks.delete(accessCode), 10 * 60 * 1000);
         }
     }
 };
 
-module.exports = webhookController;
+module.exports = ewayCallbackController;

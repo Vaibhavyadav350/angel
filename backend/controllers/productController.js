@@ -7,20 +7,28 @@ const { notifySubscribers } = require('../controllers/restockController');
 // create a new product
 exports.createProduct = catchAsyncError(async (req, res, next) => {
   req.body.admin = req.user.id;
-  let images = req.body.images;
   let newImages = [];
-  for (let i = 0; i < images.length; i++) {
-    const { public_id, url } = await cloudinary.uploader.upload(images[i], {
-      folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
-      fetch_format: 'auto',
-      quality: 'auto'
-    });
-    newImages.push({ public_id, url });
+  if (req.body.images && Array.isArray(req.body.images)) {
+    let images = req.body.images;
+    for (let i = 0; i < images.length; i++) {
+      const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+        folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
+        fetch_format: 'auto',
+        quality: 'auto'
+      });
+      newImages.push({ public_id, url });
+    }
   }
-  req.body.images = [...newImages];
+  req.body.images = newImages;
+
+  // Calculate global stock from variants
+  if (req.body.variants && Array.isArray(req.body.variants)) {
+    req.body.stock = req.body.variants.reduce((total, variant) => total + (Number(variant.stock) || 0), 0);
+  }
+
   const product = await Product.create(req.body);
 
-  console.info(`[CATALOG CREATION] New product added: ${product.name} (SKU: ${product._id}). Starting stock: ${product.stock}`);
+  console.info(`[CATALOG CREATION] New product structure added: ${product.name} (SKU: ${product._id}). Global Stock: ${product.stock}`);
 
   res.status(200).json({
     success: true,
@@ -37,33 +45,44 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
   if (!product) {
     return next(new ErrorHandler('Product Not Found', 404));
   }
-  let images = req.body.images;
   let newImages = [];
-  for (let i = 0; i < images.length; i++) {
-    if (typeof images[i] === 'string') {
-      const { public_id, url } = await cloudinary.uploader.upload(images[i], {
-        folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
-        fetch_format: 'auto',
-        quality: 'auto'
-      });
-      newImages.push({ public_id, url });
-    } else {
-      newImages.push(images[i]);
+  if (req.body.images && Array.isArray(req.body.images)) {
+    let images = req.body.images;
+    for (let i = 0; i < images.length; i++) {
+      if (typeof images[i] === 'string') {
+        const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+          folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
+          fetch_format: 'auto',
+          quality: 'auto'
+        });
+        newImages.push({ public_id, url });
+      } else {
+        newImages.push(images[i]);
+      }
     }
+    req.body.images = [...newImages];
+  } else {
+    // If no new images array is sent, preserve existing images by not overwriting req.body.images
+    delete req.body.images;
   }
-  req.body.images = [...newImages];
+
+  // Recalculate global stock from variants on update
+  if (req.body.variants && Array.isArray(req.body.variants)) {
+    req.body.stock = req.body.variants.reduce((total, variant) => total + (Number(variant.stock) || 0), 0);
+  }
+
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
     // Removed deprecated useFindAndModify option
   });
 
-  // If stock was increased, notify subscribers
+  // If total stock was increased, notify subscribers (Simplified logic for now)
   if (req.body.stock && req.body.stock > 0) {
     await notifySubscribers(req.params.id);
   }
 
-  console.info(`[CATALOG MUTATION] Product updated: ${product.name} (SKU: ${product._id}).`);
+  console.info(`[CATALOG MUTATION] Product structure updated: ${product.name} (SKU: ${product._id}). New Global Stock: ${product.stock}`);
 
   res.status(200).json({
     success: true,
@@ -105,6 +124,7 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       price,
       images,
       colors,
+      variants,
       company,
       description,
       category,
@@ -118,6 +138,7 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       price,
       image: images && images.length > 0 ? images[0].url : '',
       colors,
+      variants: variants || [],
       company,
       description,
       category,
@@ -250,6 +271,70 @@ exports.deleteReview = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Review deleted',
+  });
+});
+
+// get trending products
+exports.getTrendingProducts = catchAsyncError(async (req, res, next) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : 5;
+  let products = await Product.find({ isTrending: true }).limit(limit);
+  if (products.length < limit) {
+    const fallback = await Product.find({ isTrending: false }).sort({ rating: -1, numberOfReviews: -1 }).limit(limit - products.length);
+    products = [...products, ...fallback];
+  }
+
+  const data = products.map((item) => {
+    return {
+      id: item._id,
+      name: item.name,
+      price: item.price,
+      image: item.images && item.images.length > 0 ? item.images[0].url : '',
+      colors: item.colors,
+      company: item.company,
+      description: item.description,
+      category: item.category,
+      subCategory: item.subCategory || '',
+      productType: item.productType || '',
+      collections: item.collections || [],
+      stock: item.stock,
+      shipping: item.shipping,
+      featured: item.featured,
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
+// get new arrivals
+exports.getNewArrivals = catchAsyncError(async (req, res, next) => {
+  const limit = req.query.limit ? parseInt(req.query.limit) : 5;
+  const products = await Product.find().sort({ createdAt: -1 }).limit(limit);
+
+  const data = products.map((item) => {
+    return {
+      id: item._id,
+      name: item.name,
+      price: item.price,
+      image: item.images && item.images.length > 0 ? item.images[0].url : '',
+      colors: item.colors,
+      company: item.company,
+      description: item.description,
+      category: item.category,
+      subCategory: item.subCategory || '',
+      productType: item.productType || '',
+      collections: item.collections || [],
+      stock: item.stock,
+      shipping: item.shipping,
+      featured: item.featured,
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data,
   });
 });
 

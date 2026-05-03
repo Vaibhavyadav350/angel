@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useReducer } from 'react';
 import axios from 'axios';
 import reducer from '../reducers/admin/newsletter_reducer';
 import { admin_newsletter_url } from '../utils/constants';
@@ -50,9 +50,8 @@ export const NewsletterProvider = ({ children }) => {
         }
     }, [fetchSubscribers]);
 
-    useEffect(() => {
-        fetchSubscribers();
-    }, [fetchSubscribers]);
+    // Removed global auto-fetch. The newsletter page calls fetchSubscribers() explicitly.
+    // This prevents unauthenticated API calls on every page load including customer routes.
 
     return (
         <NewsletterContext.Provider
