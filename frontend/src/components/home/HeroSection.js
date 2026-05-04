@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
@@ -26,24 +26,23 @@ const slides = [
 const HeroSection = () => {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const timerRef = useRef(null);
 
-  const goTo = (idx) => {
+  const goTo = useCallback((idx) => {
     if (animating) return;
     setAnimating(true);
     setTimeout(() => {
       setCurrent(idx);
       setAnimating(false);
     }, 400);
-  };
+  }, [animating]);
 
-  const next = () => goTo((current + 1) % slides.length);
-  const prev = () => goTo((current - 1 + slides.length) % slides.length);
+  const next = useCallback(() => goTo((current + 1) % slides.length), [current, goTo]);
+  const prev = useCallback(() => goTo((current - 1 + slides.length) % slides.length), [current, goTo]);
 
   useEffect(() => {
     const timer = setInterval(next, 6000);
     return () => clearInterval(timer);
-  }, [next]); // Added 'next' as dependency
+  }, [next]);
 
   const slide = slides[current];
 
