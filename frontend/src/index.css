@@ -3,16 +3,16 @@
 Archive Design Tokens (Snitch Design System)
 ===============
 */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,ital@9..144,300;9..144,400;9..144,700;9..144,900&family=Inter:wght@300;400;500;600&family=Libre+Barcode+39&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@300;400;500;600;700;800&family=Libre+Barcode+39&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 :root {
-  /* Archive Color Palette mapped to theme.json via Tailwind */
-  --champagne-cream: theme('colors.champagne');
-  --sand-beige: theme('colors.sand');
-  --deep-bronze: theme('colors.bronze');
-  --muted-gold: theme('colors.gold');
-  --deep-chocolate: theme('colors.chocolate');
+  /* Restore Original Archive Color Palette from theme.json */
+  --champagne-cream: #F7E7CE;
+  --sand-beige: #E1C699;
+  --deep-bronze: #7A5C41;
+  --muted-gold: #C5A059;
+  --deep-chocolate: #3D2B1F;
 
   /* Legacy Aliases (kept for backward compatibility) */
   --clr-primary-1: hsl(22, 28%, 21%);
@@ -111,6 +111,7 @@ h2,
 h3,
 h4,
 h5 {
+  font-family: 'Cormorant Garamond', serif;
   letter-spacing: var(--spacing);
   line-height: 1.1;
   margin-bottom: 0.75rem;

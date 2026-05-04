@@ -1,97 +1,87 @@
 import React, { useEffect } from 'react';
-import {
-  Hero,
-  CinematicJourney,
-  MarqueeBanner,
-  BrandPhilosophy,
-  CuratedOccasions,
-  TheBridalEdit,
-  ProductCollection,
-  WeaversChronicles,
-  EleganceSection,
-  TrendingDresses,
-  ClientDiaries,
-  TrustSignals,
-  ShopTheLook,
-  Newsletter,
-  RecentlyViewed,
-  CategoryDirectory,
-  NewArrivalsCarousel,
-  CircularCategories,
-  SalwarKameezLookbook,
-  LehengaBento,
-  SareeArchival,
-} from '../../components/archive';
+import HeroSection from '../../components/home/HeroSection';
+import ShopByCategory from '../../components/home/ShopByCategory';
+import NewArrivalsGrid from '../../components/home/NewArrivalsGrid';
+import OccasionsStrip from '../../components/home/OccasionsStrip';
+import SaleBanner from '../../components/home/SaleBanner';
+import TrustNewsletter from '../../components/home/TrustNewsletter';
+import HorizontalLookbook from '../../components/home/HorizontalLookbook';
+import CircularCategories from '../../components/home/CircularCategories';
+import CustomerDiaries from '../../components/home/CustomerDiaries';
 
 const HomePage = () => {
   useEffect(() => {
-    document.title = 'Angel Fashion Studio | Home';
+    document.title = 'Angel Fashion Studio | Luxury Bridal & Festive Wear';
   }, []);
 
-  // Static Mock Data to simulate Backend until ready (Allows visual testing)
-  const salwarData = [
-    { name: "Georgette Anarkali", material: "Pure Georgette", originalPrice: "₹18,500", price: "₹11,336", image: "/assets/landing/salwar-lookbook-1.jpg", isBespoke: true },
-    { name: "Art Silk Sequence", material: "Art Silk", originalPrice: "₹14,000", price: "₹9,186", image: "/assets/landing/salwar-lookbook-2.jpg", isNew: true },
-    { name: "Chiffon Palazzo Suit", material: "Luxe Chiffon", price: "₹10,500", image: "/assets/landing/salwar-lookbook-3.jpg" },
-    { name: "Organza Embroidered", material: "Organza & Net", price: "₹10,945", image: "/assets/landing/salwar-lookbook-4.jpg", isBespoke: true },
-  ];
-
-  const lehengaData = [
-    { name: "Sequines Lehenga", material: "Heavy Net", price: "₹16,500", image: "/assets/landing/lehenga-bento-1.jpg", isNew: true, isBespoke: true },
-    { name: "Floral Threadwork", material: "Raw Silk", price: "₹22,000", image: "/assets/landing/lehenga-bento-2.jpg" },
-    { name: "Bridal Zardozi", material: "Pure Velvet", originalPrice: "₹1,10,000", price: "₹85,000", image: "/assets/landing/lehenga-bento-3.jpg", isBespoke: true },
-    { name: "Mirror Work Lehenga", material: "Georgette", price: "₹18,200", image: "/assets/landing/lehenga-bento-4.jpg" },
-  ];
-
-  const sareeData = [
-    { name: "Banarasi Handloom", material: "Pure Silk", originalPrice: "₹45,000", price: "₹38,000", image: "/assets/landing/saree-archival-1.jpg", isBespoke: true },
-    { name: "Ruffle Drape", material: "Crepe Silk", price: "₹12,000", image: "/assets/landing/saree-archival-2.jpg", isNew: true },
-    { name: "Zari Border Silk", material: "Kanjeevaram", price: "₹55,000", image: "/assets/landing/saree-archival-3.jpg", isBespoke: true },
-    { name: "Sequin Cocktail Saree", material: "Net & Satin", price: "₹15,400", image: "/assets/landing/saree-archival-4.jpg" },
-  ];
-
   return (
-    <>
-      <main className="bg-champagne font-body selection:bg-gold selection:text-white">
-        <Hero />
+    <div className="bg-champagne selection:bg-[#3D2B1F] selection:text-white">
+      {/* Content Layer */}
+      <main>
+        {/* Section 2: Hero */}
+        <HeroSection />
+        
+        {/* Section 3: Circular Categories (Replaced Chips) */}
         <CircularCategories />
-        <CategoryDirectory />
 
-        <CinematicJourney />
-        <MarqueeBanner />
+        {/* Section 4: Heritage Collection (Champagne) */}
+        <div className="bg-[#F5EFE4]">
+          <NewArrivalsGrid />
+        </div>
 
-        {/* New: The highest-tier bespoke showcase */}
-        <TheBridalEdit />
+        {/* Section 5: Salwar Kameez Lookbook (Light) */}
+        <HorizontalLookbook 
+          title="The Salwar Lookbook" 
+          category="Women" 
+          subCategory="Salwar Kameez" 
+          bgColor="bg-[#FFFCF9]"
+        />
 
-        <BrandPhilosophy />
+        {/* Section 6: Lehenga Choli Lookbook (Champagne) */}
+        <HorizontalLookbook 
+          title="The Lehenga Edit" 
+          category="Women" 
+          subCategory="Lehengas" 
+          bgColor="bg-[#F5EFE4]"
+        />
 
-        {/* E-Commerce Expansion Sections */}
-        <CuratedOccasions />
+        {/* Section 7: Saree Archival (Light) */}
+        <HorizontalLookbook 
+          title="The Saree Edit" 
+          category="Women" 
+          subCategory="Sarees" 
+          bgColor="bg-[#FFFCF9]"
+        />
 
-        {/* Bespoke Magazine Layouts for Core Categories */}
-        <SalwarKameezLookbook products={salwarData} />
-        <LehengaBento products={lehengaData} />
-        <SareeArchival products={sareeData} />
+        {/* Section 8: Jewelry Edit (Champagne) */}
+        <HorizontalLookbook 
+          title="The Jewelry Edit" 
+          category="Jewelry" 
+          bgColor="bg-[#F5EFE4]"
+        />
 
-        <NewArrivalsCarousel />
-        <TrendingDresses />
+        {/* Section 10: Shop By Category (Champagne) */}
+        <div className="bg-[#F5EFE4]">
+          <ShopByCategory />
+        </div>
 
-        <ProductCollection />
-        <WeaversChronicles />
-        <EleganceSection />
-        <ShopTheLook />
+        {/* Section 11: Occasions (Light) */}
+        <div className="bg-[#FFFCF9]">
+          <OccasionsStrip />
+        </div>
 
-        {/* Social Proof */}
-        <ClientDiaries />
+        {/* Section 12: Sale Banner (Dark) */}
+        <SaleBanner />
 
-        <Newsletter />
-        <RecentlyViewed />
+        {/* Section 12.5: Customer Diaries (Stone/Light) */}
+        <CustomerDiaries />
 
-        {/* Pre-Footer Trust Signals Strip */}
-        <TrustSignals />
+        {/* Section 13: Trust Bar & Newsletter (Light) */}
+        <TrustNewsletter />
       </main>
-    </>
+    </div>
   );
 };
+
 
 export default HomePage;

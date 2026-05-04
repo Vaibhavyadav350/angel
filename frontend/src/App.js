@@ -1,7 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { Toast, ErrorBoundary } from './components';
-import { ArchiveNavbar, ArchiveFooter, CheckoutNavbar, ScrollToTop } from './components/archive';
+import { CheckoutNavbar, ScrollToTop } from './components/archive';
+import NewNavbar from './components/home/NewNavbar';
+import NewFooter from './components/home/NewFooter';
+import MobileBottomNav from './components/home/MobileBottomNav';
 import { useProductsContext } from './context/products_context';
 import { AdminProvider } from './context/admin_context';
 import { OrderProvider as AdminOrderProvider } from './context/admin_order_context';
@@ -146,65 +149,74 @@ const CustomerRoutes = () => (
   <Switch>
     <Route exact path='/'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Home />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/about'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <About />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/products'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Products />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/cart'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Cart />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <PrivateRoute exact path='/login'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Login />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/register'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Register />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/forgot-password'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Forgot />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/reset-password'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Reset />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <Route exact path='/products/:id'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <SingleProduct />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <PrivateRoute exact path='/checkout'>
@@ -215,72 +227,82 @@ const CustomerRoutes = () => (
     </PrivateRoute>
     <PrivateRoute exact path='/orders'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <OrdersPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/orders/:id'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <SingleOrder />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/profile'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <ProfilePage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/wishlist'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <WishlistPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </PrivateRoute>
     <Route exact path='/contact'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <ContactPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/shipping'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <ShippingPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/privacy-policy'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <PrivacyPolicyPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/refund-policy'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <RefundPolicyPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/terms'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <TermsPage />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='*'>
       <>
-        <ArchiveNavbar />
+        <NewNavbar />
         <Error />
-        <ArchiveFooter />
+        <NewFooter />
+        <MobileBottomNav />
       </>
     </Route>
   </Switch>
