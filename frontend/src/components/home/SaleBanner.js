@@ -27,7 +27,7 @@ const SaleBanner = () => {
           {/* Right: Image (40%) */}
           <div className="flex-1 relative hidden md:block">
             <img 
-              src="/assets/landing/hero-lehenga.jpg" 
+              src="/assets/landing/hero_slide_2.jpg" 
               alt="Sale Event" 
               className="w-full h-full object-cover"
             />
