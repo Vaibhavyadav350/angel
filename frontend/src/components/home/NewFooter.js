@@ -55,9 +55,9 @@ const NewFooter = () => {
               Exquisite hand-spun garments tailored for the modern spirit.
             </p>
             <div className="flex gap-4">
-              <a href="javascript:void(0)" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaInstagram size={18} className="text-white" /></a>
-              <a href="javascript:void(0)" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaPinterest size={18} className="text-white" /></a>
-              <a href="javascript:void(0)" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaFacebookF size={18} className="text-white" /></a>
+              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaInstagram size={18} className="text-white" /></Link>
+              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaPinterest size={18} className="text-white" /></Link>
+              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaFacebookF size={18} className="text-white" /></Link>
             </div>
           </div>
 
