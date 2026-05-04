@@ -41,9 +41,9 @@ const HeroSection = () => {
   const prev = () => goTo((current - 1 + slides.length) % slides.length);
 
   useEffect(() => {
-    timerRef.current = setInterval(next, 6000);
-    return () => clearInterval(timerRef.current);
-  }, [current]);
+    const timer = setInterval(next, 6000);
+    return () => clearInterval(timer);
+  }, [next]); // Added 'next' as dependency
 
   const slide = slides[current];
 

@@ -1,13 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiHome, FiSearch, FiHeart, FiShoppingBag, FiUser } from 'react-icons/fi';
+import { FiHome, FiSearch, FiHeart, FiShoppingBag } from 'react-icons/fi';
 import { useCartContext } from '../../context/cart_context';
-import { useUserContext } from '../../context/user_context';
 
 const MobileBottomNav = () => {
   const location = useLocation();
   const { total_items } = useCartContext();
-  const { currentUser } = useUserContext();
 
   const isActive = (path) => location.pathname === path;
 

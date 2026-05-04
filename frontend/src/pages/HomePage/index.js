@@ -5,9 +5,10 @@ import NewArrivalsGrid from '../../components/home/NewArrivalsGrid';
 import OccasionsStrip from '../../components/home/OccasionsStrip';
 import SaleBanner from '../../components/home/SaleBanner';
 import TrustNewsletter from '../../components/home/TrustNewsletter';
-import HorizontalLookbook from '../../components/home/HorizontalLookbook';
-import CircularCategories from '../../components/home/CircularCategories';
+import CategoryShowcase from '../../components/home/CategoryShowcase';
 import CustomerDiaries from '../../components/home/CustomerDiaries';
+import CategoryPills from '../../components/home/CategoryPills';
+import HorizontalLookbook from '../../components/home/HorizontalLookbook';
 
 const HomePage = () => {
   useEffect(() => {
@@ -16,72 +17,66 @@ const HomePage = () => {
 
   return (
     <div className="bg-champagne selection:bg-[#3D2B1F] selection:text-white">
-      {/* Content Layer */}
       <main>
-        {/* Section 2: Hero */}
+        {/* 1. Hero Banner */}
         <HeroSection />
         
-        {/* Section 3: Circular Categories (Replaced Chips) */}
-        <CircularCategories />
+        {/* 2. Sticky Category Pills */}
+        <CategoryPills />
 
-        {/* Section 4: Heritage Collection (Champagne) */}
+        {/* 3. The Heritage Collection (Dynamic Product Grid) */}
         <div className="bg-[#F5EFE4]">
           <NewArrivalsGrid />
         </div>
 
-        {/* Section 5: Salwar Kameez Lookbook (Light) */}
+        {/* 4. The Discovery Series (New Static Editorial Sections) */}
+        {/* These appear AFTER Heritage Collection as requested, with smaller images */}
+        <CategoryShowcase />
+
+        {/* 5. Dynamic Lookbooks (Restored) */}
         <HorizontalLookbook 
           title="The Salwar Lookbook" 
           category="Women" 
           subCategory="Salwar Kameez" 
           bgColor="bg-[#FFFCF9]"
         />
-
-        {/* Section 6: Lehenga Choli Lookbook (Champagne) */}
         <HorizontalLookbook 
           title="The Lehenga Edit" 
           category="Women" 
           subCategory="Lehengas" 
           bgColor="bg-[#F5EFE4]"
         />
-
-        {/* Section 7: Saree Archival (Light) */}
         <HorizontalLookbook 
           title="The Saree Edit" 
           category="Women" 
           subCategory="Sarees" 
           bgColor="bg-[#FFFCF9]"
         />
-
-        {/* Section 8: Jewelry Edit (Champagne) */}
         <HorizontalLookbook 
           title="The Jewelry Edit" 
           category="Jewelry" 
           bgColor="bg-[#F5EFE4]"
         />
 
-        {/* Section 10: Shop By Category (Champagne) */}
-        <div className="bg-[#F5EFE4]">
-          <ShopByCategory />
-        </div>
-
-        {/* Section 11: Occasions (Light) */}
+        {/* 6. Shop by Occasion (Editorial Accordion) */}
         <div className="bg-[#FFFCF9]">
           <OccasionsStrip />
         </div>
 
-        {/* Section 12: Sale Banner (Dark) */}
-        <SaleBanner />
-
-        {/* Section 12.5: Customer Diaries (Stone/Light) */}
+        {/* 7. Customer Diaries (Social Proof) */}
         <CustomerDiaries />
 
-        {/* Section 13: Trust Bar & Newsletter (Light) */}
+        {/* 8. Quick Directory (Arch Layout) */}
+        <div className="bg-[#F5EFE4]">
+          <ShopByCategory />
+        </div>
+
+        {/* 9. Sale Archive & Trust Bar */}
+        <SaleBanner />
         <TrustNewsletter />
       </main>
     </div>
   );
 };
-
 
 export default HomePage;
