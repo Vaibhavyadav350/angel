@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import HeroSection from '../../components/home/HeroSection';
 import ShopByCategory from '../../components/home/ShopByCategory';
-import NewArrivalsGrid from '../../components/home/NewArrivalsGrid';
 import OccasionsStrip from '../../components/home/OccasionsStrip';
 import SaleBanner from '../../components/home/SaleBanner';
 import TrustNewsletter from '../../components/home/TrustNewsletter';

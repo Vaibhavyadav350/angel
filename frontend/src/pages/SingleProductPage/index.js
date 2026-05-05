@@ -8,7 +8,6 @@ import {
   ProductImages,
   AddToCart,
   Stars,
-  ReviewModal,
   UserReview,
   NotifyMeModal,
 } from '../../components';
@@ -18,7 +17,6 @@ import { useUserContext } from '../../context/user_context';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { OptimizedImage } from '../../components/archive/shared';
-import { motion, useScroll, useTransform } from 'framer-motion';
 
 
 
@@ -47,10 +45,6 @@ const SingleProductPage = () => {
   const { wishlist, toggleWishlistItem, currentUser } = useUserContext();
 
   const toggleAccordion = (id) => setOpenAccordion(prev => prev === id ? null : id);
-
-  const { scrollYProgress } = useScroll();
-  const stickyOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-  const stickyY = useTransform(scrollYProgress, [0, 0.2], [100, 0]);
 
   useEffect(() => {
     fetchSingleProduct(`${url}${id}`);
