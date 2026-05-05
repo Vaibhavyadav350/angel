@@ -8,7 +8,7 @@ import {
 
 const cart_reducer = (state, action) => {
   if (action.type === ADD_TO_CART) {
-    const { id, color, size, amount, product } = action.payload;
+    const { id, color, size, amount, product, expressDelivery } = action.payload;
     const tempItem = state.cart.find((item) => item.id === id + color + size);
 
     // Find variant stock if available
@@ -55,6 +55,7 @@ const cart_reducer = (state, action) => {
         discountPercent: discount,
         taxPercent: tax,
         shipping: product.shipping || false,
+        expressDelivery: expressDelivery || false,
         max: maxStock,
       };
       return { ...state, cart: [...state.cart, newItem] };
@@ -97,27 +98,29 @@ const cart_reducer = (state, action) => {
   }
 
   if (action.type === COUNT_CART_TOTALS) {
-    const { total_items, total_amount, shipping_fee } = state.cart.reduce(
+    const { total_items, total_amount } = state.cart.reduce(
       (total, cartItem) => {
         const { price, amount } = cartItem;
         total.total_items += amount;
 
-        // Fix JavaScript floating point math errors (e.g. 0.1 + 0.2 = 0.30000000000000004)
+        // Fix JavaScript floating point math errors
         total.total_amount += price * amount;
         total.total_amount = Number(total.total_amount.toFixed(2));
 
-        // Shipping fee: $15 flat rate per order for Angel Archive, not per item
-        if (total.total_amount > 0) {
-          total.shipping_fee = 15; // $15 standard archival shipping
-        }
         return total;
       },
       {
         total_items: 0,
         total_amount: 0,
-        shipping_fee: 0,
       }
     );
+
+    let shipping_fee = 0;
+    if (total_amount > 0) {
+      const hasExpress = state.cart.some(item => item.expressDelivery);
+      shipping_fee = 11 + (hasExpress ? 50 : 0);
+    }
+
     return { ...state, total_items, total_amount, shipping_fee };
   }
 

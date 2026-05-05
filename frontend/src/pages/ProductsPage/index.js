@@ -4,6 +4,7 @@ import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
 import { Loading, Error } from '../../components';
 import { useProductsContext } from '../../context/products_context';
+import { useState } from 'react';
 
 const CATEGORY_PILLS = [
   { label: 'ALL', category: 'all', url: '/products' },
@@ -18,6 +19,8 @@ const CATEGORY_PILLS = [
 ];
 
 const ProductsPage = () => {
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   const {
     filtered_products: products,
     grid_view,
@@ -50,6 +53,7 @@ const ProductsPage = () => {
     const category = searchParams.get('category') || 'all';
     const subCategory = searchParams.get('subCategory') || 'all';
     const collection = searchParams.get('collection') || 'all';
+    const productType = searchParams.get('productType') || 'all';
 
     setFilterValue('category', category);
     
@@ -57,6 +61,7 @@ const ProductsPage = () => {
     // completes before we apply the specific subCategory from the URL.
     setTimeout(() => {
       if (subCategory !== 'all') setFilterValue('subCategory', subCategory);
+      if (productType !== 'all') setFilterValue('productType', productType);
       if (collection !== 'all') setFilterValue('collection', collection);
     }, 10);
     
@@ -80,9 +85,9 @@ const ProductsPage = () => {
   ].filter(Boolean);
 
   return (
-    <main className="bg-champagne font-body min-h-screen">
+    <main className="bg-champagne font-body min-h-screen relative">
       {/* Header Section */}
-      <section className="pt-8 pb-6 px-12 lg:px-24 text-center">
+      <section className="pt-24 lg:pt-32 pb-6 px-12 lg:px-24 text-center">
         <h2 className="text-[12vw] font-editorial font-black text-bronze uppercase leading-none tracking-tighter">
           PRODUCTS
         </h2>
@@ -108,8 +113,8 @@ const ProductsPage = () => {
         </div>
       </section>
 
-      {/* Category Pill Navigation */}
-      <section className="px-8 lg:px-24 py-4 border-y border-bronze/10 overflow-x-auto">
+      {/* Category Pill Navigation - Hidden on Mobile */}
+      <section className="hidden lg:block px-8 lg:px-24 py-4 border-y border-bronze/10 overflow-x-auto">
         <div className="flex gap-3 whitespace-nowrap min-w-max mx-auto justify-center">
           {CATEGORY_PILLS.map((pill) => {
             const isActive = (pill.category === 'all' && filters.category === 'all') ||
@@ -132,8 +137,8 @@ const ProductsPage = () => {
         </div>
       </section>
 
-      {/* Hero Banner */}
-      <section className="relative w-full h-[60vh] bg-chocolate overflow-hidden flex items-center justify-center">
+      {/* Hero Banner - Hidden on Mobile */}
+      <section className="hidden lg:flex relative w-full h-[60vh] bg-chocolate overflow-hidden items-center justify-center">
         <div className="absolute inset-0 w-full h-full">
           <img
             alt="Collection Hero"
@@ -227,10 +232,48 @@ const ProductsPage = () => {
       )}
 
       {/* Filter + Product Grid */}
-      <div className="px-8 lg:px-24 pb-20">
-        <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row gap-16 lg:gap-20">
-          {/* Sidebar */}
-          <Filters />
+      <div className="px-6 lg:px-24 pb-20">
+        <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row gap-8 lg:gap-20 relative">
+          
+          {/* Mobile Filter Toggle Button */}
+          <div className="lg:hidden flex justify-between items-center mb-4">
+            <button 
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="flex items-center gap-2 border border-bronze/20 px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] text-bronze uppercase hover:bg-gold hover:border-gold hover:text-white transition-all shadow-sm"
+            >
+              <span className="material-symbols-outlined text-sm">tune</span>
+              Filter & Sort
+            </button>
+          </div>
+
+          {/* Sidebar Filters */}
+          <div className={`
+            fixed inset-0 z-50 lg:static lg:block lg:z-auto transition-transform duration-500 ease-in-out
+            ${isMobileFilterOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}
+          `}>
+            {/* Mobile Overlay Background */}
+            <div 
+              className={`fixed inset-0 bg-black/40 lg:hidden transition-opacity duration-300 ${isMobileFilterOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+              onClick={() => setIsMobileFilterOpen(false)}
+            />
+            
+            {/* Drawer Content */}
+            <div className={`
+              absolute lg:static bottom-0 left-0 w-full lg:w-auto h-[85vh] lg:h-auto bg-champagne lg:bg-transparent
+              rounded-t-[2rem] lg:rounded-none p-8 lg:p-0 overflow-y-auto lg:overflow-visible shadow-2xl lg:shadow-none
+            `}>
+              <div className="flex justify-between items-center lg:hidden mb-8 border-b border-bronze/10 pb-4">
+                <h3 className="text-xl font-editorial font-bold text-bronze uppercase tracking-widest">Filters</h3>
+                <button 
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-bronze/5 text-bronze hover:bg-bronze hover:text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <Filters />
+            </div>
+          </div>
 
           {/* Product Grid */}
           <div className="flex-1 min-w-0">

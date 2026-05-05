@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { socialLinks } from '../../utils/constants';
 
 const AboutPage = () => {
   useEffect(() => {
@@ -214,8 +215,24 @@ const AboutPage = () => {
                 <span className="material-symbols-outlined text-5xl">east</span>
               </button>
             </div>
-            <p className="text-[13px] font-bold uppercase tracking-[0.8em] mt-24 text-gold">Exclusive access to
+            <p className="text-[13px] font-bold uppercase tracking-[0.8em] mt-16 mb-12 text-gold">Exclusive access to
               heritage drops</p>
+            
+            {/* Social Network Links */}
+            <div className="flex items-center justify-center gap-6 mt-16 border-t border-bronze/10 pt-16">
+              {socialLinks.map((link) => (
+                <a 
+                  key={link.id} 
+                  href={link.url} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="size-16 rounded-full border border-bronze/30 flex items-center justify-center text-bronze hover:bg-bronze hover:text-white hover:scale-110 transition-all duration-500 shadow-sm"
+                  title={link.text}
+                >
+                  {React.cloneElement(link.icon, { fontSize: '1.8rem', color: 'inherit' })}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>

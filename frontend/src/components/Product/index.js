@@ -56,8 +56,8 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
         {/* Subtle hover overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
 
-        {/* Badge — top left */}
-        <div className="absolute top-4 left-4 z-10">
+        {/* Badge — top left (Hidden on mobile) */}
+        <div className="absolute top-4 left-4 z-10 hidden md:block">
           <span className="px-3 py-1.5 bg-gold text-chocolate text-[8px] font-black uppercase tracking-widest shadow-sm">
             {badgeLabel}
           </span>
@@ -72,57 +72,42 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
           </div>
         )}
 
-        {/* Wishlist Heart — top right */}
+        {/* Wishlist Heart — top right (Hidden on mobile) */}
         <button
           onClick={handleWishlist}
-          className="absolute top-4 right-4 z-10 p-3 bg-white/80 backdrop-blur-sm rounded-full text-bronze hover:bg-white hover:scale-110 transition-all duration-300 shadow-sm"
+          className="absolute top-4 right-4 z-10 p-3 bg-white/80 backdrop-blur-sm rounded-full text-bronze hover:bg-white hover:scale-110 transition-all duration-300 shadow-sm hidden md:block"
           aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           {isWishlisted ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
         </button>
 
-        {/* Slide-up Hover Action Bar */}
-        <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-10">
-          <div className="bg-chocolate/90 backdrop-blur-sm px-6 py-4 flex items-center justify-between gap-3">
-            <Link
-              to={`/products/${id}`}
-              className="flex-1 text-center text-[9px] font-black uppercase tracking-[0.3em] text-champagne hover:text-gold transition-colors"
-            >
-              Quick View
-            </Link>
-            <div className="w-px h-4 bg-champagne/20" />
-            <Link
-              to={`/products/${id}`}
-              className="flex-1 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gold hover:text-champagne transition-colors"
-            >
-              Customize Size
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Product Info */}
-      <div className="flex justify-between items-start">
-        <div className="space-y-1.5 flex-1 min-w-0 pr-4">
-          <h3 className="text-2xl font-editorial font-bold text-bronze truncate group-hover:text-gold transition-colors duration-300">
-            {name}
-          </h3>
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/40">
-            {category} {subCategory ? `// ${subCategory}` : ''}
-          </p>
-          {/* Free Shipping Pill */}
-          {shipping && (
-            <span className="inline-block text-[8px] font-bold uppercase tracking-widest text-gold border border-gold/30 px-2 py-0.5">
+      <div className="flex flex-col gap-1.5 mt-4">
+        <h3 className="text-lg md:text-2xl font-editorial font-bold text-bronze truncate group-hover:text-gold transition-colors duration-300">
+          {name}
+        </h3>
+        
+        <div className="flex items-center gap-3">
+          <p className="text-base md:text-xl font-editorial text-bronze whitespace-nowrap">{formatPrice(price)}</p>
+          {discountPercent > 0 && (
+            <p className="text-[10px] md:text-[12px] text-bronze/40 line-through">{formatPrice(price / (1 - discountPercent / 100))}</p>
+          )}
+        </div>
+
+        <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/40 mt-1">
+          {category} {subCategory ? `// ${subCategory}` : ''}
+        </p>
+
+        {/* Free Shipping Pill */}
+        {shipping && (
+          <div className="pt-1">
+            <span className="inline-block text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-gold border border-gold/30 px-2 py-0.5">
               Free Shipping
             </span>
-          )}
-        </div>
-        <div className="text-right">
-          <p className="text-xl font-editorial text-bronze whitespace-nowrap">{formatPrice(price)}</p>
-          {discountPercent > 0 && (
-            <p className="text-[10px] text-bronze/40 line-through">{formatPrice(price / (1 - discountPercent / 100))}</p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

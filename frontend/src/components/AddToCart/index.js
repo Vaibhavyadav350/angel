@@ -14,6 +14,7 @@ const AddToCart = ({ product }) => {
   const [mainColor, setMainColor] = useState(null);
   const [mainSize, setMainSize] = useState(null);
   const [amount, setAmount] = useState(1);
+  const [expressDelivery, setExpressDelivery] = useState(false);
 
   // Derived available options based on selections
   const [availableColors, setAvailableColors] = useState(colors);
@@ -107,7 +108,7 @@ const AddToCart = ({ product }) => {
       return;
     }
 
-    addToCart(id, mainColor || 'default', mainSize || 'default', amount, product);
+    addToCart(id, mainColor || 'default', mainSize || 'default', amount, product, expressDelivery);
     setTimeout(() => {
       window.location.href = '/cart';
     }, 100);
@@ -180,8 +181,29 @@ const AddToCart = ({ product }) => {
         </div>
       )}
 
+      {/* Express Delivery Add-On */}
+      <div className="pt-2 pb-4 border-b border-bronze/10">
+        <label className="flex items-start gap-4 cursor-pointer group w-fit">
+          <div className="relative flex items-center justify-center mt-0.5">
+            <input
+              type="checkbox"
+              checked={expressDelivery}
+              onChange={(e) => setExpressDelivery(e.target.checked)}
+              className="peer appearance-none w-4 h-4 border-2 border-bronze/20 rounded-[2px] checked:bg-gold checked:border-gold transition-all duration-200 cursor-pointer"
+            />
+            <FaCheck className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 w-2 h-2 pointer-events-none" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bronze group-hover:text-gold transition-colors">
+              Express Delivery <span className="text-gold">(+$50)</span>
+            </span>
+            <span className="text-[9px] text-bronze/50 font-medium mt-1">Ships in 1-2 working days</span>
+          </div>
+        </label>
+      </div>
+
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
+      <div className="flex items-stretch gap-4 pt-4">
         <AmountButtons
           amount={amount}
           increase={increase}
@@ -191,11 +213,11 @@ const AddToCart = ({ product }) => {
         <button
           onClick={handleAcquire}
           disabled={availableStockLimit === 0 && Boolean(mainSize && (colors?.length > 0 ? mainColor : true))}
-          className="flex-1 w-full sm:w-auto py-5 bg-bronze text-champagne text-[11px] font-black uppercase tracking-[0.2em] rounded text-center hover:bg-gold hover:-translate-y-1 transition-all duration-500 active:scale-[0.98] shadow-2xl shadow-bronze/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-bronze disabled:hover:translate-y-0"
+          className="flex-1 w-full flex items-center justify-center py-4 bg-bronze text-champagne text-[11px] font-black uppercase tracking-[0.2em] rounded-md hover:bg-gold hover:-translate-y-1 transition-all duration-500 active:scale-[0.98] shadow-2xl shadow-bronze/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-bronze disabled:hover:translate-y-0"
         >
           {availableStockLimit === 0 && Boolean(mainSize && (colors?.length > 0 ? mainColor : true))
             ? 'Sold Out'
-            : 'Acquire Artifact'}
+            : 'Add to Cart'}
         </button>
       </div>
 

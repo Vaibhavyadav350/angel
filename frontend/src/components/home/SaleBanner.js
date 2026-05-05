@@ -10,8 +10,8 @@ const SaleBanner = () => {
           {/* Left: Text Content (60%) */}
           <div className="flex-[1.5] p-6 md:p-12 flex flex-col justify-center z-10">
             <p className="text-[#C5A059] text-[9px] md:text-[11px] tracking-[0.4em] font-bold uppercase mb-2">Limited Time Only</p>
-            <h2 className="text-white text-3xl md:text-5xl font-serif mb-6 leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              The Grand Finale <br /> 
+            <h2 className="text-white text-2xl md:text-5xl font-serif mb-6 leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              The Grand Finale <br className="hidden sm:block" /> 
               <span className="text-[#C5A059]">Up to 40% Off</span>
             </h2>
             <div>

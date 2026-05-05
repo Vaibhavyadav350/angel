@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SectionHeading from './SectionHeading';
 
 const showcases = [
   {
@@ -139,11 +140,8 @@ const CategoryShowcase = () => {
           <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
             
             <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end gap-8 mb-16">
-              <div className="text-center lg:text-left">
-                <p className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Series {`0${sIdx + 1}`}</p>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-editorial font-bold text-[#3D2B1F] leading-tight uppercase tracking-tighter">
-                  {section.title}
-                </h2>
+              <div className="text-center lg:text-left w-full lg:w-auto flex flex-col items-center lg:items-start">
+                <SectionHeading title={section.title} subtitle={`Series 0${sIdx + 1}`} className="text-center lg:text-left flex flex-col items-center lg:items-start" />
                 <p className="text-sm font-medium text-[#7A5C41]/80 leading-relaxed border-l-2 border-[#C5A059]/40 pl-6 mt-6 max-w-lg hidden md:block">
                   {section.subtitle}
                 </p>
@@ -152,36 +150,20 @@ const CategoryShowcase = () => {
               <p className="text-[10px] font-bold text-[#C5A059] tracking-[0.4em] uppercase whitespace-nowrap">{section.category} COLLECTION</p>
             </div>
 
-            {section.sections.map((sub, subIdx) => {
-              // Determine if we need to auto-scroll (Desktop only, and if items > 4 for aesthetic density)
-              const needsScroll = sub.items.length > 5;
-              const displayItems = needsScroll ? [...sub.items, ...sub.items] : sub.items;
-
-              return (
+            {section.sections.map((sub, subIdx) => (
                 <div key={subIdx} className="mb-20 last:mb-0">
                   <div className="flex items-center gap-4 mb-10 px-0">
                     <div className="h-px w-10 bg-[#C5A059]" />
                     <h3 className="text-[10px] font-bold text-[#3D2B1F] tracking-[0.4em] uppercase">{sub.title}</h3>
                   </div>
                   
-                  {/* Container with Marquee logic for Desktop */}
-                  <div className={`
-                    ${needsScroll ? 'lg:overflow-hidden' : ''}
-                    w-full
-                  `}>
-                    <div className={`
-                      grid grid-cols-2 md:grid-cols-2 
-                      ${needsScroll ? 'lg:flex lg:w-max lg:animate-marquee' : 'lg:grid lg:grid-cols-5'}
-                      gap-4 md:gap-8
-                    `}>
-                      {displayItems.map((item, iIdx) => (
+                  <div className="w-full">
+                    <div className="grid grid-cols-2 gap-4 md:gap-6 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-8 no-scrollbar lg:snap-x lg:snap-mandatory">
+                      {sub.items.map((item, iIdx) => (
                         <Link 
                           key={iIdx} 
                           to={item.url}
-                          className={`
-                            group flex flex-col 
-                            ${needsScroll ? 'lg:w-[calc(20vw-2.5rem)] lg:flex-shrink-0 lg:mx-4' : 'lg:w-full'}
-                          `}
+                          className="group flex flex-col lg:flex-none lg:w-[320px] lg:snap-start"
                         >
                           <div className={`relative aspect-[3/4] overflow-hidden rounded-2xl mb-4 bg-[#F9F6F2] transition-all duration-700 shadow-md group-hover:shadow-xl
                             ${section.id === 'men' ? 'rounded-none border-b-0' : ''}
@@ -215,11 +197,21 @@ const CategoryShowcase = () => {
                           </div>
                         </Link>
                       ))}
+
+                      {/* View More Card (Desktop only to maintain mobile grid symmetry) */}
+                      <Link
+                        to={`/products?category=${section.category}&subCategory=${encodeURIComponent(sub.title.replace('& ', '').split(' ')[0])}`}
+                        className="hidden lg:flex flex-none w-[320px] snap-start items-center justify-center bg-[#F5EFE4] rounded-2xl group border-2 border-dashed border-[#D4C5B5] hover:border-[#C5A059] transition-colors"
+                      >
+                        <div className="text-center">
+                          <span className="text-4xl text-[#C5A059] block mb-2 group-hover:translate-x-2 transition-transform">→</span>
+                          <p className="text-[11px] font-bold tracking-widest text-[#3D2B1F] uppercase">View Complete Collection</p>
+                        </div>
+                      </Link>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
           </div>
         </section>
       ))}

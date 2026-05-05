@@ -43,7 +43,7 @@ const OccasionsStrip = () => {
         </div>
         
         {/* Interactive Accordion Animation */}
-        <div className="flex flex-col lg:flex-row h-[550px] lg:h-[480px] w-full gap-4 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[480px] w-full gap-4 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
           {occasions.map((occ, idx) => {
             const isActive = activeIndex === idx;
 
@@ -52,8 +52,14 @@ const OccasionsStrip = () => {
                 to={occ.url}
                 key={idx}
                 onMouseEnter={() => setActiveIndex(idx)}
-                className={`relative group overflow-hidden rounded-[40px] shadow-2xl transition-all duration-700 ease-out cursor-pointer ${
-                  isActive ? 'lg:flex-[4] h-[350px] lg:h-full' : 'lg:flex-[1] h-[100px] lg:h-full'
+                onClick={(e) => {
+                  if (!isActive) {
+                    e.preventDefault();
+                    setActiveIndex(idx);
+                  }
+                }}
+                className={`relative group overflow-hidden rounded-[32px] md:rounded-[40px] shadow-xl transition-all duration-700 ease-out cursor-pointer ${
+                  isActive ? 'lg:flex-[4] h-[320px] md:h-[350px] lg:h-full' : 'lg:flex-[1] h-[80px] md:h-[100px] lg:h-full'
                 }`}
               >
                 <img
@@ -70,7 +76,7 @@ const OccasionsStrip = () => {
                 }`} />
 
                 {/* Content */}
-                <div className="absolute inset-0 p-8 lg:p-12 flex flex-col justify-end h-full">
+                <div className="absolute inset-0 p-6 lg:p-12 flex flex-col justify-end h-full">
                   {/* Vertical Text for Inactive Items (Desktop) */}
                   <div className={`hidden lg:flex absolute inset-0 items-center justify-center transition-opacity duration-700 ${
                     isActive ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -80,18 +86,32 @@ const OccasionsStrip = () => {
                     </h3>
                   </div>
 
+                  {/* Horizontal Text for Inactive Items (Mobile) */}
+                  <div className={`lg:hidden absolute inset-0 flex items-center px-8 transition-opacity duration-700 ${
+                    isActive ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                  }`}>
+                    <h3 className="text-lg font-editorial font-bold text-white uppercase tracking-[0.2em]">
+                      {occ.name}
+                    </h3>
+                  </div>
+
                   {/* Active State Details */}
                   <div className={`transition-all duration-700 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                    <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-4 mb-2 md:mb-4">
                       <div className="h-[1px] w-12 bg-[#C5A059]/60"></div>
                       <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#C5A059]">{`0${idx + 1}`}</span>
                     </div>
-                    <h3 className="text-3xl lg:text-5xl font-editorial font-black text-white uppercase leading-[0.9] mb-4">
+                    <h3 className="text-2xl md:text-3xl lg:text-5xl font-editorial font-black text-white uppercase leading-[0.9] mb-2 md:mb-4">
                       {occ.name}
                     </h3>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
-                      {occ.subtitle}
-                    </p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-white/70">
+                        {occ.subtitle}
+                      </p>
+                      <span className="lg:hidden text-[9px] font-bold text-[#C5A059] uppercase tracking-widest border-b border-[#C5A059]/40 pb-1">
+                        Tap to View →
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>

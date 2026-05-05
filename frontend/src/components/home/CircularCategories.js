@@ -23,7 +23,7 @@ const CircularCategories = () => {
                             <img
                                 src={cat.img}
                                 alt={cat.label}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                             />
                             <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
                         </div>

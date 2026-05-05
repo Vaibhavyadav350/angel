@@ -4,7 +4,6 @@ import { Toast, ErrorBoundary } from './components';
 import { CheckoutNavbar, ScrollToTop } from './components/archive';
 import NewNavbar from './components/home/NewNavbar';
 import NewFooter from './components/home/NewFooter';
-import MobileBottomNav from './components/home/MobileBottomNav';
 import { useProductsContext } from './context/products_context';
 import { AdminProvider } from './context/admin_context';
 import { OrderProvider as AdminOrderProvider } from './context/admin_order_context';
@@ -152,7 +151,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Home />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/about'>
@@ -160,7 +158,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <About />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/products'>
@@ -168,7 +165,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Products />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/cart'>
@@ -176,7 +172,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Cart />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <PrivateRoute exact path='/login'>
@@ -184,7 +179,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Login />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/register'>
@@ -192,7 +186,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Register />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/forgot-password'>
@@ -200,7 +193,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Forgot />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/reset-password'>
@@ -208,7 +200,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Reset />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <Route exact path='/products/:id'>
@@ -216,7 +207,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <SingleProduct />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <PrivateRoute exact path='/checkout'>
@@ -230,7 +220,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <OrdersPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/orders/:id'>
@@ -238,7 +227,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <SingleOrder />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/profile'>
@@ -246,7 +234,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <ProfilePage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <PrivateRoute exact path='/wishlist'>
@@ -254,7 +241,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <WishlistPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </PrivateRoute>
     <Route exact path='/contact'>
@@ -262,7 +248,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <ContactPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/shipping'>
@@ -270,7 +255,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <ShippingPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/privacy-policy'>
@@ -278,7 +262,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <PrivacyPolicyPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/refund-policy'>
@@ -286,7 +269,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <RefundPolicyPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='/terms'>
@@ -294,7 +276,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <TermsPage />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
     <Route exact path='*'>
@@ -302,7 +283,6 @@ const CustomerRoutes = () => (
         <NewNavbar />
         <Error />
         <NewFooter />
-        <MobileBottomNav />
       </>
     </Route>
   </Switch>

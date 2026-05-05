@@ -7,14 +7,8 @@ export const formatPrice = (number) => {
 };
 
 export const getUniqueValues = (data, type) => {
-  let unique = data.map((item) => item[type]);
-
-  if (type === 'colors') {
-    unique = unique.flat();
-  }
-
-  unique = new Set(unique);
-  return ['all', ...unique];
+  let unique = data.map((item) => item[type]).flat(Infinity).filter(Boolean);
+  return ['all', ...new Set(unique)];
 };
 
 export const checkObjectProperties = (object) => {

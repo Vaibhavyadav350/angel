@@ -13,11 +13,11 @@ const ListView = ({ products }) => {
             className="flex flex-col sm:flex-row gap-8 pb-8 border-b border-bronze/10 group"
           >
             {/* Image */}
-            <div className="relative w-full sm:w-48 h-56 shrink-0 overflow-hidden bg-sand/20">
+            <div className="relative w-full sm:w-48 aspect-[3/4] shrink-0 overflow-hidden bg-sand/20">
               <img
                 src={image}
                 alt={name}
-                className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+                className="w-full h-full object-cover object-top transition-transform duration-[2000ms] group-hover:scale-110"
               />
             </div>
 
@@ -30,9 +30,32 @@ const ListView = ({ products }) => {
                     {category}
                   </p>
                 )}
-                <p className="text-sm font-medium leading-relaxed text-bronze/60 max-w-lg line-clamp-3">
-                  {description?.substring(0, 150)}...
-                </p>
+                
+                {/* Sizes and Colors replacing Description */}
+                <div className="flex flex-col gap-3 mt-4">
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/60">Sizes:</span>
+                      <div className="flex gap-2">
+                        {product.sizes.map((size, index) => (
+                          <span key={index} className="text-[10px] font-bold text-bronze border border-bronze/20 px-2 py-0.5 rounded-sm">
+                            {size}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {product.colors && product.colors.length > 0 && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/60">Colors:</span>
+                      <div className="flex gap-1.5">
+                        {product.colors.map((color, index) => (
+                          <span key={index} className="size-4 rounded-full border border-bronze/20 shadow-sm" style={{ backgroundColor: color }} title={color}></span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xl font-editorial font-bold text-bronze">

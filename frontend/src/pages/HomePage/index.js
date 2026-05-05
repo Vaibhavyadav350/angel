@@ -7,7 +7,7 @@ import SaleBanner from '../../components/home/SaleBanner';
 import TrustNewsletter from '../../components/home/TrustNewsletter';
 import CategoryShowcase from '../../components/home/CategoryShowcase';
 import CustomerDiaries from '../../components/home/CustomerDiaries';
-import CategoryPills from '../../components/home/CategoryPills';
+import CircularCategories from '../../components/home/CircularCategories';
 import HorizontalLookbook from '../../components/home/HorizontalLookbook';
 
 const HomePage = () => {
@@ -21,19 +21,31 @@ const HomePage = () => {
         {/* 1. Hero Banner */}
         <HeroSection />
         
-        {/* 2. Sticky Category Pills */}
-        <CategoryPills />
+        {/* 2. Circular Categories (Restored) */}
+        <CircularCategories />
 
         {/* 3. The Heritage Collection (Dynamic Product Grid) */}
-        <div className="bg-[#F5EFE4]">
+        {/* <div className="bg-[#F5EFE4]">
           <NewArrivalsGrid />
-        </div>
+        </div> */}
 
         {/* 4. The Discovery Series (New Static Editorial Sections) */}
         {/* These appear AFTER Heritage Collection as requested, with smaller images */}
         <CategoryShowcase />
 
         {/* 5. Dynamic Lookbooks (Restored) */}
+        <HorizontalLookbook 
+          title="The Sherwani Edit" 
+          category="Men" 
+          subCategory="SHERWANIS" 
+          bgColor="bg-[#FFFCF9]"
+        />
+        <HorizontalLookbook 
+          title="The Kurta Edit" 
+          category="Men" 
+          subCategory="KURTAS" 
+          bgColor="bg-[#F5EFE4]"
+        />
         <HorizontalLookbook 
           title="The Salwar Lookbook" 
           category="Women" 
@@ -59,7 +71,7 @@ const HomePage = () => {
         />
 
         {/* 6. Shop by Occasion (Editorial Accordion) */}
-        <div className="bg-[#FFFCF9]">
+        <div className="hidden md:block bg-[#FFFCF9]">
           <OccasionsStrip />
         </div>
 

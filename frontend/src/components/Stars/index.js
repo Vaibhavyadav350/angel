@@ -18,9 +18,11 @@ const Stars = ({ stars, reviews }) => {
   });
 
   return (
-    <div>
-      <div className='stars'>{tempStars}</div>
-      <p className='reviews'>({reviews} customer reviews)</p>
+    <div className="flex items-center gap-4">
+      <div className="flex items-center text-gold gap-0.5">{tempStars}</div>
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-bronze/50">
+        ({reviews} customer reviews)
+      </p>
     </div>
   );
 };

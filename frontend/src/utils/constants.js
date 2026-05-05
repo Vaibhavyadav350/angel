@@ -1,10 +1,7 @@
 import React from 'react';
 import taxonomy from './taxonomy.json';
 import { GiCompass, GiDiamondHard, GiStabbedNote } from 'react-icons/gi';
-import {
-  AiFillLinkedin,
-  AiFillTwitterCircle,
-} from 'react-icons/ai';
+
 import {
   FaHome,
   FaProductHunt,
@@ -16,7 +13,21 @@ import {
   FaLayerGroup,
   FaTags,
   FaBoxes,
+  FaFacebook,
+  FaInstagram,
+  FaMapMarkerAlt,
 } from 'react-icons/fa';
+
+const TikTokIcon = ({ className, color, fontSize }) => (
+  <svg 
+    className={className} 
+    style={{ fill: color, width: fontSize, height: fontSize }} 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 448 512"
+  >
+    <path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.17h0A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z"/>
+  </svg>
+);
 
 export const links = [
   {
@@ -62,23 +73,27 @@ export const navCategories = Object.keys(taxonomy.categories).reduce((acc, cat) 
 export const socialLinks = [
   {
     id: 1,
-    icon: (
-      <AiFillLinkedin className='linkedin' color='var(--clr-primary-5)' fontSize='2.5rem' />
-    ),
-    text: 'LinkedIn',
-    url: 'https://www.linkedin.com/company/angel-fashion-studio',
+    icon: <FaMapMarkerAlt className='maps' color='var(--clr-primary-5)' fontSize='2.5rem' />,
+    text: 'Google Maps',
+    url: 'https://maps.app.goo.gl/sboFSVQQDtBSNtrA7',
   },
   {
     id: 2,
-    icon: (
-      <AiFillTwitterCircle
-        className='twitter'
-        color='var(--clr-primary-5)'
-        fontSize='2.5rem'
-      />
-    ),
-    text: 'Twitter',
-    url: 'https://twitter.com/angelfashionstudio',
+    icon: <FaFacebook className='facebook' color='var(--clr-primary-5)' fontSize='2.5rem' />,
+    text: 'Facebook',
+    url: 'https://www.facebook.com/p/Angel-Fashion-Studio-61552253573789/',
+  },
+  {
+    id: 3,
+    icon: <FaInstagram className='instagram' color='var(--clr-primary-5)' fontSize='2.5rem' />,
+    text: 'Instagram',
+    url: 'https://www.instagram.com/angiafs/',
+  },
+  {
+    id: 4,
+    icon: <TikTokIcon className='tiktok' color='var(--clr-primary-5)' fontSize='2.5rem' />,
+    text: 'TikTok',
+    url: 'https://www.tiktok.com/@angelfashionstudio?_r=1&_t=ZS-9669YA0SKWa',
   },
 ];
 

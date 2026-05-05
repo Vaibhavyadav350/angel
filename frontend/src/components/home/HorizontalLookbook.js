@@ -1,32 +1,25 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useProductsContext } from '../../context/products_context';
+import SectionHeading from './SectionHeading';
 
 const HorizontalLookbook = ({ title, category, subCategory, bgColor = "bg-white" }) => {
   const { products } = useProductsContext();
   const scrollRef = useRef(null);
 
   const filteredProducts = products.filter(p =>
-    p.category === category && (!subCategory || p.subCategory === subCategory)
+    p.category?.toLowerCase() === category.toLowerCase() && 
+    (!subCategory || p.subCategory?.toLowerCase() === subCategory.toLowerCase())
   ).slice(0, 6);
 
   if (filteredProducts.length === 0) return null;
-
-  // Split title into two parts for the specific editorial style
-  const titleParts = title.split(' ');
-  const firstPart = titleParts.slice(0, -1).join(' ');
-  const lastPart = titleParts[titleParts.length - 1];
 
   return (
     <section className={`${bgColor} py-12 md:py-20 overflow-hidden relative border-b border-[#D4C5B5]/20`}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         {/* Header */}
         <div className="flex flex-row justify-between items-center mb-8 gap-4 border-b border-[#D4C5B5]/30 pb-6">
-          <div className="flex items-center gap-6">
-            <h2 className="text-3xl md:text-5xl font-editorial font-bold text-[#3D2B1F] leading-none uppercase tracking-tighter">
-              {firstPart} <span className="text-[#C5A059] italic font-light">{lastPart}</span>
-            </h2>
-          </div>
+          <SectionHeading title={title} />
           <Link
             to={`/products?category=${category}${subCategory ? `&subCategory=${subCategory}` : ''}`}
             className="group flex items-center gap-3 shrink-0"
@@ -52,24 +45,29 @@ const HorizontalLookbook = ({ title, category, subCategory, bgColor = "bg-white"
               to={`/products/${product.id}`}
               className="flex-none w-[220px] md:w-[320px] snap-start group"
             >
-              <div className="aspect-[4/5] overflow-hidden rounded-2xl relative mb-4">
+              <div className="aspect-[4/5] overflow-hidden rounded-2xl relative bg-[#F9F6F2] transition-all duration-700 shadow-sm group-hover:shadow-xl">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors" />
+                
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 transition-opacity duration-700 bg-gradient-to-t from-[#3D2B1F]/90 via-[#3D2B1F]/20 to-transparent opacity-70 group-hover:opacity-90" />
 
-                {/* Subtle Price Tag */}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-[10px] font-bold text-[#3D2B1F]">
+                {/* Content Overlay */}
+                <div className="absolute inset-x-0 bottom-0 p-4 md:p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                  {/* Price (Appears on hover in Desktop, Always visible on Mobile) */}
+                  <p className="text-[#C5A059] text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase mb-1.5 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500">
                     {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(product.price)}
                   </p>
+                  
+                  {/* Product Name */}
+                  <h4 className="text-sm md:text-lg font-editorial font-bold text-white uppercase leading-none tracking-tight line-clamp-2">
+                    {product.name}
+                  </h4>
                 </div>
               </div>
-              <h3 className="text-[15px] font-serif text-[#3D2B1F] group-hover:text-[#C5A059] transition-colors uppercase tracking-wide">
-                {product.name}
-              </h3>
             </Link>
           ))}
 
@@ -85,7 +83,10 @@ const HorizontalLookbook = ({ title, category, subCategory, bgColor = "bg-white"
           </Link>
         </div>
       </div>
-      <style>{`.scrollbar-hide::-webkit-scrollbar { display: none; }`}</style>
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </section>
   );
 };

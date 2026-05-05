@@ -139,7 +139,7 @@ const NewNavbar = () => {
                             {items.map((item) => (
                               <li key={item}>
                                 <Link
-                                  to={`/products?category=${key}&subCategory=${encodeURIComponent(item)}`}
+                                  to={`/products?category=${key}&subCategory=${encodeURIComponent(subCat)}&productType=${encodeURIComponent(item)}`}
                                   className="text-[12px] text-[#7A5C41] hover:text-[#3D2B1F] capitalize transition-colors leading-relaxed"
                                 >
                                   {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
@@ -308,7 +308,7 @@ const NewNavbar = () => {
                                 {items.map((item) => (
                                   <Link
                                     key={item}
-                                    to={`/products?category=${key}&subCategory=${encodeURIComponent(item)}`}
+                                    to={`/products?category=${key}&subCategory=${encodeURIComponent(subCat)}&productType=${encodeURIComponent(item)}`}
                                     className="text-[11px] text-[#7A5C41] hover:text-[#3D2B1F] bg-[#F5EFE4] px-3 py-1 rounded-full capitalize"
                                   >
                                     {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
