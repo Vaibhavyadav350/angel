@@ -103,7 +103,7 @@ app.use('/api', limiter);
 
 const strictLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 20, // Back to production standard
+  max: 150, // Increased: admin dashboard fires 5+ calls/page, 20 was causing false rate-limit errors
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 

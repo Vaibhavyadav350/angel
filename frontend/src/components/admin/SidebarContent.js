@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NavItem from './NavItem';
 import { LinkItems } from '../../utils/constants';
 import { useAdminContext } from '../../context/admin_context';
+import logo from '../../assets/logo.png';
 
 export default function SidebarContent({ onClose, className = '' }) {
   const {
@@ -43,13 +44,8 @@ export default function SidebarContent({ onClose, className = '' }) {
     >
       {/* Brand Header */}
       <div className="h-20 flex items-center justify-between px-6">
-        <div className="flex flex-col">
-          <span className="font-editorial text-xl font-black text-bronze uppercase tracking-[0.15em] leading-none">
-            Angel
-          </span>
-          <span className="text-[8px] font-bold uppercase tracking-[0.6em] text-gold mt-1">
-            Archive
-          </span>
+        <div className="flex items-center shrink-0">
+          <img src={logo} alt="Angel Fashion Studio Logo" className="h-12 object-contain" />
         </div>
         <button
           className="md:hidden text-bronze/50 hover:text-bronze transition-colors p-1"

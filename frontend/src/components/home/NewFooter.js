@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaInstagram, FaPinterest, FaFacebookF, FaChevronDown } from 'react-icons/fa';
+import logo from '../../assets/logo.png';
 
 const footerLinks = {
   "Shop Women": [
@@ -47,9 +48,8 @@ const NewFooter = () => {
           
           {/* Column 1: Brand */}
           <div className="space-y-6">
-            <Link to="/" className="flex flex-col leading-none">
-              <span className="font-serif text-2xl font-bold tracking-widest text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>ANGEL</span>
-              <span className="text-[10px] tracking-[0.3em] uppercase text-[#C5A059]">FASHION STUDIO</span>
+            <Link to="/" className="flex items-center shrink-0">
+              <img src={logo} alt="Angel Fashion Studio Logo" className="h-16 md:h-24 object-contain brightness-0 invert" />
             </Link>
             <p className="text-white/40 text-[11px] leading-relaxed uppercase tracking-widest max-w-xs">
               Exquisite hand-spun garments tailored for the modern spirit.

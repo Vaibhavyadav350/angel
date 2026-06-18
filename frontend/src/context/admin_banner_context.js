@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import { admin_banners_url } from '../utils/constants';
 
@@ -39,7 +39,7 @@ const CACHE_TTL = 60000;
 export const BannerProvider = ({ children }) => {
     const [state, dispatch] = useReducer(bannerReducer, initialState);
 
-    const getBanners = async (force = false) => {
+    const getBanners = useCallback(async (force = false) => {
         const now = Date.now();
         if (!force && lastBannersFetch > 0 && (now - lastBannersFetch < CACHE_TTL)) {
             return;
@@ -52,7 +52,7 @@ export const BannerProvider = ({ children }) => {
         } catch (error) {
             dispatch({ type: 'SET_ERROR' });
         }
-    };
+    }, []);
 
     const createBanner = async (data) => {
         dispatch({ type: 'SET_LOADING' });

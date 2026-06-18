@@ -5,6 +5,7 @@ import { useCartContext } from '../../context/cart_context';
 import { useUserContext } from '../../context/user_context';
 import { default_profile_image } from '../../utils/constants';
 import taxonomy from '../../utils/taxonomy.json';
+import logo from '../../assets/logo.png';
 
 const megaMenuData = taxonomy.categories;
 
@@ -59,7 +60,6 @@ const NewNavbar = () => {
     : 'bg-champagne/95 backdrop-blur-md shadow-sm';
 
   const textColor = isHomePage && !scrolled ? 'text-white' : 'text-[#3D2B1F]';
-  const logoColor = isHomePage && !scrolled ? 'text-white' : 'text-[#3D2B1F]';
   const iconColor = isHomePage && !scrolled ? 'text-white hover:text-[#C5A059]' : 'text-[#3D2B1F] hover:text-[#C5A059]';
 
   const mainNavLinks = [
@@ -75,20 +75,17 @@ const NewNavbar = () => {
     <>
       {/* ── MAIN NAVBAR ── */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${navBg}`}
-        style={{ height: '64px' }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 h-16 md:h-20 ${navBg}`}
       >
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-full flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-full flex items-center justify-between relative">
 
           {/* LEFT — Logo */}
-          <Link to="/" className="flex flex-col leading-none shrink-0">
-            <span className={`font-serif text-xl font-bold tracking-widest transition-colors ${logoColor}`}
-              style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', serif" }}>
-              ANGEL
-            </span>
-            <span className={`text-[8px] tracking-[0.3em] uppercase transition-colors ${isHomePage && !scrolled ? 'text-white/70' : 'text-[#C5A059]'}`}>
-              FASHION STUDIO
-            </span>
+          <Link to="/" className="flex items-center shrink-0 z-50">
+            <img 
+              src={logo} 
+              alt="Angel Fashion Studio Logo" 
+              className={`h-12 md:h-16 scale-[1.5] md:scale-[2] origin-left object-contain transition-all duration-300 ${isHomePage && !scrolled ? 'brightness-0 invert' : ''}`} 
+            />
           </Link>
 
           {/* CENTER — Desktop Nav Links */}
@@ -262,13 +259,9 @@ const NewNavbar = () => {
           <div className="relative z-10 w-[85vw] max-w-sm h-full bg-white flex flex-col shadow-2xl overflow-y-auto">
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#F0E8DF]">
-              <div>
-                <div className="font-serif text-lg font-bold text-[#3D2B1F]"
-                  style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                  ANGEL
-                </div>
-                <div className="text-[8px] tracking-[0.3em] text-[#C5A059] uppercase">FASHION STUDIO</div>
-              </div>
+              <Link to="/" onClick={() => setDrawerOpen(false)} className="flex items-center">
+                <img src={logo} alt="Angel Fashion Studio Logo" className="h-12 object-contain" />
+              </Link>
               <button onClick={() => setDrawerOpen(false)} className="text-[#7A5C41] hover:text-[#3D2B1F] p-1">
                 <FiX size={22} />
               </button>

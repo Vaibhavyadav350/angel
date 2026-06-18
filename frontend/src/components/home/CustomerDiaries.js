@@ -4,28 +4,28 @@ import SectionHeading from './SectionHeading';
 
 const socialReviews = [
   {
-    image: "/assets/landing/client-udaipur.jpg",
-    quote: "The heritage collection made our special day feel like a royal dream. Highly recommend visiting the flagship store!",
-    author: "Aanya & Rahul",
-    handle: "Local Guide"
+    image: "/assets/landing/diaries/diary_red_suit.jpg",
+    quote: "A moment of pure joy captured in our intricately embroidered crimson suit! The fit is an absolute dream.",
+    author: "Simran Kaur",
+    handle: "@simran_vibes"
   },
   {
-    image: "/assets/landing/client-sangeet.jpg",
-    quote: "Exquisite craftsmanship that truly represents our culture. The fabric quality is completely unmatched.",
-    author: "Priya Sharma",
-    handle: "@priyasharma"
+    image: "/assets/landing/diaries/diary_magenta_saree.jpg",
+    quote: "Stunning in our signature magenta draped saree. The heritage gold embroidery completely stole the show tonight.",
+    author: "Ayesha S.",
+    handle: "Verified Buyer"
   },
   {
-    image: "/assets/landing/client-mehendi.jpg",
-    quote: "A perfect blend of traditional elegance and modern style. Obsessed with my new velvet overlay! ✨",
-    author: "Ishani",
-    handle: "@ishani_style"
+    image: "/assets/landing/diaries/diary_teal_lehenga.jpg",
+    quote: "Finding the perfect fit in-store! This beautiful ombre teal lehenga was literally made for her.",
+    author: "Emma C.",
+    handle: "@emma.style"
   },
   {
-    image: "/assets/landing/client-groomsquad.jpg",
-    quote: "Unboxing the most insane heritage pieces from Angel Archive! The handwork is crazy. 🤯👗",
-    author: "The Style Edit",
-    handle: "@styleedit"
+    image: "/assets/landing/diaries/diary_couple_ivory.jpg",
+    quote: "A picture-perfect engagement. Breathtaking in our custom ivory bridal lehenga alongside her regal groom.",
+    author: "Priya & Rohan",
+    handle: "Angel Bride"
   }
 ];
 

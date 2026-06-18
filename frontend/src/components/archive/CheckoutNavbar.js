@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiLock } from 'react-icons/fi';
+import logo from '../../assets/logo.png';
 
 const CheckoutNavbar = () => {
     return (
@@ -9,13 +10,8 @@ const CheckoutNavbar = () => {
                 <div className="w-12"></div> {/* Spacer for perfect centering */}
 
                 {/* Centered Brand Logo */}
-                <Link to="/" className="text-center group flex flex-col items-center">
-                    <h1 className="font-editorial text-3xl sm:text-4xl text-bronze uppercase font-black tracking-tighter hover:text-gold transition-colors duration-500">
-                        ANGEL
-                    </h1>
-                    <p className="font-editorial text-[9px] sm:text-[10px] text-bronze/60 uppercase tracking-[0.4em] font-medium mt-1">
-                        Fashion Studio
-                    </p>
+                <Link to="/" className="text-center group flex items-center justify-center">
+                    <img src={logo} alt="Angel Fashion Studio Logo" className="h-14 sm:h-20 object-contain" />
                 </Link>
 
                 {/* Secure Marker */}

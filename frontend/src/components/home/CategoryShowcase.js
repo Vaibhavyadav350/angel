@@ -1,6 +1,44 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SectionHeading from './SectionHeading';
+
+const AutoCarousel = ({ children }) => {
+  const scrollRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    let animationFrameId;
+    let scrollDirection = 1;
+    const speed = 0.7;
+
+    const scroll = () => {
+      const container = scrollRef.current;
+      if (container && !isHovered && window.innerWidth >= 1024) {
+        if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 1) {
+          scrollDirection = -1;
+        } else if (container.scrollLeft <= 0) {
+          scrollDirection = 1;
+        }
+        container.scrollLeft += speed * scrollDirection;
+      }
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    animationFrameId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isHovered]);
+
+  return (
+    <div 
+      ref={scrollRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="grid grid-cols-2 gap-4 md:gap-6 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-8 no-scrollbar"
+    >
+      {children}
+    </div>
+  );
+};
 
 const showcases = [
   {
@@ -102,6 +140,11 @@ const showcases = [
         title: "JEWELRY SERIES",
         items: [
           { name: "Bridal Suites", sub: "KUNDAN", img: "/assets/landing/catalog/subcat_bridaljewelry.jpg", url: "/products?category=Jewelry&subCategory=Bridal" },
+          { name: "Necklaces", sub: "STATEMENT", img: "/assets/landing/catalog/subcat_necklaces.jpg", url: "/products?category=Jewelry&subCategory=Necklaces" },
+          { name: "Chokers", sub: "TRADITIONAL", img: "/assets/landing/catalog/subcat_chokers.jpg", url: "/products?category=Jewelry&subCategory=Chokers" },
+          { name: "Earrings", sub: "CLASSIC", img: "/assets/landing/catalog/subcat_earrings.jpg", url: "/products?category=Jewelry&subCategory=Earrings" },
+          { name: "Bracelets & Bangles", sub: "ELEGANT", img: "/assets/landing/catalog/subcat_bracelets.jpg", url: "/products?category=Jewelry&subCategory=Bracelets" },
+          { name: "Rings", sub: "STATEMENT", img: "/assets/landing/catalog/subcat_rings.jpg", url: "/products?category=Jewelry&subCategory=Rings" },
           { name: "Casual Elegance", sub: "MODERN", img: "/assets/landing/catalog/subcat_casualjewelry.jpg", url: "/products?category=Jewelry&subCategory=Casual" }
         ]
       }
@@ -158,12 +201,12 @@ const CategoryShowcase = () => {
                   </div>
                   
                   <div className="w-full">
-                    <div className="grid grid-cols-2 gap-4 md:gap-6 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-8 no-scrollbar lg:snap-x lg:snap-mandatory">
+                    <AutoCarousel>
                       {sub.items.map((item, iIdx) => (
                         <Link 
                           key={iIdx} 
                           to={item.url}
-                          className="group flex flex-col lg:flex-none lg:w-[320px] lg:snap-start"
+                          className="group flex flex-col lg:flex-none lg:w-[320px]"
                         >
                           <div className={`relative aspect-[3/4] overflow-hidden rounded-2xl mb-4 bg-[#F9F6F2] transition-all duration-700 shadow-md group-hover:shadow-xl
                             ${section.id === 'men' ? 'rounded-none border-b-0' : ''}
@@ -175,25 +218,17 @@ const CategoryShowcase = () => {
                               alt={item.name}
                               className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
                             />
-                            <div className={`absolute inset-0 transition-opacity duration-700
-                              ${section.id === 'jewelry' ? 'bg-gradient-to-t from-[#3D2B1F]/95 via-transparent to-transparent opacity-80' : 'bg-gradient-to-t from-[#3D2B1F]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40'}
-                            `} />
-                            {section.id === 'men' && (
-                              <div className="absolute inset-0 border-0 group-hover:border-[1px] border-[#C5A059]/40 transition-all duration-500" />
-                            )}
-                            <div className="absolute inset-x-0 bottom-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                              <p className="text-[#C5A059] text-[8px] font-bold tracking-[0.3em] uppercase mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                {item.sub}
-                              </p>
-                              <h4 className="text-sm md:text-base font-editorial font-bold text-white uppercase leading-none tracking-tight">
-                                {item.name}
-                              </h4>
+                            {/* Hover overlay with minimal "Explore" */}
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                              <span className="text-white text-[10px] tracking-[0.3em] uppercase border border-white/40 px-6 py-2 rounded-full backdrop-blur-sm">
+                                Explore
+                              </span>
                             </div>
                           </div>
-                          <div className="text-center md:text-left">
-                            <span className="text-[9px] font-bold text-[#C5A059] tracking-[0.2em] uppercase border-b border-[#C5A059]/20 pb-1 group-hover:border-[#C5A059] transition-all">
-                              Explore
-                            </span>
+                          
+                          <div className="text-center lg:text-left mt-2 px-2">
+                            <p className="text-[10px] text-[#C5A059] tracking-[0.2em] font-bold mb-1 uppercase">{item.sub}</p>
+                            <h4 className="font-serif text-lg text-[#3D2B1F] tracking-wide" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{item.name}</h4>
                           </div>
                         </Link>
                       ))}
@@ -208,7 +243,7 @@ const CategoryShowcase = () => {
                           <p className="text-[11px] font-bold tracking-widest text-[#3D2B1F] uppercase">View Complete Collection</p>
                         </div>
                       </Link>
-                    </div>
+                    </AutoCarousel>
                   </div>
                 </div>
               ))}

@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useCartContext } from '../../context/cart_context';
 import { useUserContext } from '../../context/user_context';
+import logo from '../../assets/logo.png';
 
 const megaMenuData = {
   'BY OCCASION': [
@@ -85,14 +86,8 @@ const ArchiveNavbar = React.memo(() => {
       {/* Spacer for announcement bar height */}
       <header className="fixed top-0 left-0 right-0 z-[100] px-12 lg:px-24 py-5 flex items-center justify-between bg-champagne/90 backdrop-blur-md border-b border-bronze/10 transition-all duration-500">
         {/* Left Logo */}
-        <Link to="/" className="text-left" onClick={closeMenu}>
-          <h1 className="text-2xl lg:text-3xl font-editorial font-black tracking-tighter leading-none text-left text-bronze uppercase">
-            ANGEL
-            <br />
-            <span className="text-[8px] lg:text-[9px] tracking-[0.5em] lg:tracking-[0.8em] font-bold text-gold">
-              FASHION STUDIO
-            </span>
-          </h1>
+        <Link to="/" className="text-left flex items-center" onClick={closeMenu}>
+          <img src={logo} alt="Angel Fashion Studio Logo" className="h-14 md:h-20 object-contain" />
         </Link>
 
         {/* Right Side Navigation */}

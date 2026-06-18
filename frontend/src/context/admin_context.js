@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useReducer } from 'react';
+import React, { useContext, useEffect, useState, useReducer, useCallback, useRef } from 'react';
 import axios from 'axios';
 import {
   admin_auth_url,
@@ -36,9 +36,10 @@ export const AdminProvider = ({ children }) => {
   const [adminAuthLoading, setAdminAuthLoading] = useState(true);
   const [adminUserState, dispatch] = useReducer(reducer, adminUserInitialState);
 
+  // Ref guard: prevents fetchAdmins from re-firing on every currentAdmin object reference change
+  const adminsFetchedRef = useRef(false);
 
-
-  const checkAdminAuth = async () => {
+  const checkAdminAuth = useCallback(async () => {
     try {
       setAdminAuthLoading(true);
       const response = await axios.post(admin_auth_url);
@@ -50,13 +51,14 @@ export const AdminProvider = ({ children }) => {
       setAdminAuthLoading(false);
       setCurrentAdmin(null);
     }
-  };
+  }, []);
 
-  const loginAdmin = async (email, password) => {
+  const loginAdmin = useCallback(async (email, password) => {
     try {
       const response = await axios.post(admin_login_url, { email, password });
       const { success, data } = response.data;
       if (success) {
+        adminsFetchedRef.current = false; // Reset so admins are fetched for new login
         setCurrentAdmin(data);
       }
       return { success, data };
@@ -64,22 +66,24 @@ export const AdminProvider = ({ children }) => {
       const { message } = error.response?.data || {};
       return { success: false, message: message || 'Login failed' };
     }
-  };
+  }, []);
 
-  const logoutAdmin = async () => {
+  const logoutAdmin = useCallback(async () => {
     try {
       const response = await axios.get(admin_logout_url);
       const { success, message } = response.data;
+      adminsFetchedRef.current = false; // Reset for next login
       setCurrentAdmin(null);
       return { success, message };
     } catch (error) {
       const { message } = error.response?.data || {};
+      adminsFetchedRef.current = false;
       setCurrentAdmin(null);
       return { success: false, message: message || 'Logout failed' };
     }
-  };
+  }, []);
 
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     dispatch({ type: GET_ADMINS_BEGIN });
     try {
       const response = await axios.get(admin_users_url);
@@ -88,9 +92,9 @@ export const AdminProvider = ({ children }) => {
     } catch (error) {
       dispatch({ type: GET_ADMINS_ERROR });
     }
-  };
+  }, []);
 
-  const updateAdminPrivilege = async (id, privilege) => {
+  const updateAdminPrivilege = useCallback(async (id, privilege) => {
     try {
       const response = await axios.put(`${admin_users_url}${id}`, { privilege });
       const { success, data } = response.data;
@@ -99,9 +103,9 @@ export const AdminProvider = ({ children }) => {
       const { message } = error.response?.data || {};
       return { success: false, message: message || 'Update failed' };
     }
-  };
+  }, []);
 
-  const deleteAdmin = async (id) => {
+  const deleteAdmin = useCallback(async (id) => {
     try {
       const response = await axios.delete(`${admin_users_url}${id}`);
       const { success, message } = response.data;
@@ -110,15 +114,15 @@ export const AdminProvider = ({ children }) => {
       const { message } = error.response?.data || {};
       return { success: false, message: message || 'Delete failed' };
     }
-  };
+  }, []);
 
-  const updateNewAdminDetails = (e) => {
+  const updateNewAdminDetails = useCallback((e) => {
     const name = e.target.name;
     const value = e.target.value;
     dispatch({ type: CREATE_NEW_ADMIN, payload: { name, value } });
-  };
+  }, []);
 
-  const createNewAdmin = async () => {
+  const createNewAdmin = useCallback(async () => {
     const { new_admin } = adminUserState;
     try {
       const response = await axios.post(admin_register_url, new_admin);
@@ -128,17 +132,19 @@ export const AdminProvider = ({ children }) => {
       const { message } = error.response?.data || {};
       return { success: false, message: message || 'Create failed' };
     }
-  };
+  }, [adminUserState]);
 
   useEffect(() => {
     checkAdminAuth();
-  }, []);
+  }, [checkAdminAuth]);
 
+  // Only fetch admins ONCE when currentAdmin transitions from null to truthy
   useEffect(() => {
-    if (currentAdmin) {
+    if (currentAdmin && !adminsFetchedRef.current) {
+      adminsFetchedRef.current = true;
       fetchAdmins();
     }
-  }, [currentAdmin]);
+  }, [currentAdmin, fetchAdmins]);
 
   return (
     <AdminContext.Provider

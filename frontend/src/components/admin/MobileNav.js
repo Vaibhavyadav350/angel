@@ -3,6 +3,7 @@ import { useAdminContext } from '../../context/admin_context';
 import { useLocation, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiMenu, FiChevronRight, FiChevronDown, FiLogOut } from 'react-icons/fi';
+import logo from '../../assets/logo.png';
 
 export default function MobileNav({ onOpen, ...rest }) {
   const {
@@ -48,9 +49,9 @@ export default function MobileNav({ onOpen, ...rest }) {
       </button>
 
       {/* Mobile brand */}
-      <span className="md:hidden font-editorial text-lg font-black text-bronze uppercase tracking-[0.1em]">
-        Angel
-      </span>
+      <div className="md:hidden flex items-center">
+        <img src={logo} alt="Angel Fashion Studio Logo" className="h-10 object-contain" />
+      </div>
 
       {/* Desktop breadcrumbs */}
       <nav className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em]">

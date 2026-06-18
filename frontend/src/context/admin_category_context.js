@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import { admin_categories_url } from '../utils/constants';
 
@@ -39,7 +39,7 @@ const CACHE_TTL = 60000;
 export const CategoryProvider = ({ children }) => {
     const [state, dispatch] = useReducer(categoryReducer, initialState);
 
-    const getCategories = async (force = false) => {
+    const getCategories = useCallback(async (force = false) => {
         const now = Date.now();
         if (!force && lastCategoriesFetch > 0 && (now - lastCategoriesFetch < CACHE_TTL)) {
             return;
@@ -52,7 +52,7 @@ export const CategoryProvider = ({ children }) => {
         } catch (error) {
             dispatch({ type: 'SET_ERROR' });
         }
-    };
+    }, []);
 
     const createCategory = async (data) => {
         dispatch({ type: 'SET_LOADING' });

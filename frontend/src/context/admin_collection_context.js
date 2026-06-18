@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import { admin_collections_url } from '../utils/constants';
 
@@ -39,7 +39,7 @@ const CACHE_TTL = 60000;
 export const CollectionProvider = ({ children }) => {
     const [state, dispatch] = useReducer(collectionReducer, initialState);
 
-    const getCollections = async (force = false) => {
+    const getCollections = useCallback(async (force = false) => {
         const now = Date.now();
         if (!force && lastCollectionsFetch > 0 && (now - lastCollectionsFetch < CACHE_TTL)) {
             return;
@@ -52,7 +52,7 @@ export const CollectionProvider = ({ children }) => {
         } catch (error) {
             dispatch({ type: 'SET_ERROR' });
         }
-    };
+    }, []);
 
     const createCollection = async (data) => {
         dispatch({ type: 'SET_LOADING' });
