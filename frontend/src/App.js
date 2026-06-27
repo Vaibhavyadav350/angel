@@ -57,6 +57,7 @@ import {
   CollectionsPage as AdminCollections,
   CategoriesPage as AdminCategories,
   InventoryPage as AdminInventory,
+  SettingsPage as AdminSettings,
 } from './pages/admin';
 
 // Wrapper that bundles all admin context providers — only mounts on admin routes
@@ -91,9 +92,9 @@ const AdminRoutes = () => (
       <Route exact path='/'>
         <Redirect to="/admin" />
       </Route>
-      <Route exact path='/admin/login'>
+      <AdminPrivateRoute exact path='/admin/login'>
         <AdminLogin />
-      </Route>
+      </AdminPrivateRoute>
       <AdminPrivateRoute exact path='/admin'>
         <AdminDashboard />
       </AdminPrivateRoute>
@@ -135,6 +136,9 @@ const AdminRoutes = () => (
       </AdminPrivateRoute>
       <AdminPrivateRoute exact path='/admin/inventory'>
         <AdminInventory />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/settings'>
+        <AdminSettings />
       </AdminPrivateRoute>
       <Route exact path='*'>
         <Error />
@@ -209,19 +213,19 @@ const CustomerRoutes = () => (
         <NewFooter />
       </>
     </Route>
-    <PrivateRoute exact path='/checkout'>
+    <Route exact path='/checkout'>
       <>
         <CheckoutNavbar />
         <Checkout />
       </>
-    </PrivateRoute>
-    <PrivateRoute exact path='/orders'>
+    </Route>
+    <Route exact path='/orders'>
       <>
         <NewNavbar />
         <OrdersPage />
         <NewFooter />
       </>
-    </PrivateRoute>
+    </Route>
     <PrivateRoute exact path='/orders/:id'>
       <>
         <NewNavbar />

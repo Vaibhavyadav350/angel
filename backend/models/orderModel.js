@@ -42,6 +42,9 @@ const orderSchema = mongoose.Schema({
         type: Number,
         required: true,
       },
+      mrp: {
+        type: Number, // recommended retail price per unit (before per-product discount)
+      },
       quantity: {
         type: Number,
         required: true,
@@ -83,6 +86,7 @@ const orderSchema = mongoose.Schema({
     id: {
       type: String,
       required: true,
+      unique: true, // Prevents duplicate orders for the same eWAY TransactionID
     },
     status: {
       type: String,
@@ -121,6 +125,12 @@ const orderSchema = mongoose.Schema({
     type: String,
     default: '',
   },
+  addOns: [
+    {
+      name: { type: String },
+      price: { type: Number },
+    },
+  ],
   orderStatus: {
     type: String,
     required: true,

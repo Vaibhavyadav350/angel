@@ -19,9 +19,10 @@ function ReviewModal({ product }) {
     const { success, message } = await reviewProduct(id, stars, comment);
     setLoading(false);
     if (success) {
-      return toast.success(message);
+      toast.success(message);
+      setIsOpen(false);
     } else {
-      return toast.error(message);
+      toast.error(message);
     }
   };
 

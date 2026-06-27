@@ -7,11 +7,16 @@ const CategoryRow = ({ category, onEdit, onDelete, onAddSub, onDeleteSub }) => {
     const [expanded, setExpanded] = useState(false);
     const [newSubName, setNewSubName] = useState('');
 
-    const handleAddSub = () => {
-        if (!newSubName.trim()) return;
-        onAddSub(category._id, newSubName.trim());
-        setNewSubName('');
-        toast.success(`Subcategory "${newSubName.trim()}" added.`);
+    const handleAddSub = async () => {
+        const name = newSubName.trim();
+        if (!name) return;
+        const res = await onAddSub(category._id, name);
+        if (res?.success) {
+            setNewSubName('');
+            toast.success(`Subcategory "${name}" added.`);
+        } else {
+            toast.error(res?.message || 'Failed to add subcategory');
+        }
     };
 
     return (
@@ -135,22 +140,28 @@ const CategoriesPage = () => {
 
     useEffect(() => { getCategories(); }, [getCategories]);
 
-    const handleSave = (data) => {
-        if (editingCategory?._id) {
-            updateCategory(editingCategory._id, data);
-            toast.success('Category updated!');
+    const handleSave = async (data) => {
+        const isEdit = Boolean(editingCategory?._id);
+        const res = isEdit
+            ? await updateCategory(editingCategory._id, data)
+            : await createCategory(data);
+        if (res?.success) {
+            toast.success(isEdit ? 'Category updated!' : 'Category created!');
+            setModalOpen(false);
+            setEditingCategory(null);
         } else {
-            createCategory(data);
-            toast.success('Category created!');
+            toast.error(res?.message || 'Failed to save category');
         }
-        setModalOpen(false);
-        setEditingCategory(null);
     };
 
-    const handleDeleteCategory = (id) => {
+    const handleDeleteCategory = async (id) => {
         if (window.confirm('Delete this category? This will not delete the products, but filters may break.')) {
-            deleteCategory(id);
-            toast.success('Category deleted.');
+            const res = await deleteCategory(id);
+            if (res?.success) {
+                toast.success('Category deleted.');
+            } else {
+                toast.error(res?.message || 'Failed to delete category');
+            }
         }
     };
 
@@ -178,13 +189,13 @@ const CategoriesPage = () => {
                 <div className="bg-gold/10 border border-gold/20 rounded-lg px-6 py-4 mb-8 flex items-start gap-3">
                     <span className="material-symbols-outlined text-gold mt-0.5">info</span>
                     <p className="text-sm text-bronze/70">
-                        Categories power the navigation menu and product filters. Click a category to expand and manage its subcategories. Changes here are reflected site-wide. <strong>Backend sync coming in Phase 3.</strong>
+                        Categories power the navigation menu and product filters. Click a category to expand and manage its subcategories. Changes here are saved to the catalog and reflected site-wide.
                     </p>
                 </div>
 
                 {/* Category Tree */}
                 <div>
-                    {categories.sort((a, b) => a.sortOrder - b.sortOrder).map(cat => (
+                    {[...categories].sort((a, b) => a.sortOrder - b.sortOrder).map(cat => (
                         <CategoryRow
                             key={cat._id}
                             category={cat}

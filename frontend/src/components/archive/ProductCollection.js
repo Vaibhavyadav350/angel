@@ -149,9 +149,9 @@ const ProductCollection = React.memo(() => {
                   </div>
                   <div className="text-right">
                     <p className="text-3xl font-editorial text-gold">
-                      {formatPrice(((product.price * (1 - (product.discountPercent || 0) / 100)) * (1 + (product.taxPercent || 0) / 100)))}
+                      {formatPrice(product.price * (1 - (product.discountPercent || 0) / 100))}
                     </p>
-                    {(product.discountPercent > 0) && (
+                    {product.discountPercent > 0 && (
                       <span className="text-[9px] font-bold uppercase tracking-widest text-champagne/30 line-through">
                         {formatPrice(product.price)}
                       </span>

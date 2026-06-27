@@ -4,8 +4,13 @@ import { formatPrice } from '../../utils/helpers';
 
 function OrderDetails({
   order_status,
-  shippingPrice,
-  totalPrice,
+  shippingPrice = 0,
+  totalPrice = 0,
+  itemsPrice = 0,
+  discountAmount = 0,
+  couponCode = '',
+  taxPrice = 0,
+  addOns = [],
   paymentInfo = { id: '', status: '' },
   user = { name: '', email: '' },
   shippingInfo = {
@@ -21,6 +26,10 @@ function OrderDetails({
   returnReason = '',
   returnRequestedAt,
 }) {
+  // Itemised breakdown, consistent with checkout and the invoice.
+  const itemTotal = orderItems.reduce((sum, i) => sum + (i.mrp || i.price) * i.quantity, 0);
+  const productDiscount = Math.max(0, itemTotal - itemsPrice);
+  const gst = taxPrice || Math.round((totalPrice / 11) * 100) / 100;
   const statusClasses = {
     processing: 'bg-amber-100 text-amber-700',
     confirmed: 'bg-blue-100 text-blue-700',
@@ -54,13 +63,37 @@ function OrderDetails({
             {paymentInfo.status}
           </span>
         </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40 mb-2">Shipping</p>
-          <p className="text-sm font-bold text-gold">{formatPrice(shippingPrice)}</p>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40 mb-2">Order Total</p>
-          <p className="text-lg font-editorial font-black text-bronze">{formatPrice(totalPrice)}</p>
+      </div>
+
+      {/* Cost Breakdown */}
+      <div className="bg-champagne/20 border border-bronze/10 rounded-xl p-6">
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40 mb-4">Cost Breakdown</p>
+        <div className="space-y-2 max-w-sm">
+          <div className="flex justify-between text-sm text-bronze/70">
+            <span>Item Total</span><span>{formatPrice(itemTotal)}</span>
+          </div>
+          {productDiscount > 0 && (
+            <div className="flex justify-between text-sm text-emerald-600">
+              <span>Product Discount</span><span>−{formatPrice(productDiscount)}</span>
+            </div>
+          )}
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-sm text-emerald-600">
+              <span>Coupon{couponCode ? ` (${couponCode})` : ''}</span><span>−{formatPrice(discountAmount)}</span>
+            </div>
+          )}
+          {addOns && addOns.length > 0 && addOns.map((a, idx) => (
+            <div key={idx} className="flex justify-between text-sm text-bronze/70">
+              <span>{a.name}</span><span>+{formatPrice(a.price)}</span>
+            </div>
+          ))}
+          <div className="flex justify-between text-sm text-bronze/70">
+            <span>Shipping</span><span>{formatPrice(shippingPrice)}</span>
+          </div>
+          <div className="flex justify-between text-base font-editorial font-black text-bronze pt-2 border-t border-bronze/10">
+            <span>Order Total</span><span>{formatPrice(totalPrice)}</span>
+          </div>
+          <p className="text-[10px] text-bronze/40 text-right">Includes GST of {formatPrice(gst)}</p>
         </div>
       </div>
 

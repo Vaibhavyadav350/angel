@@ -6,10 +6,10 @@ router.route('/active').get(categoryController.getActiveCategories);
 
 router.route('/')
     .get(categoryController.getAllCategories)
-    .post(isAuthenticatedAdmin, checkAdminPrivileges('admin'), categoryController.createCategory);
+    .post(isAuthenticatedAdmin, checkAdminPrivileges('moderate', 'super'), categoryController.createCategory);
 
 router.route('/:id')
-    .put(isAuthenticatedAdmin, checkAdminPrivileges('admin'), categoryController.updateCategory)
-    .delete(isAuthenticatedAdmin, checkAdminPrivileges('admin'), categoryController.deleteCategory);
+    .put(isAuthenticatedAdmin, checkAdminPrivileges('moderate', 'super'), categoryController.updateCategory)
+    .delete(isAuthenticatedAdmin, checkAdminPrivileges('moderate', 'super'), categoryController.deleteCategory);
 
 module.exports = router;

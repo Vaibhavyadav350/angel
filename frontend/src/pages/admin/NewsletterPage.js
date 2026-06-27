@@ -43,7 +43,7 @@ const NewsletterPage = () => {
                     <p className="text-xl text-red-600 font-medium mb-4">Failed to load subscribers</p>
                     <button
                         onClick={fetchSubscribers}
-                        className="flex items-center gap-2 px-4 py-2 bg-bronze-500 text-white rounded-md hover:bg-bronze-600 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-bronze text-white rounded-md hover:bg-bronze/90 transition-colors"
                     >
                         <FiRefreshCcw /> Retry
                     </button>
@@ -54,17 +54,17 @@ const NewsletterPage = () => {
 
     return (
         <SidebarWithHeader title="Newsletter Subscribers">
-            <div className="bg-white rounded-lg shadow-sm border border-champagne-200 overflow-hidden">
-                <div className="p-6 border-b border-champagne-100 flex justify-between items-center bg-champagne-50/30">
+            <div className="bg-white rounded-lg shadow-sm border border-bronze/10 overflow-hidden">
+                <div className="p-6 border-b border-bronze/10 flex justify-between items-center bg-champagne/30">
                     <div>
-                        <h2 className="text-xl font-semibold text-bronze-800">Archive Members</h2>
-                        <p className="text-sm text-bronze-600 mt-1">
+                        <h2 className="text-xl font-semibold text-bronze">Archive Members</h2>
+                        <p className="text-sm text-bronze/60 mt-1">
                             Total Subscribers: {subscribers.length}
                         </p>
                     </div>
                     <button
                         onClick={fetchSubscribers}
-                        className="p-2 text-bronze-600 hover:bg-champagne-100 rounded-full transition-colors"
+                        className="p-2 text-bronze/60 hover:bg-champagne/30 rounded-full transition-colors"
                         title="Refresh list"
                     >
                         <FiRefreshCcw className={subscribers_loading ? 'animate-spin' : ''} />
@@ -74,27 +74,27 @@ const NewsletterPage = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-champagne-50/50">
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze-700 border-b border-champagne-100">Email Address</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze-700 border-b border-champagne-100">Subscribed On</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze-700 border-b border-champagne-100 text-center">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze-700 border-b border-champagne-100 text-right">Actions</th>
+                            <tr className="bg-champagne/10">
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze/70 border-b border-bronze/10">Email Address</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze/70 border-b border-bronze/10">Subscribed On</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze/70 border-b border-bronze/10 text-center">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-bronze/70 border-b border-bronze/10 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-champagne-100">
+                        <tbody className="divide-y divide-bronze/5">
                             {subscribers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-10 text-center text-bronze-500">
+                                    <td colSpan="4" className="px-6 py-10 text-center text-bronze/50">
                                         No subscribers found in the archive.
                                     </td>
                                 </tr>
                             ) : (
                                 subscribers.map((sub) => (
-                                    <tr key={sub._id} className="hover:bg-champagne-50/30 transition-colors">
-                                        <td className="px-6 py-4 text-sm text-bronze-900 font-medium">
+                                    <tr key={sub._id} className="hover:bg-champagne/30 transition-colors">
+                                        <td className="px-6 py-4 text-sm text-bronze font-medium">
                                             {sub.email}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-bronze-600">
+                                        <td className="px-6 py-4 text-sm text-bronze/60">
                                             {new Date(sub.subscribedAt).toLocaleDateString(undefined, {
                                                 year: 'numeric',
                                                 month: 'long',

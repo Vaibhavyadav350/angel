@@ -230,23 +230,23 @@ const SingleProductPage = () => {
                   <div className="space-y-1">
                     <span className="text-[9px] lg:text-xs font-bold uppercase tracking-[0.2em] text-bronze/50 block">Archival Investment</span>
                     <span className="text-3xl sm:text-4xl lg:text-5xl font-editorial font-bold text-bronze leading-none">
-                      {formatPrice(((price * (1 - (product.discountPercent || 0) / 100)) * (1 + (product.taxPercent || 0) / 100)))}
+                      {formatPrice(price * (1 - (product.discountPercent || 0) / 100))}
                     </span>
                   </div>
-                  {(product.discountPercent > 0) && (
+                  {product.discountPercent > 0 && (
                     <div className="pb-1 flex items-center gap-2 lg:gap-4">
                       <span className="text-xl lg:text-2xl font-editorial font-medium text-bronze/40 line-through">
                         {formatPrice(price)}
                       </span>
                       <span className="px-2 lg:px-3 py-1 lg:py-1.5 bg-gold text-white text-[9px] lg:text-xs font-black uppercase tracking-widest rounded-sm leading-none shadow-sm">
-                        -{product.discountPercent}% Archival
+                        -{product.discountPercent}% Off
                       </span>
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between text-[9px] lg:text-xs font-bold uppercase tracking-[0.2em] text-bronze/60 bg-bronze/5 p-3 lg:p-4 rounded-lg">
                   <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[11px] lg:text-sm text-gold">verified</span> Authenticity Verified</span>
-                  <span>Incl. {product.taxPercent || 0}% Regional GST</span>
+                  <span>Incl. 10% GST</span>
                 </div>
               </div>
 

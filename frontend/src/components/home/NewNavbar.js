@@ -81,10 +81,10 @@ const NewNavbar = () => {
 
           {/* LEFT — Logo */}
           <Link to="/" className="flex items-center shrink-0 z-50">
-            <img 
-              src={logo} 
-              alt="Angel Fashion Studio Logo" 
-              className={`h-12 md:h-16 scale-[1.5] md:scale-[2] origin-left object-contain transition-all duration-300 ${isHomePage && !scrolled ? 'brightness-0 invert' : ''}`} 
+            <img
+              src={logo}
+              alt="Angel Fashion Studio Logo"
+              className={`h-12 md:h-16 scale-[2.1] md:scale-[2.8] origin-left -translate-y-2 object-contain transition-all duration-300 ${isHomePage && !scrolled ? 'brightness-0 invert' : ''}`}
             />
           </Link>
 
@@ -260,7 +260,7 @@ const NewNavbar = () => {
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#F0E8DF]">
               <Link to="/" onClick={() => setDrawerOpen(false)} className="flex items-center">
-                <img src={logo} alt="Angel Fashion Studio Logo" className="h-12 object-contain" />
+                <img src={logo} alt="Angel Fashion Studio Logo" className="h-[58px] object-contain" />
               </Link>
               <button onClick={() => setDrawerOpen(false)} className="text-[#7A5C41] hover:text-[#3D2B1F] p-1">
                 <FiX size={22} />

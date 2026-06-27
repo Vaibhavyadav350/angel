@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { FaCheck } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaRuler } from 'react-icons/fa';
 import { useCartContext } from '../../context/cart_context';
 import AmountButtons from '../AmountButtons/';
 import { toast } from 'react-toastify';
@@ -14,7 +14,6 @@ const AddToCart = ({ product }) => {
   const [mainColor, setMainColor] = useState(null);
   const [mainSize, setMainSize] = useState(null);
   const [amount, setAmount] = useState(1);
-  const [expressDelivery, setExpressDelivery] = useState(false);
 
   // Derived available options based on selections
   const [availableColors, setAvailableColors] = useState(colors);
@@ -22,6 +21,9 @@ const AddToCart = ({ product }) => {
 
   // Max stock for currently selected permutation
   const [availableStockLimit, setAvailableStockLimit] = useState(globalStock);
+
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const closeSizeChart = useCallback(() => setSizeChartOpen(false), []);
 
   useEffect(() => {
     // If we only have 1 color/size, auto-select them
@@ -108,7 +110,7 @@ const AddToCart = ({ product }) => {
       return;
     }
 
-    addToCart(id, mainColor || 'default', mainSize || 'default', amount, product, expressDelivery);
+    addToCart(id, mainColor || 'default', mainSize || 'default', amount, product);
     setTimeout(() => {
       window.location.href = '/cart';
     }, 100);
@@ -149,16 +151,28 @@ const AddToCart = ({ product }) => {
       {/* Sizes Section */}
       {sizes && sizes.length > 0 && (
         <div className="space-y-4">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40 block flex justify-between">
-            <span>Select Silhouette {mainSize && <span className="text-bronze">- {mainSize}</span>}</span>
-            {mainSize && mainColor && variants?.length > 0 && (
-              <span className={`text-[9px] ${availableStockLimit > 0 ? (availableStockLimit <= 3 ? 'text-red-500' : 'text-green-600') : 'text-red-500'}`}>
-                {availableStockLimit > 0
-                  ? (availableStockLimit <= 3 ? `Only ${availableStockLimit} Left In Stock` : 'In Stock')
-                  : 'Out of Stock'}
-              </span>
-            )}
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">
+              Select Silhouette {mainSize && <span className="text-bronze">- {mainSize}</span>}
+            </span>
+            <div className="flex items-center gap-4">
+              {mainSize && mainColor && variants?.length > 0 && (
+                <span className={`text-[9px] font-bold uppercase tracking-widest ${availableStockLimit > 0 ? (availableStockLimit <= 3 ? 'text-red-500' : 'text-green-600') : 'text-red-500'}`}>
+                  {availableStockLimit > 0
+                    ? (availableStockLimit <= 3 ? `Only ${availableStockLimit} Left` : 'In Stock')
+                    : 'Out of Stock'}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setSizeChartOpen(true)}
+                className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-gold hover:text-bronze transition-colors"
+              >
+                <FaRuler size={10} />
+                Size Chart
+              </button>
+            </div>
+          </div>
           <div className="flex flex-wrap gap-3">
             {sizes.map((size, index) => {
               const isAvailable = variants?.length > 0 ? availableSizes.includes(size) : true;
@@ -181,26 +195,35 @@ const AddToCart = ({ product }) => {
         </div>
       )}
 
-      {/* Express Delivery Add-On */}
-      <div className="pt-2 pb-4 border-b border-bronze/10">
-        <label className="flex items-start gap-4 cursor-pointer group w-fit">
-          <div className="relative flex items-center justify-center mt-0.5">
-            <input
-              type="checkbox"
-              checked={expressDelivery}
-              onChange={(e) => setExpressDelivery(e.target.checked)}
-              className="peer appearance-none w-4 h-4 border-2 border-bronze/20 rounded-[2px] checked:bg-gold checked:border-gold transition-all duration-200 cursor-pointer"
-            />
-            <FaCheck className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 w-2 h-2 pointer-events-none" />
+      {/* Size Chart Modal */}
+      {sizeChartOpen && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={closeSizeChart}
+        >
+          <div
+            className="relative bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-bronze/10">
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-bronze">Size Chart</span>
+              <button
+                onClick={closeSizeChart}
+                className="text-bronze/40 hover:text-bronze transition-colors p-1"
+              >
+                <FaTimes size={16} />
+              </button>
+            </div>
+            <div className="p-4">
+              <img
+                src="/assets/size-chart.png"
+                alt="Angel Fashion Studio Size Chart"
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-bronze group-hover:text-gold transition-colors">
-              Express Delivery <span className="text-gold">(+$50)</span>
-            </span>
-            <span className="text-[9px] text-bronze/50 font-medium mt-1">Ships in 1-2 working days</span>
-          </div>
-        </label>
-      </div>
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex items-stretch gap-4 pt-4">

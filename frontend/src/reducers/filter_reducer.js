@@ -11,11 +11,11 @@ import {
 
 const filter_reducer = (state, action) => {
   if (action.type === LOAD_PRODUCTS) {
-    let maxPrice = action.payload.map((product) => product.price);
-    maxPrice = Math.max(...maxPrice);
-
-    let minPrice = action.payload.map((product) => product.price);
-    minPrice = Math.min(...minPrice);
+    // Guard against an empty product list — Math.max(...[]) is -Infinity, which
+    // would break the price slider and filter every product out.
+    const prices = action.payload.map((product) => product.price).filter((p) => typeof p === 'number');
+    const maxPrice = prices.length ? Math.max(...prices) : 0;
+    const minPrice = prices.length ? Math.min(...prices) : 0;
 
     return {
       ...state,
@@ -134,7 +134,7 @@ const filter_reducer = (state, action) => {
     //color
     if (color !== 'all') {
       tempProducts = tempProducts.filter((product) => {
-        return product.colors.find((c) => c === color);
+        return product.colors && product.colors.find((c) => c === color);
       });
     }
     //price

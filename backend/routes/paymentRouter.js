@@ -1,11 +1,10 @@
 const router = require('express').Router();
-const { paymentController, callbackController } = require('../controllers/paymentController');
+const { paymentController } = require('../controllers/paymentController');
 
-// Direct payment / Responsive Shared Page initiation
+// Initiate RSP checkout — returns SharedPaymentUrl to redirect user to eWAY's hosted page
 router.post('/create-checkout-session', paymentController);
 
-// eWAY callback after RSP or 3DS completion
-// eWAY redirects here with ?AccessCode=xxx after user completes payment on hosted page
-router.get('/callback', callbackController);
+// Note: GET /api/payment/callback is registered directly in server.js (before this router)
+// and handled by webhookController. It does NOT go through this router.
 
 module.exports = router;

@@ -3,7 +3,7 @@ import { formatPrice } from '../../utils/helpers';
 import AmountButtons from '../AmountButtons/';
 import { useCartContext } from '../../context/cart_context';
 
-const CartItem = ({ id, image, name, color, price, amount, size, discountPercent }) => {
+const CartItem = ({ id, image, name, color, price, amount, size, mrp, discountPercent }) => {
   const { removeItem, toggleAmount } = useCartContext();
 
   const increase = () => toggleAmount(id, 'inc');
@@ -38,8 +38,8 @@ const CartItem = ({ id, image, name, color, price, amount, size, discountPercent
       {/* Unit Price — hidden on small */}
       <div className="hidden lg:block">
         <p className="font-editorial text-base text-bronze">{formatPrice(price)}</p>
-        {discountPercent > 0 && (
-          <p className="text-[8px] font-black uppercase tracking-widest text-gold">-{discountPercent}% Archival</p>
+        {discountPercent > 0 && mrp > price && (
+          <p className="text-[10px] text-bronze/40 line-through">{formatPrice(mrp)}</p>
         )}
       </div>
 

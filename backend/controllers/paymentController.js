@@ -1,22 +1,19 @@
-const Product = require('../models/productModel');
+const PendingCheckout = require('../models/pendingCheckoutModel');
+const pricingService = require('../services/pricingService');
 const rapid = require('eway-rapid');
-const { createOrderFromTransaction } = require('../services/orderService');
 
-// Initialize eWAY Rapid client — endpoint must be 'Sandbox' or 'Production' (NOT a URL)
 const client = rapid.createClient(
   process.env.EWAY_API_KEY,
   process.env.EWAY_PASSWORD,
   process.env.EWAY_ENDPOINT || 'Sandbox'
 );
 
-// Public URLs used for eWAY callbacks (must be accessible from the internet, not localhost)
 const BACKEND_PUBLIC_URL = process.env.BACKEND_PUBLIC_URL || 'https://prod-api.angelfashionstudio.org';
 const FRONTEND_PUBLIC_URL = process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org';
 
 const paymentController = async (req, res) => {
-  const { cart, shipping_fee, total_amount, shipping, eway_encrypted_card } = req.body;
+  const { cart, shipping_fee, total_amount, shipping } = req.body;
 
-  // --- Validation ---
   if (!cart || !Array.isArray(cart) || cart.length === 0) {
     return res.status(400).json({ success: false, message: 'Cart is required and must not be empty' });
   }
@@ -29,50 +26,61 @@ const paymentController = async (req, res) => {
   if (!shipping || typeof shipping !== 'object') {
     return res.status(400).json({ success: false, message: 'Shipping information is required' });
   }
+  const email = req.body.email || '';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: 'A valid email address is required for order confirmation' });
+  }
 
   try {
-    console.info(`[EWAY CHECKOUT] User: ${req.body.email || 'Guest'}, Items: ${cart.length}, Total: $${total_amount}, Shipping: $${shipping_fee}`);
+    // Server-authoritative pricing — recompute everything (item prices, shipping,
+    // coupon) from the database. The browser's totals are never trusted to charge.
+    const pricing = await pricingService.computeAuthoritativeOrder(cart, {
+      shippingMethod: req.body.shippingMethod,
+      couponCode: req.body.couponCode,
+      addons: req.body.addons,
+    });
 
-    // --- Stock Check ---
-    const orderItemsMeta = [];
-    for (const item of cart) {
-      const productId = item.productId || item.id;
-      if (!productId) continue;
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ success: false, message: `Product not found: ${item.name}` });
-      }
-      if (product.stock < item.amount) {
-        return res.status(400).json({ success: false, message: `Stock Error: Only ${product.stock} left for ${item.name}.` });
-      }
-      orderItemsMeta.push({ id: productId, q: item.amount, c: item.color || 'Standard', s: item.size || 'M' });
+    if (typeof total_amount === 'number' && Math.abs(total_amount - pricing.sellingTotal) > 0.01) {
+      console.warn(`[PRICING MISMATCH] Client items total $${total_amount} vs server $${pricing.sellingTotal} — charging the server amount.`);
     }
+    console.info(`[EWAY CHECKOUT] User: ${req.body.email || 'Guest'}, Items: ${cart.length}, Charge: $${pricing.total}, Shipping: $${pricing.shipping} (${pricing.method}), Coupon: ${pricing.couponCode || 'none'}`);
 
-    // Use public URLs for eWAY callbacks — localhost won't work as eWAY needs to reach these
-    const FRONTEND_URL = FRONTEND_PUBLIC_URL;
-    const BACKEND_URL = BACKEND_PUBLIC_URL;
+    const orderItemsMeta = pricing.items.map((i) => ({ id: i.productId, q: i.qty, c: i.color, s: i.size }));
 
-    // --- Calculate Amounts ---
-    const discountAmount = Number(req.body.discountAmount) || 0;
-    const finalTotal = total_amount - discountAmount + shipping_fee;
-    const amountInCents = Math.round(finalTotal * 100); // eWAY requires CENTS
+    const finalTotal = pricing.total;
+    const amountInCents = Math.round(finalTotal * 100);
 
-    // --- Build Metadata (max 3 Options, each max 255 chars) ---
-    // eWAY HTML-encodes Options values, so JSON is NOT allowed. Use pipe-delimited format.
-    const metaOption = [
+    // Build Options — pipe-delimited key=value with type prefix (m:/i:/s:)
+    // eWAY HTML-encodes quotes so JSON breaks — use safe chars only (no &, ", ', <, >)
+    // Max 254 chars per Value. Items spread across multiple entries to handle large carts.
+    const metaValue = 'm:' + [
       `uid=${req.body.userId || ''}`,
       `uname=${(req.body.shipping?.name || 'Guest').substring(0, 30)}`,
       `email=${(req.body.email || '').substring(0, 50)}`,
-      `disc=${discountAmount}`,
-      `coupon=${req.body.couponCode || ''}`,
-      `shipFee=${shipping_fee}`,
-      `itemsP=${total_amount}`,
+      `disc=${pricing.couponDiscount}`,
+      `coupon=${pricing.couponCode || ''}`,
+      `shipFee=${pricing.shipping}`,
+      `itemsP=${pricing.sellingTotal}`,
+      `addons=${pricing.addons.map((a) => a.key).join('.')}`,
     ].join('|');
 
-    // Compact items: id:qty:color:size for each item, comma-separated
-    const itemsOption = orderItemsMeta.map(i => `${i.id}:${i.q}:${i.c}:${i.s}`).join(',');
+    // Split items across multiple Options entries — each ObjectId is 24 chars, entries ~33 chars each
+    // 7+ items easily exceed 254 chars if packed into one entry
+    const itemEntries = orderItemsMeta.map(i => `${i.id}:${i.q}:${i.c}:${i.s}`);
+    const itemChunks = [];
+    let currentChunk = '';
+    for (const entry of itemEntries) {
+      const candidate = currentChunk ? `${currentChunk},${entry}` : entry;
+      if (('i:' + candidate).length > 254) {
+        if (currentChunk) itemChunks.push({ Value: `i:${currentChunk}` });
+        currentChunk = entry;
+      } else {
+        currentChunk = candidate;
+      }
+    }
+    if (currentChunk) itemChunks.push({ Value: `i:${currentChunk}` });
 
-    const shippingOption = [
+    const shippingValue = 's:' + [
       `addr=${(req.body.shipping?.address?.line1 || '').substring(0, 50)}`,
       `city=${req.body.shipping?.address?.city || ''}`,
       `state=${req.body.shipping?.address?.state || ''}`,
@@ -80,140 +88,59 @@ const paymentController = async (req, res) => {
       `phone=${req.body.shipping?.phone_number || ''}`,
     ].join('|');
 
-    // eWAY allows max 3 Options, each max 255 chars
     const options = [
-      { Value: metaOption.substring(0, 255) },
-      { Value: itemsOption.substring(0, 255) },
-      { Value: shippingOption.substring(0, 255) },
+      { Value: metaValue.substring(0, 254) },
+      ...itemChunks,
+      { Value: shippingValue.substring(0, 254) },
     ];
 
-    // --- Customer Info ---
     const customerName = req.body.shipping?.name || 'Guest User';
-    const nameParts = customerName.split(' ');
+    const nameParts = customerName.trim().split(' ');
     const firstName = nameParts[0] || 'Guest';
     const lastName = nameParts.slice(1).join(' ') || 'User';
 
     const payload = {
+      RedirectUrl: `${BACKEND_PUBLIC_URL}/api/payment/callback`,
+      CancelUrl: `${BACKEND_PUBLIC_URL}/api/payment/cancel`,
+      TransactionType: 'Purchase',
+
       Customer: {
         FirstName: firstName,
         LastName: lastName,
-        Email: req.body.email || 'guest@example.com',
+        Email: req.body.email || '',
         Phone: req.body.shipping?.phone_number || '',
         Street1: req.body.shipping?.address?.line1 || '',
         City: req.body.shipping?.address?.city || '',
         State: req.body.shipping?.address?.state || '',
         PostalCode: req.body.shipping?.address?.postal_code || '',
-        Country: 'au', // lowercase ISO 3166-1 alpha-2
+        Country: 'au',
       },
+
+      // ShippingAddress is used by eWAY for fraud scoring (Fraud Lite/Essentials/Ultimate)
+      // It is NOT shown to the customer on the hosted page
+      ShippingAddress: {
+        ShippingMethod: 'DesignatedByCustomer',
+        FirstName: firstName,
+        LastName: lastName,
+        Street1: req.body.shipping?.address?.line1 || '',
+        City: req.body.shipping?.address?.city || '',
+        State: req.body.shipping?.address?.state || '',
+        Country: 'au',
+        PostalCode: req.body.shipping?.address?.postal_code || '',
+        Phone: req.body.shipping?.phone_number || '',
+        Email: req.body.email || '',
+      },
+
       Payment: {
         TotalAmount: amountInCents,
         CurrencyCode: 'AUD',
-        InvoiceNumber: `INV-${Date.now()}`.substring(0, 12),
+        InvoiceNumber: `AFS-${Date.now()}`,
         InvoiceDescription: `Angel Fashion Studio - ${cart.length} item(s)`.substring(0, 64),
       },
+
       Options: options,
-      TransactionType: 'Purchase', // 'Purchase' = e-commerce (3DS eligible). 'MOTO' bypasses 3DS entirely.
+      CustomerIP: req.ip || '',
     };
-
-    // =============================================
-    // DIRECT CONNECTION (with CSE-encrypted card)
-    // =============================================
-    if (eway_encrypted_card) {
-      // ExpiryYear: eWAY requires 2-digit "YY" — convert from "2030" → "30"
-      let expiryYear = String(eway_encrypted_card.expiryYear || '');
-      if (expiryYear.length === 4) {
-        expiryYear = expiryYear.slice(-2); // "2030" → "30"
-      }
-
-      // CardDetails.Name is REQUIRED by eWAY
-      payload.Customer.CardDetails = {
-        Name: eway_encrypted_card.nameOnCard || customerName,
-        Number: eway_encrypted_card.number,      // CSE ciphertext
-        ExpiryMonth: String(eway_encrypted_card.expiryMonth || '').padStart(2, '0'),
-        ExpiryYear: expiryYear,
-        CVN: eway_encrypted_card.cvn,            // CSE ciphertext
-      };
-
-      // DIRECT method doesn't need RedirectUrl/CancelUrl
-      console.info(`[EWAY DIRECT] Sending transaction. Amount: ${amountInCents} cents, Card Name: ${payload.Customer.CardDetails.Name}`);
-
-      const response = await client.createTransaction(rapid.Enum.Method.DIRECT, payload);
-
-      // SDK response uses .get() method
-      const txnStatus = response.get('TransactionStatus');
-      const txnId = response.get('TransactionID');
-      const errors = response.get('Errors') || '';
-      const responseMsg = response.get('ResponseMessage') || '';
-      const responseCode = response.get('ResponseCode') || '';
-
-      console.info(`[EWAY DIRECT RESPONSE] Status: ${txnStatus}, ID: ${txnId}, Code: ${responseCode}, Msg: ${responseMsg}, Errors: ${errors}`);
-
-      if (errors) {
-        // Translate V6xxx codes to human-readable messages
-        const humanErrors = errors.split(',').filter(Boolean).map(code => {
-          try { return rapid.getMessage(code.trim(), 'en'); } catch { return code; }
-        }).join('; ');
-        console.error(`[EWAY DIRECT ERROR] ${humanErrors}`);
-        return res.status(400).json({ success: false, message: `Payment Error: ${humanErrors}` });
-      }
-
-      // --- Check for 3DS challenge requirement ---
-      // eWAY returns Verification.ACSURL when the card requires OTP authentication
-      const verification = response.get('Verification') || {};
-      const acsUrl = verification.ACSURL;
-
-      if (acsUrl) {
-        // 3DS required — fall back to eWAY Responsive Shared Page which handles 3DS/OTP internally
-        console.info(`[EWAY 3DS] Card requires 3DS authentication. Falling back to Responsive Shared Page.`);
-        payload.RedirectUrl = `${BACKEND_URL}/api/payment/callback`;
-        payload.CancelUrl = `${FRONTEND_URL}/checkout?canceled=true`;
-
-        const rspResponse = await client.createTransaction(rapid.Enum.Method.RESPONSIVE_SHARED, payload);
-        const rspErrors = rspResponse.get('Errors') || '';
-        if (rspErrors) {
-          const humanErrors = rspErrors.split(',').filter(Boolean).map(code => {
-            try { return rapid.getMessage(code.trim(), 'en'); } catch { return code; }
-          }).join('; ');
-          return res.status(500).json({ success: false, message: `Payment Error: ${humanErrors}` });
-        }
-
-        const sharedUrl = rspResponse.get('SharedPaymentUrl');
-        console.info(`[EWAY 3DS RSP] Redirecting to eWAY hosted page for 3DS. URL: ${sharedUrl}`);
-        return res.status(200).json({ success: true, url: sharedUrl, requires_3ds: true });
-      }
-
-      if (txnStatus) {
-        console.info(`[EWAY DIRECT SUCCESS] Transaction ${txnId} approved. ResponseCode: ${responseCode}`);
-
-        // Fulfill order
-        try {
-          await createOrderFromTransaction({
-            TransactionID: txnId,
-            TotalAmount: amountInCents,
-            Options: options,
-          });
-        } catch (orderErr) {
-          console.error(`[ORDER FULFILLMENT ERROR] ${orderErr.message}`);
-          // Payment succeeded even if fulfillment fails — don't lose the transaction
-        }
-
-        return res.status(200).json({
-          success: true,
-          transactionId: txnId,
-        });
-      } else {
-        // Declined
-        const declineMsg = responseMsg || responseCode || 'Unknown reason';
-        console.warn(`[EWAY DIRECT DECLINED] ${declineMsg}`);
-        return res.status(400).json({ success: false, message: `Payment Declined: ${declineMsg}` });
-      }
-    }
-
-    // =============================================
-    // RESPONSIVE SHARED PAGE (fallback — no card data sent)
-    // =============================================
-    payload.RedirectUrl = `${BACKEND_URL}/api/payment/callback`;
-    payload.CancelUrl = `${FRONTEND_URL}/checkout?canceled=true`;
 
     const response = await client.createTransaction(rapid.Enum.Method.RESPONSIVE_SHARED, payload);
 
@@ -222,74 +149,35 @@ const paymentController = async (req, res) => {
       const humanErrors = errors.split(',').filter(Boolean).map(code => {
         try { return rapid.getMessage(code.trim(), 'en'); } catch { return code; }
       }).join('; ');
-      console.error(`[EWAY SHARED ERROR] ${humanErrors}`);
+      console.error(`[EWAY RSP ERROR] ${humanErrors}`);
       return res.status(500).json({ success: false, message: `eWAY Error: ${humanErrors}` });
     }
 
     const sharedUrl = response.get('SharedPaymentUrl');
-    console.info(`[EWAY SHARED SUCCESS] URL created. AccessCode: ${response.get('AccessCode')}`);
+    const accessCode = response.get('AccessCode');
+    if (!sharedUrl || !accessCode) {
+      console.error('[EWAY RSP] No SharedPaymentUrl or AccessCode returned');
+      return res.status(502).json({ success: false, message: 'Payment gateway returned no redirect URL' });
+    }
 
+    // Persist AccessCode so the reconciliation job can recover orders
+    // if the customer closes the browser before eWAY fires the redirect callback
+    await PendingCheckout.create({ accessCode }).catch(err =>
+      console.warn(`[EWAY RSP] Could not save PendingCheckout: ${err.message}`)
+    );
+
+    console.info(`[EWAY RSP] URL created. AccessCode: ${accessCode}`);
     return res.status(200).json({ success: true, url: sharedUrl });
 
   } catch (error) {
     console.error(`[EWAY FATAL] ${error.message}`);
+    // Pricing/stock validation errors carry a status code — surface them cleanly.
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
     console.error(error.stack);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// =============================================
-// 3DS / RSP CALLBACK — eWAY redirects here after payment on hosted page
-// GET /api/payment/callback?AccessCode=xxx
-// =============================================
-const callbackController = async (req, res) => {
-  const { AccessCode } = req.query;
-
-  if (!AccessCode) {
-    console.error('[EWAY CALLBACK] Missing AccessCode in callback');
-    return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true`);
-  }
-
-  try {
-    console.info(`[EWAY CALLBACK] Received AccessCode: ${AccessCode}`);
-
-    // Query eWAY for final transaction result
-    const result = await client.queryTransaction(AccessCode);
-    const txnStatus = result.get('TransactionStatus');
-    const txnId = result.get('TransactionID');
-    const responseCode = result.get('ResponseCode') || '';
-    const errors = result.get('Errors') || '';
-
-    console.info(`[EWAY CALLBACK RESULT] Status: ${txnStatus}, ID: ${txnId}, Code: ${responseCode}`);
-
-    if (!txnStatus) {
-      const reason = errors || responseCode || 'Transaction declined';
-      console.warn(`[EWAY CALLBACK DECLINED] ${reason}`);
-      return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true&reason=${encodeURIComponent(reason)}`);
-    }
-
-    // Transaction approved — create order
-    const options = result.get('Options') || [];
-    const totalAmount = result.get('TotalAmount') || 0;
-
-    try {
-      await createOrderFromTransaction({
-        TransactionID: txnId,
-        TotalAmount: totalAmount,
-        Options: options,
-      });
-      console.info(`[EWAY CALLBACK SUCCESS] Order created for Transaction ${txnId}`);
-    } catch (orderErr) {
-      console.error(`[EWAY CALLBACK ORDER ERROR] ${orderErr.message}`);
-      // Payment went through — redirect to orders page regardless
-    }
-
-    return res.redirect(`${FRONTEND_PUBLIC_URL}/orders?success=true`);
-
-  } catch (err) {
-    console.error(`[EWAY CALLBACK FATAL] ${err.message}`);
-    return res.redirect(`${FRONTEND_PUBLIC_URL}/checkout?payment_failed=true`);
-  }
-};
-
-module.exports = { paymentController, callbackController };
+module.exports = { paymentController };

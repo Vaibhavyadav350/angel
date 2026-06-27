@@ -63,7 +63,7 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
           </span>
         </div>
 
-        {/* Discount badge — top right (only when discount exists) */}
+        {/* Discount badge — top right */}
         {discountPercent > 0 && (
           <div className="absolute top-4 right-14 z-10">
             <span className="px-2 py-1 bg-chocolate text-champagne text-[8px] font-black uppercase tracking-widest">
@@ -90,9 +90,11 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
         </h3>
         
         <div className="flex items-center gap-3">
-          <p className="text-base md:text-xl font-editorial text-bronze whitespace-nowrap">{formatPrice(price)}</p>
+          <p className="text-base md:text-xl font-editorial text-bronze whitespace-nowrap">
+            {formatPrice(price * (1 - (discountPercent || 0) / 100))}
+          </p>
           {discountPercent > 0 && (
-            <p className="text-[10px] md:text-[12px] text-bronze/40 line-through">{formatPrice(price / (1 - discountPercent / 100))}</p>
+            <p className="text-[10px] md:text-[12px] text-bronze/40 line-through">{formatPrice(price)}</p>
           )}
         </div>
 

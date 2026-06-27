@@ -14,6 +14,7 @@ import BannersPage from './BannersPage';
 import CollectionsPage from './CollectionsPage';
 import CategoriesPage from './CategoriesPage';
 import InventoryPage from './InventoryPage';
+import SettingsPage from './SettingsPage';
 
 export {
   Dashboard,
@@ -32,5 +33,6 @@ export {
   CollectionsPage,
   CategoriesPage,
   InventoryPage,
+  SettingsPage,
 };
 

@@ -1,5 +1,6 @@
 import {
   CREATE_NEW_PRODUCT,
+  RESET_NEW_PRODUCT,
   GET_PRODUCTS_BEGIN,
   GET_PRODUCTS_ERROR,
   GET_PRODUCTS_SUCCESS,
@@ -26,6 +27,9 @@ const product_reducer = (state, action) => {
   if (action.type === CREATE_NEW_PRODUCT) {
     const { name, value } = action.payload;
     return { ...state, new_product: { ...state.new_product, [name]: value } };
+  }
+  if (action.type === RESET_NEW_PRODUCT) {
+    return { ...state, new_product: action.payload };
   }
   if (action.type === GET_SINGLE_PRODUCT_BEGIN) {
     return {

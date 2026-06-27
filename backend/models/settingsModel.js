@@ -2,10 +2,31 @@ const mongoose = require('mongoose');
 
 const settingsSchema = new mongoose.Schema(
     {
-        priorityShippingPrice: {
+        // --- Shipping (AUD, GST-inclusive) ---
+        standardShippingPrice: {
             type: Number,
-            default: 3500,
+            default: 15,
         },
+        expressShippingPrice: {
+            type: Number,
+            default: 65,
+        },
+        expressEnabled: {
+            type: Boolean,
+            default: true,
+        },
+        // Standard shipping becomes free when the discounted subtotal is at or
+        // above this amount. 0 disables free shipping.
+        freeShippingThreshold: {
+            type: Number,
+            default: 0,
+        },
+        // --- Tax ---
+        gstRate: {
+            type: Number,
+            default: 10, // % GST, included in displayed prices
+        },
+        // --- Optional add-on services (AUD, GST-inclusive) ---
         hemmingPrice: {
             type: Number,
             default: 800,

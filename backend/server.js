@@ -38,6 +38,9 @@ const connectToDb = require('./config/db');
 // require cloudinary configs
 const cloudinary = require('./config/cloudinary');
 
+// require reconciliation service
+const { startReconciliationJob } = require('./services/reconciliationService');
+
 // uncaught exception
 process.on('uncaughtException', async (err) => {
   console.error(`[SERVER FATAL] Uncaught Exception: ${err.message}`);
@@ -72,7 +75,7 @@ app.use(
           const regex = new RegExp(allowedClean.replace(/\*/g, '.*'));
           return regex.test(originClean);
         }
-        return originClean === allowedClean || originClean.includes(allowedClean);
+        return originClean === allowedClean;
       });
 
       if (isAllowed) {
@@ -87,7 +90,32 @@ app.use(
 );
 
 // Security Middlewares
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,       // 1 year
+    includeSubDomains: true,
+    preload: true,          // eligible for browser HSTS preload list
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}));
+// Permissions-Policy: disable browser features the app never uses
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
 app.use(mongoSanitize());
 
 // Rate Limiting (Prevents Brute-Force & basic DDoS)
@@ -107,9 +135,27 @@ const strictLimiter = rateLimit({
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 
-// eWAY callback route (redirect-based, no raw body needed unlike Stripe webhooks)
+// eWAY callback routes — registered before app.use(express.json) as these are redirect-based
 const ewayCallbackController = require('./controllers/webhookController');
+const PendingCheckout = require('./models/pendingCheckoutModel');
+
 app.get('/api/payment/callback', ewayCallbackController);
+
+// eWAY cancel route — user clicked "Cancel" on the hosted page
+// Routing through backend keeps the AccessCode out of the user's browser history
+app.get('/api/payment/cancel', async (req, res) => {
+  const FRONTEND_URL = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')[0]
+    : 'http://localhost:3000';
+  const { AccessCode } = req.query;
+  if (AccessCode) {
+    PendingCheckout.findOneAndUpdate(
+      { accessCode: AccessCode, status: 'pending' },
+      { status: 'failed' }
+    ).catch(() => {});
+  }
+  return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
+});
 
 app.use(express.json({ limit: '20mb' }));
 app.use(cookieParser());
@@ -120,6 +166,15 @@ app.get('/', (req, res) => {
     success: true,
     message: 'API service running 🚀',
   });
+});
+
+// RFC 9116 — security.txt
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain').send(
+    `Contact: mailto:${process.env.SECURITY_CONTACT_EMAIL || 'admin@angelfashionstudio.org'}\n` +
+    `Preferred-Languages: en\n` +
+    `Policy: https://www.angelfashionstudio.org/privacy-policy\n`
+  );
 });
 
 // using routers
@@ -150,6 +205,9 @@ connectToDb().then(() => {
     console.info(`[SERVER] Angel Fashion Studio API running on port ${port} | ENV: ${process.env.NODE_ENV || 'development'}`);
     console.info(`[SERVER] CORS origins: ${allowedOrigins.join(', ')}`);
   });
+
+  // Start background reconciliation job for missed eWAY payment callbacks
+  startReconciliationJob();
 
   // unhandled promise rejection
   process.on('unhandledRejection', (err) => {

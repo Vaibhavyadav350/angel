@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
 import { useInventoryContext } from '../../context/admin_inventory_context';
-import { useProductsContext } from '../../context/products_context';
+import { useProductContext } from '../../context/admin_product_context';
 import { Link } from 'react-router-dom';
 
 const InventoryPage = () => {
     const { inventory, lowStockCount, outOfStockCount, computeInventory } = useInventoryContext();
-    const { products } = useProductsContext();
+    const { products, fetchProducts } = useProductContext();
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // all | low | out
+
+    // Load products from the admin catalog (same source as the Products page)
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     useEffect(() => {
         if (products && products.length > 0) {

@@ -11,7 +11,7 @@ const deriveInventoryRows = (products) => {
                     productId: product.id || product._id,
                     productName: product.name,
                     category: product.category,
-                    image: product.images?.[0]?.url || '',
+                    image: product.image || product.images?.[0]?.url || '',
                     size: variant.size,
                     color: variant.color,
                     sku: variant.sku || `${(product.id || product._id)?.slice(-4)}-${variant.size}-${variant.color}`.toUpperCase(),

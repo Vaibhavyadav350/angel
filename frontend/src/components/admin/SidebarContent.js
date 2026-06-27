@@ -31,7 +31,8 @@ export default function SidebarContent({ onClose, className = '' }) {
           link.name !== 'Banners' &&
           link.name !== 'Collections' &&
           link.name !== 'Categories' &&
-          link.name !== 'Inventory'
+          link.name !== 'Inventory' &&
+          link.name !== 'Settings'
       );
       setLinks(tempLinks);
     }
@@ -43,9 +44,9 @@ export default function SidebarContent({ onClose, className = '' }) {
       className={`bg-white border-r border-bronze/10 w-60 fixed h-full flex flex-col transition-all duration-300 ${className}`}
     >
       {/* Brand Header */}
-      <div className="h-20 flex items-center justify-between px-6">
-        <div className="flex items-center shrink-0">
-          <img src={logo} alt="Angel Fashion Studio Logo" className="h-12 object-contain" />
+      <div className="h-32 flex items-center justify-between px-4">
+        <div className="flex items-center w-full">
+          <img src={logo} alt="Angel Fashion Studio Logo" className="w-full h-auto max-h-[110px] object-contain" />
         </div>
         <button
           className="md:hidden text-bronze/50 hover:text-bronze transition-colors p-1"
@@ -68,7 +69,7 @@ export default function SidebarContent({ onClose, className = '' }) {
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 overflow-y-auto py-2">
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2">
         {Links.map((link) => (
           <NavItem key={link.name} icon={link.icon} url={link.url}>
             {link.name}

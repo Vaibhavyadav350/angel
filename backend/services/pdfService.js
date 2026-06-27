@@ -104,7 +104,7 @@ exports.generateInvoice = async (order, res) => {
     const valuationX = 330;
     const valuationY = startY;
     const valuationW = 225;
-    const valuationH = 150;
+    const valuationH = 185;
 
     doc.roundedRect(valuationX, valuationY, valuationW, valuationH, 12).lineWidth(1).stroke(colors.bronze);
 
@@ -121,9 +121,16 @@ exports.generateInvoice = async (order, res) => {
     doc.fillColor(colors.gray).font('Helvetica').text('Shipping', valInnerX, valInnerY);
     doc.fillColor(colors.chocolate).font('Helvetica-Bold').text(formatPrice(order.shippingPrice), valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
 
+    if (order.addOns && order.addOns.length > 0) {
+        valInnerY += 20;
+        const addonsTotal = order.addOns.reduce((s, a) => s + (a.price || 0), 0);
+        doc.fillColor(colors.gray).font('Helvetica').text('Services', valInnerX, valInnerY);
+        doc.fillColor(colors.chocolate).font('Helvetica-Bold').text(formatPrice(addonsTotal), valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
+    }
+
     if (order.discountAmount > 0) {
         valInnerY += 20;
-        doc.font('Helvetica').fillColor(colors.gold).text(`Discount`, valInnerX, valInnerY);
+        doc.font('Helvetica').fillColor(colors.gold).text(`Coupon`, valInnerX, valInnerY);
         doc.font('Helvetica-Bold').text(`-${formatPrice(order.discountAmount)}`, valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
     }
 
@@ -184,7 +191,7 @@ exports.generateInvoice = async (order, res) => {
         doc.fillColor(colors.gold).fontSize(7).font('Helvetica-Bold').text(`SIZE: `, 40, itemPos + 15, { continued: true }).fillColor(colors.gray).text(`${item.size}   `, { continued: true })
             .fillColor(colors.gold).text(`COLOR: `, { continued: true }).fillColor(colors.gray).text(`${item.color}`);
 
-        doc.fillColor(colors.gray).fontSize(8).font('Helvetica').text(`${item.quantity} x ${formatPrice(item.price)}`, 40, itemPos + 30);
+        doc.fillColor(colors.gray).fontSize(8).font('Helvetica').text(`${item.quantity} x ${formatPrice(item.price)}${item.mrp && item.mrp > item.price ? `   ·   RRP ${formatPrice(item.mrp)}` : ''}`, 40, itemPos + 30);
 
         doc.fillColor(colors.chocolate).fontSize(14).font('Times-Bold').text(formatPrice(item.price * item.quantity), 455, itemPos + 15, { align: 'right', width: 100 });
 
@@ -245,7 +252,7 @@ exports.generateInvoiceBuffer = (order) => {
             drawLuxuryHeader(doc, 'TAX INVOICE', order);
             let startY = drawBigOrderMeta(doc, order, true);
 
-            const valuationX = 330, valuationY = startY, valuationW = 225, valuationH = 150;
+            const valuationX = 330, valuationY = startY, valuationW = 225, valuationH = 185;
             doc.roundedRect(valuationX, valuationY, valuationW, valuationH, 12).lineWidth(1).stroke(colors.bronze);
             const valInnerX = valuationX + 20;
             let valInnerY = valuationY + 25;
@@ -258,9 +265,16 @@ exports.generateInvoiceBuffer = (order) => {
             doc.fillColor(colors.gray).font('Helvetica').text('Shipping', valInnerX, valInnerY);
             doc.fillColor(colors.chocolate).font('Helvetica-Bold').text(formatPrice(order.shippingPrice), valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
 
+            if (order.addOns && order.addOns.length > 0) {
+                valInnerY += 20;
+                const addonsTotal = order.addOns.reduce((s, a) => s + (a.price || 0), 0);
+                doc.fillColor(colors.gray).font('Helvetica').text('Services', valInnerX, valInnerY);
+                doc.fillColor(colors.chocolate).font('Helvetica-Bold').text(formatPrice(addonsTotal), valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
+            }
+
             if (order.discountAmount > 0) {
                 valInnerY += 20;
-                doc.font('Helvetica').fillColor(colors.gold).text(`Discount`, valInnerX, valInnerY);
+                doc.font('Helvetica').fillColor(colors.gold).text(`Coupon`, valInnerX, valInnerY);
                 doc.font('Helvetica-Bold').text(`-${formatPrice(order.discountAmount)}`, valuationX, valInnerY, { align: 'right', width: valuationW - 20 });
             }
             valInnerY += 20;
@@ -301,7 +315,7 @@ exports.generateInvoiceBuffer = (order) => {
                 doc.fillColor(colors.chocolate).fontSize(10).font('Helvetica-Bold').text(item.name.toUpperCase(), 40, itemPos);
                 doc.fillColor(colors.gold).fontSize(7).font('Helvetica-Bold').text(`SIZE: `, 40, itemPos + 15, { continued: true }).fillColor(colors.gray).text(`${item.size}   `, { continued: true })
                     .fillColor(colors.gold).text(`COLOR: `, { continued: true }).fillColor(colors.gray).text(`${item.color}`);
-                doc.fillColor(colors.gray).fontSize(8).font('Helvetica').text(`${item.quantity} x ${formatPrice(item.price)}`, 40, itemPos + 30);
+                doc.fillColor(colors.gray).fontSize(8).font('Helvetica').text(`${item.quantity} x ${formatPrice(item.price)}${item.mrp && item.mrp > item.price ? `   ·   RRP ${formatPrice(item.mrp)}` : ''}`, 40, itemPos + 30);
                 doc.fillColor(colors.chocolate).fontSize(14).font('Times-Bold').text(formatPrice(item.price * item.quantity), 455, itemPos + 15, { align: 'right', width: 100 });
                 itemPos += 60;
 

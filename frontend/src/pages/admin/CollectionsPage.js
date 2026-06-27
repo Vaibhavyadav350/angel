@@ -90,22 +90,28 @@ const CollectionsPage = () => {
 
     useEffect(() => { getCollections(); }, [getCollections]);
 
-    const handleSave = (data) => {
-        if (editingCollection?._id) {
-            updateCollection(editingCollection._id, data);
-            toast.success('Collection updated!');
+    const handleSave = async (data) => {
+        const isEdit = Boolean(editingCollection?._id);
+        const res = isEdit
+            ? await updateCollection(editingCollection._id, data)
+            : await createCollection(data);
+        if (res?.success) {
+            toast.success(isEdit ? 'Collection updated!' : 'Collection created!');
+            setModalOpen(false);
+            setEditingCollection(null);
         } else {
-            createCollection(data);
-            toast.success('Collection created!');
+            toast.error(res?.message || 'Failed to save collection');
         }
-        setModalOpen(false);
-        setEditingCollection(null);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm('Delete this collection? Products will not be affected.')) {
-            deleteCollection(id);
-            toast.success('Collection deleted.');
+            const res = await deleteCollection(id);
+            if (res?.success) {
+                toast.success('Collection deleted.');
+            } else {
+                toast.error(res?.message || 'Failed to delete collection');
+            }
         }
     };
 
@@ -136,7 +142,7 @@ const CollectionsPage = () => {
                         <div className="text-center">Status</div>
                         <div className="text-right">Actions</div>
                     </div>
-                    {collections.sort((a, b) => a.sortOrder - b.sortOrder).map(col => (
+                    {[...collections].sort((a, b) => a.sortOrder - b.sortOrder).map(col => (
                         <div key={col._id} className="grid grid-cols-[2fr,1fr,1fr,1fr,auto] gap-4 px-6 py-5 border-b border-bronze/5 last:border-0 items-center hover:bg-champagne/50 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 rounded overflow-hidden bg-bronze/5 shrink-0">

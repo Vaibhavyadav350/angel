@@ -16,6 +16,7 @@ import {
   FaFacebook,
   FaInstagram,
   FaMapMarkerAlt,
+  FaCog,
 } from 'react-icons/fa';
 
 const TikTokIcon = ({ className, color, fontSize }) => (
@@ -176,6 +177,7 @@ export const LinkItems = [
   { name: 'Customers', url: '/admin/customers', icon: <FaUserTie /> },
   { name: 'Admins', url: '/admin/admins', icon: <FaUserTie /> },
   { name: 'Returns', url: '/admin/returns', icon: <FaUndo /> },
+  { name: 'Settings', url: '/admin/settings', icon: <FaCog /> },
 ];
 
 export const orderStatusList = [
@@ -199,14 +201,14 @@ export const admin_products_export_url = `${domain}/api/admin/product/export/exc
 export const admin_create_product_url = `${domain}/api/admin/product/new`;
 export const admin_orders_url = `${domain}/api/admin/orders`;
 export const admin_orders_export_url = `${domain}/api/admin/orders/export/excel`;
-export const admin_orders_bulk_url = `${domain}/api/admin/orders/bulk-update`;
 export const admin_order_url = `${domain}/api/admin/order/`;
 export const admin_single_order_url = `${domain}/api/admin/order/`; // For fetching single order
 export const admin_delete_review_url = `${domain}/api/admin/product/review/`;
 export const admin_newsletter_url = `${domain}/api/newsletter`;
 export const admin_banners_url = `${domain}/api/banners`;
 export const admin_collections_url = `${domain}/api/featured-collections`;
-export const admin_categories_url = `${domain}/api/admin/categories`;
+export const admin_categories_url = `${domain}/api/categories`;
+export const settings_url = `${domain}/api/settings`;
 export const admin_inventory_url = `${domain}/api/admin/inventory`;
 
 // Analytics URLs

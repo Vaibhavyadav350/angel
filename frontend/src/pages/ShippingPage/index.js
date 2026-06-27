@@ -13,7 +13,7 @@ const ShippingPage = () => {
             <section className="py-20 px-8 lg:px-24">
                 <div className="container mx-auto max-w-3xl space-y-12">
                     <div className="space-y-4">
-                        <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Domestic Shipping (India)</h3>
+                        <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Domestic Shipping (Australia)</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
                             We offer free standard shipping on all domestic orders over $500. Standard delivery takes 5–7 business days. Express shipping (2–3 business days) is available at checkout for a flat fee.
                         </p>

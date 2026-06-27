@@ -22,7 +22,7 @@ function ProductsPage() {
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const handleRefresh = async () => {
-    await fetchProducts();
+    await fetchProducts(true);
   };
 
   const handleExport = async () => {

@@ -9,40 +9,11 @@ import { toast } from 'react-toastify';
 
 function OrdersTable({ orders, onRefresh }) {
   const { currentAdmin: currentUser } = useAdminContext();
-  const { fetchOrders, deleteOrder, bulkUpdateOrders, updateOrderStatus, updateReturnStatus } = useOrderContext();
+  const { fetchOrders, deleteOrder, updateOrderStatus, updateReturnStatus } = useOrderContext();
   const [loading, setLoading] = useState(false);
-  const [selectedOrders, setSelectedOrders] = useState([]);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const buttonRefs = useRef({});
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedOrders(orders.map(o => o._id));
-    } else {
-      setSelectedOrders([]);
-    }
-  };
-
-  const handleSelectOrder = (id) => {
-    setSelectedOrders(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleBulkStatusUpdate = async (status) => {
-    setLoading(true);
-    const res = await bulkUpdateOrders(selectedOrders, status);
-    setLoading(false);
-    if (res.success) {
-      toast.success(res.message);
-      setSelectedOrders([]);
-      if (onRefresh) onRefresh();
-      else fetchOrders();
-    } else {
-      toast.error(res.message);
-    }
-  };
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -89,10 +60,16 @@ function OrdersTable({ orders, onRefresh }) {
     if (menuOpenId === id) {
       setMenuOpenId(null);
     } else {
-      const rect = buttonRefs.current[id].getBoundingClientRect();
+      const button = buttonRefs.current[id];
+      if (!button) return; // ref not attached yet — avoid throwing and killing the handler
+      const rect = button.getBoundingClientRect();
+      // Menu is position:fixed (viewport-relative), so use rect coords directly.
+      // Adding scrollX/Y here pushed the menu off-screen once the page was scrolled.
+      const MENU_HEIGHT = 260; // approx dropdown height; flip up if it would overflow the viewport
+      const openUp = rect.bottom + MENU_HEIGHT > window.innerHeight;
       setMenuPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX - 144, // 144 is w-36 (dropdown width)
+        top: openUp ? Math.max(8, rect.top - MENU_HEIGHT) : rect.bottom,
+        left: rect.right - 144, // 144 is w-36 (dropdown width)
       });
       setMenuOpenId(id);
     }
@@ -121,41 +98,6 @@ function OrdersTable({ orders, onRefresh }) {
 
   return (
     <div className="space-y-4">
-      {/* Bulk Action Bar */}
-      {selectedOrders.length > 0 && (
-        <div className="bg-bronze text-champagne px-6 py-4 rounded-lg flex items-center justify-between shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-gold/20 px-3 py-1 rounded">
-              {selectedOrders.length} Selected
-            </span>
-            {orders.every(o => o.returnStatus === 'none') && (
-              <>
-                <div className="h-4 w-px bg-champagne/20" />
-                <span className="text-[11px] font-bold uppercase tracking-widest hidden md:inline">Bulk Advance To:</span>
-              </>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {orders.every(o => o.returnStatus === 'none') && ['confirmed', 'shipped', 'delivered'].map((status) => (
-              <button
-                key={status}
-                onClick={() => handleBulkStatusUpdate(status)}
-                disabled={loading}
-                className="px-4 py-2 bg-white/10 hover:bg-gold/80 text-[9px] font-black uppercase tracking-tighter border border-white/10 rounded transition-all active:scale-95 disabled:opacity-50"
-              >
-                {status}
-              </button>
-            ))}
-            <button
-              onClick={() => setSelectedOrders([])}
-              className="ml-4 text-[10px] font-bold uppercase tracking-widest hover:text-gold transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="bg-white border border-bronze/10 rounded-lg overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex items-center justify-center">
@@ -166,14 +108,6 @@ function OrdersTable({ orders, onRefresh }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-bronze/10 bg-champagne/10">
-                <th className="px-5 py-4 text-left w-10">
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={selectedOrders.length === orders.length}
-                    className="accent-gold w-4 h-4"
-                  />
-                </th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Customer</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Items</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Payment</th>
@@ -190,17 +124,8 @@ function OrdersTable({ orders, onRefresh }) {
                   orderStatus,
                   _id: id,
                 } = order;
-                const isSelected = selectedOrders.includes(id);
                 return (
-                  <tr key={index} className={`border-b border-bronze/5 hover:bg-champagne/30 transition-colors ${isSelected ? 'bg-gold/5' : ''}`}>
-                    <td className="px-5 py-4">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleSelectOrder(id)}
-                        className="accent-gold w-4 h-4 cursor-pointer"
-                      />
-                    </td>
+                  <tr key={index} className="border-b border-bronze/5 hover:bg-champagne/30 transition-colors">
                     <td className="px-5 py-4 text-sm font-medium text-bronze">{name}</td>
                     <td className="px-5 py-4">
                       <div className="flex flex-col gap-3">
@@ -324,13 +249,6 @@ function OrdersTable({ orders, onRefresh }) {
 
                               <div className="h-px bg-bronze/10 my-1"></div>
 
-                              <div
-                                className="px-5 py-2.5 text-[11px] font-bold uppercase tracking-widest text-gold hover:bg-gold/10 cursor-pointer flex justify-between items-center"
-                                onClick={() => { handleSelectOrder(id); setMenuOpenId(null); }}
-                              >
-                                {isSelected ? 'Unselect Row' : 'Select Row'}
-                                <span className="material-symbols-outlined text-sm">{isSelected ? 'check_box' : 'check_box_outline_blank'}</span>
-                              </div>
                               {currentUser.privilege !== 'low' && (
                                 <div
                                   className="px-5 py-2.5 text-[11px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 cursor-pointer flex justify-between items-center"

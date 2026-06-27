@@ -1,16 +1,16 @@
-/* global eCrypt */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCartContext } from '../../context/cart_context';
 import { useUserContext } from '../../context/user_context';
 import { useOrderContext } from '../../context/order_context';
 import { formatPrice } from '../../utils/helpers';
+import { computeOrderSummary, shippingMethods, addonOptions } from '../../utils/pricing';
+import { useSettingsContext } from '../../context/settings_context';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCouponContext } from '../../context/admin_coupon_context';
 import { domain } from '../../utils/constants';
 
-// Strict minimal Australian state mapping
 const AU_STATES = [
   { code: 'NSW', name: 'New South Wales' },
   { code: 'VIC', name: 'Victoria' },
@@ -23,38 +23,38 @@ const AU_STATES = [
 ];
 
 const CheckoutPage = () => {
-  const { cart, total_amount, shipping_fee } = useCartContext();
+  const { cart } = useCartContext();
   const { shipping, updateShipping } = useOrderContext();
   const { currentUser } = useUserContext();
+  const { settings } = useSettingsContext();
   const location = useLocation();
 
-  // Country State City
   const [selectedState, setSelectedState] = useState(shipping.address?.state || '');
+  const [deliveryMethod, setDeliveryMethod] = useState('standard');
+  const [selectedAddons, setSelectedAddons] = useState([]);
 
-  // Coupons
   const { validateCoupon } = useCouponContext();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState({ amount: 0, code: '', type: '' });
   const [applying, setApplying] = useState(false);
 
-  // States
+  // Single itemised breakdown for the whole page (and what we charge).
+  const coupon = discount.amount > 0 ? { amount: discount.amount, type: discount.type } : null;
+  const methods = shippingMethods(settings);
+  const addons = addonOptions(settings);
+  const summary = computeOrderSummary(cart, { method: deliveryMethod, coupon, addons: selectedAddons, config: settings });
+
+  const toggleAddon = (key) =>
+    setSelectedAddons((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+
+  const [guestEmail, setGuestEmail] = useState('');
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
-
-  // Card Details (CSE)
-  const [cardDetails, setCardDetails] = useState({
-    number: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvn: '',
-    nameOnCard: ''
-  });
 
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Secure Checkout';
     window.scrollTo(0, 0);
 
-    // Handle return from eWAY (Cancel only, success goes to /orders)
     const params = new URLSearchParams(location.search);
     if (params.get('canceled')) {
       toast.error('Payment cancelled.');
@@ -72,75 +72,48 @@ const CheckoutPage = () => {
     updateShipping(e);
   };
 
-  const handleCardChange = (e) => {
-    const { name, value } = e.target;
-    setCardDetails({ ...cardDetails, [name]: value });
-  };
-
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setProcessing(true);
     setError(null);
 
     const finalName = shipping.name || currentUser?.displayName;
+    const finalEmail = currentUser?.email || guestEmail;
     const { phone_number, address: { line1, postal_code, city, state } } = shipping;
+
     if (!finalName || !phone_number || !line1 || !postal_code || !city || !state) {
       toast.error('Please fill all shipping fields completely', { position: 'top-center' });
       setProcessing(false);
       return;
     }
-
-    // Validate Card Details
-    if (!cardDetails.number || !cardDetails.expiryMonth || !cardDetails.expiryYear || !cardDetails.cvn) {
-      toast.error('Please enter complete credit card details');
+    if (!finalEmail) {
+      toast.error('Please enter your email address for order confirmation', { position: 'top-center' });
       setProcessing(false);
       return;
     }
 
     try {
-      const rawDiscount = discount.type === 'PERCENTAGE' ? (total_amount * discount.amount / 100) : discount.amount;
-      const finalDiscount = Number(rawDiscount.toFixed(2));
-
-      // Client Side Encryption (CSE) — eWAY docs: use eCrypt.encryptValue()
-      if (typeof eCrypt === 'undefined' || !eCrypt.encryptValue) {
-        throw new Error('eWAY eCrypt library not loaded. Please refresh the page.');
-      }
-
-      const encryptionKey = process.env.REACT_APP_EWAY_ENCRYPTION_KEY;
-      const encryptedCard = {
-        number: eCrypt.encryptValue(cardDetails.number, encryptionKey),
-        cvn: eCrypt.encryptValue(cardDetails.cvn, encryptionKey),
-        expiryMonth: cardDetails.expiryMonth,
-        expiryYear: cardDetails.expiryYear,
-        nameOnCard: cardDetails.nameOnCard || finalName || 'Cardholder',
-      };
-
       const response = await axios.post(`${domain}/api/payment/create-checkout-session`, {
         cart,
-        shipping_fee,
-        total_amount,
+        shipping_fee: summary.delivery,
+        total_amount: summary.sellingTotal,
+        shippingMethod: deliveryMethod,
+        addons: selectedAddons,
         shipping: {
           name: finalName || 'Guest',
-          phone_number: phone_number,
+          phone_number,
           address: { line1, postal_code, city, state, country: 'AU' }
         },
-        discountAmount: finalDiscount,
+        discountAmount: summary.coupon,
         couponCode: discount.code,
-        email: currentUser?.email,
+        email: finalEmail,
         userId: currentUser?.uid,
-        eway_encrypted_card: encryptedCard
       });
 
-      if (response.data.success) {
-        // Direct payment success — transactionId is returned
-        if (response.data.transactionId) {
-          window.location.href = '/orders?success=true';
-        } else if (response.data.url) {
-          // Responsive Shared Page fallback
-          window.location.href = response.data.url;
-        }
+      if (response.data.success && response.data.url) {
+        window.location.href = response.data.url;
       } else {
-        setError(response.data.message || 'Failed to process payment.');
+        setError(response.data.message || 'Failed to initiate payment.');
         setProcessing(false);
       }
     } catch (err) {
@@ -159,7 +132,7 @@ const CheckoutPage = () => {
           </Link>
         </div>
       </main>
-    )
+    );
   }
 
   const inputClasses = "w-full bg-transparent border-0 border-b border-chocolate/20 text-chocolate py-3 px-0 focus:ring-0 focus:border-gold transition-colors font-body text-sm placeholder:text-chocolate/30";
@@ -170,14 +143,14 @@ const CheckoutPage = () => {
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-20">
 
-          {/* Left Column - Forms */}
+          {/* Left Column - Shipping Form */}
           <div className="flex-1 space-y-16">
             <section>
               <h2 className="text-4xl lg:text-5xl font-editorial font-black text-bronze uppercase tracking-tighter mb-12">
-                Fulfillment Details
+                Delivery Details
               </h2>
 
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit} data-eway-encrypt-key={process.env.REACT_APP_EWAY_ENCRYPTION_KEY}>
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit}>
                 <div className="col-span-2">
                   <label className={labelClasses}>Full Name</label>
                   <input
@@ -202,10 +175,6 @@ const CheckoutPage = () => {
                     onChange={updateShipping}
                     required
                   />
-                </div>
-
-                <div className="hidden">
-                  <input type="hidden" name="country" value="AU" />
                 </div>
 
                 <div>
@@ -255,83 +224,39 @@ const CheckoutPage = () => {
                   />
                 </div>
 
-                  <div className="col-span-2 pt-12 border-t border-bronze/10">
-                    <h3 className="text-xl font-editorial font-bold text-bronze uppercase mb-8">Payment Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                      <div className="col-span-4">
-                        <label className={labelClasses}>Name on Card</label>
-                        <input
-                          className={inputClasses}
-                          placeholder="As it appears on your card"
-                          type="text"
-                          name="nameOnCard"
-                          value={cardDetails.nameOnCard}
-                          onChange={handleCardChange}
-                          required
-                        />
-                      </div>
-                      <div className="col-span-1 md:col-span-3">
-                        <label className={labelClasses}>Card Number</label>
-                        <input
-                          className={inputClasses}
-                          placeholder="4444 3333 2222 1111"
-                          type="text"
-                          name="number"
-                          value={cardDetails.number}
-                          onChange={handleCardChange}
-                          autoComplete="off"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className={labelClasses}>CVN</label>
-                        <input
-                          className={inputClasses}
-                          placeholder="123"
-                          type="text"
-                          name="cvn"
-                          value={cardDetails.cvn}
-                          onChange={handleCardChange}
-                          autoComplete="off"
-                          required
-                        />
-                      </div>
-                      <div className="col-span-2">
-                        <label className={labelClasses}>Expiry Month</label>
-                        <select className={inputClasses} name="expiryMonth" value={cardDetails.expiryMonth} onChange={handleCardChange} required>
-                          <option value="">MM</option>
-                          {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map(m => <option key={m} value={m}>{m}</option>)}
-                        </select>
-                      </div>
-                      <div className="col-span-2">
-                        <label className={labelClasses}>Expiry Year</label>
-                        <select className={inputClasses} name="expiryYear" value={cardDetails.expiryYear} onChange={handleCardChange} required>
-                          <option value="">YY</option>
-                          {Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString()).map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                      </div>
-                    </div>
+                {!currentUser && (
+                  <div className="col-span-2">
+                    <label className={labelClasses}>Email Address (for order confirmation)</label>
+                    <input
+                      className={inputClasses}
+                      placeholder="your@email.com"
+                      type="email"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      required
+                    />
                   </div>
+                )}
 
-                  <div className="col-span-2 pt-12">
-                    <button
-                      type="submit"
-                      disabled={processing}
-                      className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
-                    >
-                      <span>{processing ? 'Processing Payment...' : 'Authorize Secure Payment'}</span>
-                      {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
-                    </button>
-                    {error && (
-                      <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
-                        {error}
-                      </div>
-                    )}
-                    <p className="text-center text-[9px] uppercase tracking-widest text-bronze/50 mt-4 font-bold flex items-center justify-center gap-2">
-                      <span className="material-symbols-outlined text-[10px]">shield_check</span>
-                      Secured by eWAY Client-Side Encryption
-                    </p>
-                  </div>
+                <div className="col-span-2 pt-12 border-t border-bronze/10">
+                  <button
+                    type="submit"
+                    disabled={processing}
+                    className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
+                  >
+                    <span>{processing ? 'Redirecting to Payment...' : 'Proceed to Secure Payment'}</span>
+                    {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
+                  </button>
+                  {error && (
+                    <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
+                      {error}
+                    </div>
+                  )}
+                  <p className="text-center text-[9px] uppercase tracking-widest text-bronze/50 mt-4 font-bold flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-[10px]">shield_check</span>
+                    Card details collected securely by eWAY — never stored on our servers
+                  </p>
+                </div>
               </form>
             </section>
           </div>
@@ -375,7 +300,7 @@ const CheckoutPage = () => {
                       onClick={async () => {
                         if (!couponCode) return;
                         setApplying(true);
-                        const res = await validateCoupon(couponCode, total_amount);
+                        const res = await validateCoupon(couponCode, summary.sellingTotal);
                         if (res.success) {
                           setDiscount({ amount: res.data.amount, code: res.data.code, type: res.data.discountType });
                           toast.success('Coupon Applied!');
@@ -392,31 +317,75 @@ const CheckoutPage = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(total_amount)}</span>
+                {/* Delivery method */}
+                <div className="space-y-2">
+                  <label className="text-[9px] font-bold uppercase tracking-widest text-bronze/40">Delivery Method</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.values(methods).map((m) => (
+                      <button
+                        key={m.key}
+                        type="button"
+                        onClick={() => setDeliveryMethod(m.key)}
+                        className={`text-left px-3 py-2 rounded border transition-all ${deliveryMethod === m.key ? 'border-gold bg-gold/5' : 'border-bronze/10 hover:border-bronze/30'}`}
+                      >
+                        <span className="block text-[10px] font-bold uppercase tracking-widest text-bronze">{m.label} · {formatPrice(m.fee)}</span>
+                        <span className="block text-[8px] uppercase tracking-widest text-bronze/40 mt-0.5">{m.eta}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                {discount.amount > 0 && (
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-red-500">
-                    <span>Discount ({discount.code})</span>
-                    <span>-{discount.type === 'PERCENTAGE' ? `${discount.amount}%` : formatPrice(discount.amount)}</span>
+
+                {/* Add-on services */}
+                {addons.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-bronze/40">Add-on Services</label>
+                    <div className="space-y-1.5">
+                      {addons.map((a) => (
+                        <label key={a.key} className="flex items-center justify-between gap-2 cursor-pointer bg-champagne/20 px-3 py-2 rounded border border-bronze/5">
+                          <span className="flex items-center gap-2">
+                            <input type="checkbox" checked={selectedAddons.includes(a.key)} onChange={() => toggleAddon(a.key)} className="accent-bronze" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">{a.label}</span>
+                          </span>
+                          <span className="text-[10px] font-bold text-bronze">{formatPrice(a.price)}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
+                  <span>Item Total</span>
+                  <span>{formatPrice(summary.itemTotal)}</span>
+                </div>
+                {summary.productDiscount > 0 && (
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-emerald-600">
+                    <span>Product Discount</span>
+                    <span>−{formatPrice(summary.productDiscount)}</span>
+                  </div>
+                )}
+                {summary.coupon > 0 && (
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-emerald-600">
+                    <span>Coupon ({discount.code})</span>
+                    <span>−{formatPrice(summary.coupon)}</span>
+                  </div>
+                )}
+                {summary.addonsTotal > 0 && (
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
+                    <span>Services</span>
+                    <span>+{formatPrice(summary.addonsTotal)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
-                  <span>Shipping</span>
-                  <span>{shipping_fee === 0 ? 'Free' : formatPrice(shipping_fee)}</span>
+                  <span>Delivery ({methods[deliveryMethod]?.label || 'Standard'})</span>
+                  <span>{summary.delivery === 0 ? 'Free' : formatPrice(summary.delivery)}</span>
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-bronze/10">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">Total</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold">To Pay</span>
                   <span className="text-2xl font-editorial font-black text-bronze">
-                    {formatPrice(
-                      (discount.type === 'PERCENTAGE'
-                        ? (total_amount * (1 - discount.amount / 100))
-                        : (total_amount - discount.amount))
-                      + shipping_fee
-                    )}
+                    {formatPrice(summary.toPay)}
                   </span>
                 </div>
+                <p className="text-[9px] text-bronze/40 text-right">Includes GST of {formatPrice(summary.gst)}</p>
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ import {
   REMOVE_CART_ITEM,
   TOGGLE_CART_ITEM_AMOUNT,
 } from '../actions';
+import { DEFAULT_PRICING, unitSellingPrice } from '../utils/pricing';
 
 const cart_reducer = (state, action) => {
   if (action.type === ADD_TO_CART) {
@@ -37,10 +38,10 @@ const cart_reducer = (state, action) => {
         ? product.images[0]
         : defaultImage;
 
-      const discount = product.discountPercent || 0;
-      const tax = product.taxPercent || 0;
-      const basePrice = product.price || 0;
-      const finalPrice = (basePrice * (1 - discount / 100)) * (1 + tax / 100);
+      // All prices are GST-inclusive. `mrp` is the RRP, `price` is what the
+      // customer actually pays after the per-product discount.
+      const rrp = product.price || 0;
+      const sellingPrice = unitSellingPrice(product);
 
       const newItem = {
         id: id + color + size,
@@ -50,10 +51,9 @@ const cart_reducer = (state, action) => {
         size,
         amount,
         image: productImage.url || defaultImage.url,
-        price: finalPrice,
-        basePrice,
-        discountPercent: discount,
-        taxPercent: tax,
+        price: sellingPrice,
+        mrp: rrp,
+        discountPercent: product.discountPercent || 0,
         shipping: product.shipping || false,
         expressDelivery: expressDelivery || false,
         max: maxStock,
@@ -115,11 +115,9 @@ const cart_reducer = (state, action) => {
       }
     );
 
-    let shipping_fee = 0;
-    if (total_amount > 0) {
-      const hasExpress = state.cart.some(item => item.expressDelivery);
-      shipping_fee = 11 + (hasExpress ? 50 : 0);
-    }
+    // Preview only (default rate); CartTotals/Checkout recompute with the live
+    // store settings. total_amount is the discounted selling subtotal.
+    const shipping_fee = total_amount > 0 ? DEFAULT_PRICING.standardShippingPrice : 0;
 
     return { ...state, total_items, total_amount, shipping_fee };
   }

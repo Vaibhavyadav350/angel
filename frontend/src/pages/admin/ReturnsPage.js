@@ -97,7 +97,7 @@ function ReturnsPage() {
 
                         <div className="flex items-end gap-2 lg:col-span-1">
                             <button
-                                onClick={applyFilters}
+                                onClick={() => applyFilters(filters)}
                                 className="flex-1 bg-bronze text-white py-2.5 rounded text-[9px] font-black uppercase tracking-widest hover:bg-gold transition-all"
                             >
                                 Apply

@@ -6,7 +6,6 @@ import {
   admin_orders_url,
   admin_order_url,
   admin_single_order_url,
-  admin_orders_bulk_url,
   admin_orders_export_url,
 } from '../utils/constants';
 import {
@@ -132,17 +131,6 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  const bulkUpdateOrders = async (orderIds, status) => {
-    try {
-      const response = await axios.put(admin_orders_bulk_url, { orderIds, status }, { withCredentials: true });
-      const { success, message } = response.data;
-      return { success, message };
-    } catch (error) {
-      const { message } = error.response?.data || {};
-      return { success: false, message: message || 'Failed to bulk update orders' };
-    }
-  };
-
   const exportOrdersToExcel = async () => {
     try {
       const response = await axios.get(admin_orders_export_url, {
@@ -201,7 +189,6 @@ export const OrderProvider = ({ children }) => {
         fetchSingleOrder,
         updateOrderStatus,
         deleteOrder,
-        bulkUpdateOrders,
         exportOrdersToExcel,
         updateReturnStatus,
         fetchPackingSlip,

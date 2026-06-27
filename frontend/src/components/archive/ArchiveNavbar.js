@@ -87,7 +87,7 @@ const ArchiveNavbar = React.memo(() => {
       <header className="fixed top-0 left-0 right-0 z-[100] px-12 lg:px-24 py-5 flex items-center justify-between bg-champagne/90 backdrop-blur-md border-b border-bronze/10 transition-all duration-500">
         {/* Left Logo */}
         <Link to="/" className="text-left flex items-center" onClick={closeMenu}>
-          <img src={logo} alt="Angel Fashion Studio Logo" className="h-14 md:h-20 object-contain" />
+          <img src={logo} alt="Angel Fashion Studio Logo" className="h-[67px] md:h-24 object-contain" />
         </Link>
 
         {/* Right Side Navigation */}

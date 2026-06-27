@@ -11,7 +11,7 @@ const CheckoutNavbar = () => {
 
                 {/* Centered Brand Logo */}
                 <Link to="/" className="text-center group flex items-center justify-center">
-                    <img src={logo} alt="Angel Fashion Studio Logo" className="h-14 sm:h-20 object-contain" />
+                    <img src={logo} alt="Angel Fashion Studio Logo" className="h-[67px] sm:h-24 object-contain" />
                 </Link>
 
                 {/* Secure Marker */}

@@ -121,16 +121,18 @@ const BannersPage = () => {
 
     useEffect(() => { getBanners(); }, [getBanners]);
 
-    const handleSave = (data) => {
-        if (editingBanner?._id) {
-            updateBanner(editingBanner._id, data);
-            toast.success('Banner updated successfully!');
+    const handleSave = async (data) => {
+        const isEdit = Boolean(editingBanner?._id);
+        const res = isEdit
+            ? await updateBanner(editingBanner._id, data)
+            : await createBanner(data);
+        if (res?.success) {
+            toast.success(isEdit ? 'Banner updated successfully!' : 'Banner created successfully!');
+            setModalOpen(false);
+            setEditingBanner(null);
         } else {
-            createBanner(data);
-            toast.success('Banner created successfully!');
+            toast.error(res?.message || 'Failed to save banner');
         }
-        setModalOpen(false);
-        setEditingBanner(null);
     };
 
     const handleEdit = (banner) => {
@@ -138,10 +140,14 @@ const BannersPage = () => {
         setModalOpen(true);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm('Delete this banner permanently?')) {
-            deleteBanner(id);
-            toast.success('Banner deleted.');
+            const res = await deleteBanner(id);
+            if (res?.success) {
+                toast.success('Banner deleted.');
+            } else {
+                toast.error(res?.message || 'Failed to delete banner');
+            }
         }
     };
 
@@ -172,7 +178,7 @@ const BannersPage = () => {
 
                 {/* Banners Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {banners.sort((a, b) => a.sortOrder - b.sortOrder).map(banner => (
+                    {[...banners].sort((a, b) => a.sortOrder - b.sortOrder).map(banner => (
                         <div key={banner._id} className="bg-white rounded-lg overflow-hidden shadow-sm border border-bronze/10 flex flex-col">
                             <div className="relative h-40 bg-bronze/5 overflow-hidden">
                                 <img

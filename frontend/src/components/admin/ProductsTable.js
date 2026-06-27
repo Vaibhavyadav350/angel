@@ -12,26 +12,11 @@ function ProductsTable({ products }) {
   const { currentAdmin: currentUser } = useAdminContext();
   const { fetchProducts, deleteProduct } = useProductContext();
   const [loading, setLoading] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
   const buttonRefs = useRef({});
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedProducts(products.map(p => p.id));
-    } else {
-      setSelectedProducts([]);
-    }
-  };
-
-  const handleSelectProduct = (id) => {
-    setSelectedProducts(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -39,7 +24,7 @@ function ProductsTable({ products }) {
     setLoading(false);
     if (response.success) {
       toast.success(response.message, { position: 'top-center' });
-      return await fetchProducts();
+      return await fetchProducts(true);
     } else {
       toast.error(response.message, { position: 'top-center' });
     }
@@ -49,10 +34,16 @@ function ProductsTable({ products }) {
     if (menuOpenId === id) {
       setMenuOpenId(null);
     } else {
-      const rect = buttonRefs.current[id].getBoundingClientRect();
+      const button = buttonRefs.current[id];
+      if (!button) return; // ref not attached yet — avoid throwing and killing the handler
+      const rect = button.getBoundingClientRect();
+      // Menu is position:fixed (viewport-relative), so use rect coords directly.
+      // Adding scrollX/Y here pushed the menu off-screen once the page was scrolled.
+      const MENU_HEIGHT = 180; // approx dropdown height; flip up if it would overflow the viewport
+      const openUp = rect.bottom + MENU_HEIGHT > window.innerHeight;
       setMenuPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX - 160, // 160 is w-40 (dropdown width)
+        top: openUp ? Math.max(8, rect.top - MENU_HEIGHT) : rect.bottom,
+        left: rect.right - 160, // 160 is w-40 (dropdown width)
       });
       setMenuOpenId(id);
     }
@@ -79,24 +70,6 @@ function ProductsTable({ products }) {
 
   return (
     <div className="space-y-4">
-      {/* Bulk Status Bar (Simplified for Products) */}
-      {selectedProducts.length > 0 && (
-        <div className="bg-bronze text-champagne px-6 py-3 rounded-lg flex items-center justify-between shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-gold/20 px-3 py-1 rounded">
-              {selectedProducts.length} Items Selected
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-widest hidden md:inline">Ready for Archival Audit</span>
-          </div>
-          <button
-            onClick={() => setSelectedProducts([])}
-            className="text-[10px] font-bold uppercase tracking-widest hover:text-gold transition-colors"
-          >
-            Clear Selection
-          </button>
-        </div>
-      )}
-
       <div className="bg-white border border-bronze/10 rounded-lg overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex items-center justify-center">
@@ -107,14 +80,6 @@ function ProductsTable({ products }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-bronze/10 bg-champagne/10">
-                <th className="px-5 py-4 text-left w-10">
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={selectedProducts.length === products.length}
-                    className="accent-gold w-4 h-4 cursor-pointer"
-                  />
-                </th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Artifact</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Category</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/40">Stock</th>
@@ -124,17 +89,8 @@ function ProductsTable({ products }) {
             <tbody>
               {products.map((product, index) => {
                 const { image, name, price, stock, category, company, id } = product;
-                const isSelected = selectedProducts.includes(id);
                 return (
-                  <tr key={index} className={`border-b border-bronze/5 hover:bg-champagne/30 transition-colors ${isSelected ? 'bg-gold/5' : ''}`}>
-                    <td className="px-5 py-4">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleSelectProduct(id)}
-                        className="accent-gold w-4 h-4 cursor-pointer"
-                      />
-                    </td>
+                  <tr key={index} className="border-b border-bronze/5 hover:bg-champagne/30 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-4">
                         <img
@@ -190,7 +146,7 @@ function ProductsTable({ products }) {
                                 left: `${menuPosition.left}px`
                               }}
                             >
-                              <Link to={`/products/${id}`} onClick={() => setMenuOpenId(null)}>
+                              <Link to={`/admin/products/${id}`} onClick={() => setMenuOpenId(null)}>
                                 <div className="px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-bronze/70 hover:bg-bronze/5 cursor-pointer">
                                   View Archive
                                 </div>
@@ -200,12 +156,6 @@ function ProductsTable({ products }) {
                                 onClick={() => openEditModal(id)}
                               >
                                 Edit Heritage
-                              </div>
-                              <div
-                                className="px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-gold hover:bg-gold/5 cursor-pointer"
-                                onClick={() => { handleSelectProduct(id); setMenuOpenId(null); }}
-                              >
-                                {isSelected ? 'Unselect' : 'Select Item'}
                               </div>
                               {currentUser.privilege !== 'low' && (
                                 <div

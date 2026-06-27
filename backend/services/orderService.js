@@ -5,27 +5,29 @@ const pdfService = require('./pdfService');
 const { sendOrderConfirmation } = require('../utils/emailService');
 
 /**
- * Shared service for creating an order after successful payment.
- * Used by sowohl webhookController (Redirect) and paymentController (Direct).
+ * Creates an order after a confirmed eWAY payment.
+ * Called by webhookController (browser redirect callback) and reconciliationService (background recovery).
  */
 exports.createOrderFromTransaction = async (transaction, meta, compressedItems, shippingMeta) => {
     const transactionId = String(transaction.TransactionID);
-    
-    // Ensure idempotency
+
+    // Idempotency — unique index on paymentInfo.id also enforces this at DB level
     const existingOrder = await Order.findOne({ 'paymentInfo.id': transactionId });
     if (existingOrder) {
         console.warn(`[ORDER SERVICE] Order already exists for TransactionID: ${transactionId}`);
         return existingOrder;
     }
 
-    // Reassemble Metadata from pipe-delimited Options (not JSON — eWAY HTML-encodes special chars)
+    // Reassemble metadata from prefixed pipe-delimited Options
+    // Format: m:key=val|key=val  i:id:qty:color:size,...  s:key=val|key=val
+    // Multiple i: entries are allowed for large carts (eWAY 254 char/entry limit)
     try {
         const optionsValues = (transaction.Options || []).map(o => o.Value || '');
 
-        // Parse pipe-delimited meta: uid=xxx|uname=yyy|email=zzz|disc=0|coupon=|shipFee=15|itemsP=700
         if (!meta || Object.keys(meta).length === 0) {
+            const metaStr = optionsValues.find(v => v.startsWith('m:'))?.slice(2) || '';
             const metaPairs = {};
-            (optionsValues[0] || '').split('|').forEach(pair => {
+            metaStr.split('|').forEach(pair => {
                 const eqIdx = pair.indexOf('=');
                 if (eqIdx > 0) metaPairs[pair.substring(0, eqIdx)] = pair.substring(eqIdx + 1);
             });
@@ -37,21 +39,26 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
                 couponCode: metaPairs.coupon || '',
                 shippingFee: Number(metaPairs.shipFee) || 0,
                 itemsPrice: Number(metaPairs.itemsP) || 0,
+                addonKeys: metaPairs.addons ? metaPairs.addons.split('.').filter(Boolean) : [],
             };
         }
 
-        // Parse compact items: id:qty:color:size,id:qty:color:size
         if (!compressedItems || compressedItems.length === 0) {
-            compressedItems = (optionsValues[1] || '').split(',').filter(Boolean).map(entry => {
+            // Collect all item chunks (may span multiple Options entries)
+            const allItemsStr = optionsValues
+                .filter(v => v.startsWith('i:'))
+                .map(v => v.slice(2))
+                .join(',');
+            compressedItems = allItemsStr.split(',').filter(Boolean).map(entry => {
                 const [id, q, c, s] = entry.split(':');
                 return { id, q: Number(q) || 1, c: c || 'Standard', s: s || 'M' };
             });
         }
 
-        // Parse pipe-delimited shipping: addr=xxx|city=yyy|state=NSW|zip=2000|phone=04xxx
         if (!shippingMeta || Object.keys(shippingMeta).length === 0) {
+            const shipStr = optionsValues.find(v => v.startsWith('s:'))?.slice(2) || '';
             const shipPairs = {};
-            (optionsValues[2] || '').split('|').forEach(pair => {
+            shipStr.split('|').forEach(pair => {
                 const eqIdx = pair.indexOf('=');
                 if (eqIdx > 0) shipPairs[pair.substring(0, eqIdx)] = pair.substring(eqIdx + 1);
             });
@@ -87,9 +94,14 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
     for (const cItem of compressedItems) {
         const product = await Product.findById(cItem.id);
         if (product) {
+            // All prices GST-inclusive. `mrp` is the RRP; `price` is what the
+            // customer paid after the per-product discount.
+            const mrp = Number(product.price) || 0;
+            const sellingPrice = Math.round(mrp * (1 - (Number(product.discountPercent) || 0) / 100) * 100) / 100;
             orderItems.push({
                 name: product.name,
-                price: product.price,
+                price: sellingPrice,
+                mrp,
                 quantity: cItem.q,
                 image: product.images[0]?.url || 'default_image.jpg',
                 color: cItem.c,
@@ -109,6 +121,19 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
         phoneNumber: shippingMeta.shippingPhone || '0000000000',
     };
 
+    // All prices are AUD and GST-inclusive, so the GST is the portion already
+    // contained in the total (total / 11 at 10%), not an amount added on top.
+    const totalPrice = transaction.TotalAmount / 100; // eWAY stores in cents
+    const taxPrice = Math.round((totalPrice / 11) * 100) / 100;
+
+    // Resolve any add-on services (priced from the live settings) for the record.
+    const Settings = require('../models/settingsModel');
+    const pricingService = require('./pricingService');
+    const settingsDoc = (await Settings.findOne()) || {};
+    const addOns = pricingService
+        .resolveAddons(meta.addonKeys || [], settingsDoc)
+        .map((a) => ({ name: a.name, price: a.price }));
+
     // Create the order
     const newOrder = await Order.create({
         shippingInfo: shippingAddress,
@@ -118,11 +143,12 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
             status: 'succeeded'
         },
         itemsPrice: Number(itemsPrice),
-        taxPrice: 0,
+        taxPrice,
         shippingPrice: Number(shippingFee),
-        totalPrice: transaction.TotalAmount / 100, // eWAY stores in cents
+        totalPrice,
         discountAmount: Number(discountAmount || 0),
         couponCode: couponCode || '',
+        addOns,
         paidAt: Date.now(),
         user: {
             name: userName,

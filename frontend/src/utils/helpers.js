@@ -1,9 +1,10 @@
 export const formatPrice = (number) => {
+  // Always show cents so the storefront matches invoices/admin (e.g. $206.18,
+  // not $206). Money is AUD, GST-inclusive.
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
-    maximumFractionDigits: 0,
-  }).format(number);
+  }).format(Number(number) || 0);
 };
 
 export const getUniqueValues = (data, type) => {

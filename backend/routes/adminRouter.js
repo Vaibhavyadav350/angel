@@ -101,21 +101,13 @@ router
     orderController.getAllOrders
   );
 
-// Export/Bulk Orders
+// Export Orders
 router
   .route('/orders/export/excel')
   .get(
     auth.checkUserAuthentication,
     auth.checkAdminPrivileges('moderate', 'super', 'low'),
     orderController.exportOrdersExcel
-  );
-
-router
-  .route('/orders/bulk-update')
-  .put(
-    auth.checkUserAuthentication,
-    auth.checkAdminPrivileges('moderate', 'super'),
-    orderController.bulkUpdateOrders
   );
 
 // send single order

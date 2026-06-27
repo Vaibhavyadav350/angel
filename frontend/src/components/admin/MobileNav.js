@@ -50,7 +50,7 @@ export default function MobileNav({ onOpen, ...rest }) {
 
       {/* Mobile brand */}
       <div className="md:hidden flex items-center">
-        <img src={logo} alt="Angel Fashion Studio Logo" className="h-10 object-contain" />
+        <img src={logo} alt="Angel Fashion Studio Logo" className="h-14 object-contain" />
       </div>
 
       {/* Desktop breadcrumbs */}

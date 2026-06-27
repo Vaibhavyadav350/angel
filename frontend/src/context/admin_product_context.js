@@ -11,6 +11,7 @@ import {
 } from '../utils/constants';
 import {
   CREATE_NEW_PRODUCT,
+  RESET_NEW_PRODUCT,
   GET_PRODUCTS_BEGIN,
   GET_PRODUCTS_ERROR,
   GET_PRODUCTS_SUCCESS,
@@ -20,33 +21,36 @@ import {
   GET_SINGLE_PRODUCT_SUCCESS,
 } from '../actions_admin';
 
+// Single definition of a blank product, reused for the initial state and for
+// resetting the create form after a successful save.
+const initialNewProduct = {
+  name: '',
+  price: 500,
+  stock: 10,
+  description: '',
+  images: [],
+  colors: [],
+  sizes: [],
+  variants: [], // Required for E-commerce variant matrix
+  category: '',
+  subCategory: '',
+  productType: '',
+  collections: [],
+  company: '',
+  shipping: true,
+  featured: false,
+  discountPercent: 0,
+  badgeText: '',
+  leadTimeDays: '',
+  composition: '',
+  careInstructions: '',
+};
+
 const initialState = {
   products_loading: false,
   products_error: false,
   products: [],
-  new_product: {
-    name: '',
-    price: 500,
-    stock: 10,
-    description: '',
-    images: [],
-    colors: [],
-    sizes: [],
-    variants: [], // Required for E-commerce variant matrix
-    category: '',
-    subCategory: '',
-    productType: '',
-    collections: [],
-    company: '',
-    shipping: true,
-    featured: false,
-    discountPercent: 20,
-    taxPercent: 10,
-    badgeText: '',
-    leadTimeDays: '',
-    composition: '',
-    careInstructions: '',
-  },
+  new_product: initialNewProduct,
   single_product_loading: false,
   single_product_error: false,
   single_product: {},
@@ -98,55 +102,28 @@ export const ProductProvider = ({ children }) => {
     }
   }, []);
 
-  const updateNewProductDetails = React.useCallback((e) => {
-    const name = e.target.name;
-    let value = e.target.value;
-    if (name === 'price' || name === 'stock' || name === 'discountPercent' || name === 'taxPercent') {
-      value = Number(value);
-    }
-    if (name === 'colors' || name === 'sizes') {
-      value = value.replace(/\s+/g, '');
-      if (value === '') {
-        value = [];
-      } else if (value.indexOf(',') > -1) {
-        value = value.split(',');
-      } else {
-        value = value.split();
-      }
-    }
-    if (name === 'shipping' || name === 'featured') {
-      value = e.target.checked;
-    }
+  // Direct field setters. Components pass already-typed values (numbers, arrays,
+  // booleans) so there is no fragile string-parsing here — that lived in the old
+  // event handlers and silently broke multi-word colors and the collections enum.
+  const setNewProductField = React.useCallback((name, value) => {
     dispatch({ type: CREATE_NEW_PRODUCT, payload: { name, value } });
   }, []);
 
-  const updateExistingProductDetails = React.useCallback((e) => {
-    const name = e.target.name;
-    let value = e.target.value;
-    if (name === 'price' || name === 'stock' || name === 'discountPercent' || name === 'taxPercent') {
-      value = Number(value);
-    }
-    if (name === 'colors' || name === 'sizes') {
-      value = value.replace(/\s+/g, '');
-      if (value === '') {
-        value = [];
-      } else if (value.indexOf(',') > -1) {
-        value = value.split(',');
-      } else {
-        value = value.split();
-      }
-    }
-    if (name === 'shipping' || name === 'featured') {
-      value = e.target.checked;
-    }
+  const setExistingProductField = React.useCallback((name, value) => {
     dispatch({ type: UPDATE_EXISTING_PRODUCT, payload: { name, value } });
+  }, []);
+
+  const resetNewProduct = React.useCallback(() => {
+    dispatch({ type: RESET_NEW_PRODUCT, payload: initialNewProduct });
   }, []);
 
   const createNewProduct = React.useCallback(async (product) => {
     try {
       const response = await axios.post(admin_create_product_url, product);
       const { success, data } = response.data;
-      fetchProducts();
+      // Force a refetch so the newly created product appears immediately,
+      // bypassing the 60s list cache.
+      fetchProducts(true);
       return { success, data };
     } catch (error) {
       const { message } = error.response?.data || {};
@@ -208,8 +185,9 @@ export const ProductProvider = ({ children }) => {
       value={{
         ...state,
         deleteProduct,
-        updateNewProductDetails,
-        updateExistingProductDetails,
+        setNewProductField,
+        setExistingProductField,
+        resetNewProduct,
         createNewProduct,
         fetchProducts,
         fetchSingleProduct,

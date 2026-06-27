@@ -204,46 +204,6 @@ exports.deleteOrder = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Bulk Update Orders (Admin)
-exports.bulkUpdateOrders = catchAsyncError(async (req, res, next) => {
-  const { orderIds, status } = req.body;
-  if (!orderIds || !Array.isArray(orderIds) || !status) {
-    return next(new ErrorHandler('Invalid request data', 400));
-  }
-
-  const statusHierarchy = {
-    'processing': 0,
-    'confirmed': 1,
-    'shipped': 2,
-    'delivered': 3
-  };
-
-  const requestedLevel = statusHierarchy[status];
-
-  if (requestedLevel === undefined) {
-    return next(new ErrorHandler('Invalid status provided for bulk update', 400));
-  }
-
-  // Build a query that only selects orders whose current level is less than the requested level
-  // This physically prevents backtracking even in a bulk query.
-  // E.g., if status is "shipped" (level 2), only update "processing" (0) or "confirmed" (1).
-  const validCurrentStatuses = Object.keys(statusHierarchy).filter(s => statusHierarchy[s] < requestedLevel);
-
-  // Update multiple orders, ensuring they are valid targets for this transition
-  const result = await Order.updateMany(
-    {
-      _id: { $in: orderIds },
-      orderStatus: { $in: validCurrentStatuses }
-    },
-    { $set: { orderStatus: status, deliveredAt: status === 'delivered' ? Date.now() : undefined } }
-  );
-
-  res.status(200).json({
-    success: true,
-    message: `${result.modifiedCount} orders updated successfully (${orderIds.length - result.modifiedCount} skipped due to invalid state transition)`
-  });
-});
-
 // Export Orders to Excel/CSV (Admin)
 exports.exportOrdersExcel = catchAsyncError(async (req, res, next) => {
   const orders = await Order.find().sort({ createdAt: -1 });

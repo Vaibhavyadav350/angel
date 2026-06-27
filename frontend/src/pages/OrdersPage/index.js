@@ -169,7 +169,7 @@ const OrderCard = ({ order, openReturnModal }) => {
             <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/30 block">Order Reference</span>
             <h3 className="text-lg font-bold text-bronze tracking-wide">#{_id.slice(-8).toUpperCase()}</h3>
             <p className="text-[9px] font-bold uppercase tracking-widest text-bronze/40 italic">
-              Placed on {new Date(createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+              Placed on {new Date(createdAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
 

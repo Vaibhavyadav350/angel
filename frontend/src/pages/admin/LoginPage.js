@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useAdminContext } from '../../context/admin_context';
 import { toast } from 'react-toastify';
 import { PreLoader } from '../../components/admin';
@@ -6,6 +7,7 @@ import useMounted from '../../hooks/useMounted';
 
 export default function LoginPage() {
   const { loginAdmin, adminAuthLoading: authLoading } = useAdminContext();
+  const history = useHistory();
   const mounted = useMounted();
 
   const [email, setEmail] = useState('');
@@ -24,6 +26,7 @@ export default function LoginPage() {
     }
     if (response.success) {
       toast.success(`Logged in as ${response.data.name}`, { position: 'top-center' });
+      history.push('/admin');
     } else {
       toast.error(response.message, { position: 'top-center' });
     }

@@ -33,6 +33,7 @@ const SingleOrderPage = () => {
         itemsPrice,
         discountAmount,
         couponCode,
+        addOns = [],
         orderStatus,
         orderItems,
         shippingInfo,
@@ -308,6 +309,12 @@ const SingleOrderPage = () => {
                                     <span className="opacity-60">Subtotal</span>
                                     <span>{formatPrice(itemsPrice)}</span>
                                 </div>
+                                {addOns && addOns.length > 0 && addOns.map((a, idx) => (
+                                    <div key={idx} className="flex justify-between items-center text-sm font-medium">
+                                        <span className="opacity-60">{a.name}</span>
+                                        <span>+{formatPrice(a.price)}</span>
+                                    </div>
+                                ))}
                                 <div className="flex justify-between items-center text-sm font-medium">
                                     <span className="opacity-60">Shipping</span>
                                     <span>{formatPrice(shippingPrice)}</span>

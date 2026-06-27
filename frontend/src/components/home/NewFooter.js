@@ -49,7 +49,7 @@ const NewFooter = () => {
           {/* Column 1: Brand */}
           <div className="space-y-6">
             <Link to="/" className="flex items-center shrink-0">
-              <img src={logo} alt="Angel Fashion Studio Logo" className="h-16 md:h-24 object-contain brightness-0 invert" />
+              <img src={logo} alt="Angel Fashion Studio Logo" className="h-[77px] md:h-[115px] object-contain brightness-0 invert" />
             </Link>
             <p className="text-white/40 text-[11px] leading-relaxed uppercase tracking-widest max-w-xs">
               Exquisite hand-spun garments tailored for the modern spirit.

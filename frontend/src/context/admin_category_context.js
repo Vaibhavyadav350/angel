@@ -93,17 +93,17 @@ export const CategoryProvider = ({ children }) => {
 
     const addSubcategory = async (categoryId, name) => {
         const category = state.categories.find(c => c._id === categoryId);
-        if (!category) return;
+        if (!category) return { success: false, message: 'Category not found' };
         const subcategory = { name, slug: name.toLowerCase().replace(/\s+/g, '-') };
         const updatedSubcategories = [...(category.subcategories || []), subcategory];
-        await updateCategory(categoryId, { subcategories: updatedSubcategories });
+        return await updateCategory(categoryId, { subcategories: updatedSubcategories });
     };
 
     const deleteSubcategory = async (categoryId, subcategoryId) => {
         const category = state.categories.find(c => c._id === categoryId);
-        if (!category) return;
+        if (!category) return { success: false, message: 'Category not found' };
         const updatedSubcategories = (category.subcategories || []).filter(s => s._id !== subcategoryId);
-        await updateCategory(categoryId, { subcategories: updatedSubcategories });
+        return await updateCategory(categoryId, { subcategories: updatedSubcategories });
     };
 
     // Removed global auto-fetch. Pages that need categories call getCategories() explicitly.
