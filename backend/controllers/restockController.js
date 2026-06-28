@@ -51,7 +51,7 @@ exports.notifySubscribers = async (productId) => {
                         <h2 style="font-style: italic;">${product.name}</h2>
                         <p>Price: $${product.price}</p>
                         <br/>
-                        <a href="${process.env.FRONTEND_URL}/products/${productId}" style="background: #4A3728; color: #F5F1E6; padding: 12px 24px; text-decoration: none; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">View Artifact</a>
+                        <a href="${process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org'}/products/${productId}" style="background: #4A3728; color: #F5F1E6; padding: 12px 24px; text-decoration: none; font-weight: bold; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">View Artifact</a>
                     </div>
                 `
             });

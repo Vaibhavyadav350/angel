@@ -64,7 +64,7 @@ const drawFooter = async (doc, order) => {
     doc.moveTo(40, footerY).lineTo(555, footerY).lineWidth(0.5).stroke(colors.champagne);
 
     try {
-        const qrDataUrl = await QRCode.toDataURL(`https://angelfashion.au/order/${order._id}`, { width: 50, margin: 0 });
+        const qrDataUrl = await QRCode.toDataURL(`https://www.angelfashionstudio.org/orders/${order._id}`, { width: 50, margin: 0 });
         doc.image(qrDataUrl, 40, footerY + 15, { width: 50 });
     } catch (err) {
         console.error("QR Code generation failed");
@@ -74,7 +74,7 @@ const drawFooter = async (doc, order) => {
         .text('ANGEL FASHION STUDIO PTY LTD', 105, footerY + 20, { characterSpacing: 1 });
 
     doc.fillColor(colors.gray).fontSize(7).font('Helvetica')
-        .text('IG: @AngelFashionStudio  |  W: angelfashion.au  |  E: atelier@angelfashion.au', 105, footerY + 32);
+        .text('IG: @AngelFashionStudio  |  W: angelfashionstudio.org  |  E: support@angelfashionstudio.org', 105, footerY + 32);
 
     doc.fillColor(colors.bronze).fontSize(8).font('Helvetica-Bold')
         .text('PAGE ' + doc.page.number, 500, footerY + 20, { align: 'right', width: 55 });

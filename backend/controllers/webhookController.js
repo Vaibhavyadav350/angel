@@ -13,9 +13,10 @@ const processingCallbacks = new Set();
 
 const ewayCallbackController = async (req, res) => {
     const accessCode = req.query.AccessCode;
-    const FRONTEND_URL = process.env.ALLOWED_ORIGINS
-        ? process.env.ALLOWED_ORIGINS.split(',')[0]
-        : 'http://localhost:3000';
+    // Customer-facing redirect target. Must be a single explicit URL — NOT the
+    // first CORS origin (that list starts with localhost for local dev, which is
+    // why prod was redirecting to http://localhost:3000 after payment).
+    const FRONTEND_URL = process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org';
 
     if (!accessCode) {
         console.error('[EWAY CALLBACK FATAL] No AccessCode received in callback.');

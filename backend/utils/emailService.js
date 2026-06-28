@@ -1,36 +1,69 @@
-const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 
 // Load environment variables if not already loaded
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    host: 'smtppro.zoho.in', // The backend server for paid/upgraded accounts
-    port: 465,
-    secure: true, // true for 465, false for 587
-    auth: {
-        user: process.env.ZOHO_EMAIL_USER,
-        pass: process.env.ZOHO_EMAIL_PASS
-    }
-});
+// ---------------------------------------------------------------------------
+// Email transport: ZeptoMail (Zoho's transactional email service) over its
+// HTTPS API on port 443. We use the API rather than SMTP because the host
+// (DigitalOcean) blocks all outbound SMTP ports (25/465/587); HTTPS is open.
+// The account is in the India DC, so the default endpoint is api.zeptomail.in.
+//
+// Required env: ZEPTOMAIL_TOKEN  (the "Send Mail" token from ZeptoMail)
+// From address: MAIL_FROM_ADDRESS or ZOHO_EMAIL_USER, on a domain verified in
+// ZeptoMail (angelfashionstudio.org — already in your Zoho account).
+// ---------------------------------------------------------------------------
+const ZEPTO_API_URL = process.env.ZEPTOMAIL_API_URL || 'https://api.zeptomail.in/v1.1/email';
+const ZEPTO_TOKEN = process.env.ZEPTOMAIL_TOKEN;
+const FROM_ADDRESS = process.env.MAIL_FROM_ADDRESS || process.env.ZOHO_EMAIL_USER;
+const FROM_NAME = 'Angel Fashion Studio';
 
-// Helper for sending HTML email
+if (!ZEPTO_TOKEN) {
+    console.warn('[EMAIL] ZEPTOMAIL_TOKEN is not set — outgoing emails will fail until it is configured.');
+}
+
+// Helper for sending HTML email. Same signature as before ({ email, subject,
+// html, attachments }), so every template function is unchanged.
 const sendEmail = async (options) => {
     try {
-        const mailOptions = {
-            from: `"Angel Fashion Studio" <${process.env.ZOHO_EMAIL_USER}>`,
-            to: options.email,
+        const payload = {
+            from: { address: FROM_ADDRESS, name: FROM_NAME },
+            to: [{ email_address: { address: options.email } }],
             subject: options.subject,
-            html: options.html,
-            attachments: options.attachments || []
+            htmlbody: options.html,
         };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.info(`[EMAIL SENT] To: ${options.email} | Subject: "${options.subject}" | MessageId: ${info.messageId}`);
-        return info;
+        // Map Nodemailer-style attachments ({ filename, content: Buffer, contentType })
+        // to ZeptoMail's base64 format.
+        if (options.attachments && options.attachments.length > 0) {
+            payload.attachments = options.attachments.map((a) => ({
+                name: a.filename,
+                mime_type: a.contentType || 'application/octet-stream',
+                content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : a.content,
+            }));
+        }
+
+        const response = await fetch(ZEPTO_API_URL, {
+            method: 'POST',
+            headers: {
+                Authorization: `Zoho-enczapikey ${ZEPTO_TOKEN}`,
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            console.error(`[EMAIL FAILED] To: ${options.email} | Subject: "${options.subject}" | ${response.status}: ${JSON.stringify(data).slice(0, 300)}`);
+            return null;
+        }
+
+        console.info(`[EMAIL SENT] To: ${options.email} | Subject: "${options.subject}" | RequestId: ${data.request_id || 'ok'}`);
+        return data;
     } catch (error) {
         console.error(`[EMAIL FAILED] To: ${options.email} | Subject: "${options.subject}" | Error: ${error.message}`);
-        // Do not throw to prevent crashing the app if email fails
+        // Do not throw — never crash a request because email failed.
         return null;
     }
 };
@@ -59,14 +92,14 @@ exports.sendWelcomeEmail = async (user) => {
             <p style="font-size: 14px; line-height: 1.6;">You now have access to exclusive collections, archival pieces, and a streamlined checkout experience tailored to our inner circle.</p>
             
             <div style="text-align: center; margin: 40px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="background-color: #432918; color: #FCFAF8; text-decoration: none; padding: 12px 30px; font-size: 12px; font-weight: bold; letter-spacing: 1px; border-radius: 4px;">EXPLORE THE COLLECTION</a>
+                <a href="${process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org'}" style="background-color: #432918; color: #FCFAF8; text-decoration: none; padding: 12px 30px; font-size: 12px; font-weight: bold; letter-spacing: 1px; border-radius: 4px;">EXPLORE THE COLLECTION</a>
             </div>
 
             <p style="font-size: 14px; line-height: 1.6;">If you have any questions or require bespoke assistance, simply reply to this email.</p>
             
             <div style="margin-top: 60px; text-align: center; border-top: 1px solid #E6D5B8; padding-top: 20px;">
                 <p style="font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; color: #432918; letter-spacing: 1px;">ANGEL FASHION STUDIO PTY LTD</p>
-                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashion.au</p>
+                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashionstudio.org</p>
             </div>
         </div>
     `;
@@ -120,8 +153,21 @@ exports.sendOrderConfirmation = async (user, order, pdfBuffer) => {
                     </tbody>
                     <tfoot>
                         <tr>
+                            <td colspan="2" style="padding-top: 12px; font-size: 11px; text-align: right; color: #7F8C8D;">Subtotal</td>
+                            <td style="padding-top: 12px; font-size: 11px; text-align: right; color: #7F8C8D;">${formatPrice(order.itemsPrice)}</td>
+                        </tr>
+                        ${(order.addOns || []).map(a => `<tr><td colspan="2" style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">${a.name}</td><td style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">${formatPrice(a.price)}</td></tr>`).join('')}
+                        ${order.discountAmount > 0 ? `<tr><td colspan="2" style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">Discount${order.couponCode ? ` (${order.couponCode})` : ''}</td><td style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">-${formatPrice(order.discountAmount)}</td></tr>` : ''}
+                        <tr>
+                            <td colspan="2" style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">Shipping</td>
+                            <td style="padding-top: 6px; font-size: 11px; text-align: right; color: #7F8C8D;">${formatPrice(order.shippingPrice)}</td>
+                        </tr>
+                        <tr>
                             <td colspan="2" style="padding-top: 15px; font-size: 12px; font-weight: bold; text-align: right;">GRAND TOTAL</td>
                             <td style="padding-top: 15px; font-size: 14px; font-weight: bold; color: #8A6B4E; text-align: right;">${formatPrice(order.totalPrice)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-top: 4px; font-size: 9px; text-align: right; color: #A89B8C;">Includes GST of ${formatPrice(order.taxPrice || (order.totalPrice / 11))}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -131,7 +177,7 @@ exports.sendOrderConfirmation = async (user, order, pdfBuffer) => {
             
             <div style="margin-top: 60px; text-align: center; border-top: 1px solid #E6D5B8; padding-top: 20px;">
                 <p style="font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; color: #432918; letter-spacing: 1px;">ANGEL FASHION STUDIO PTY LTD</p>
-                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashion.au</p>
+                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashionstudio.org</p>
             </div>
         </div>
     `;
@@ -180,14 +226,14 @@ exports.sendStatusUpdate = async (user, order, trackingNumber = null) => {
             
             <div style="margin-top: 60px; text-align: center; border-top: 1px solid #E6D5B8; padding-top: 20px;">
                 <p style="font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; color: #432918; letter-spacing: 1px;">ANGEL FASHION STUDIO PTY LTD</p>
-                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashion.au</p>
+                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashionstudio.org</p>
             </div>
         </div>
     `;
 
     return sendEmail({
         email: user.email,
-        subject: `Order Update: ${order.status} - Angel Fashion Studio`,
+        subject: `Order Update: ${order.orderStatus?.toUpperCase()} - Angel Fashion Studio`,
         html
     });
 };
@@ -213,7 +259,7 @@ exports.sendReturnUpdate = async (user, returnRequest, status) => {
 
             <div style="margin-top: 60px; text-align: center; border-top: 1px solid #E6D5B8; padding-top: 20px;">
                 <p style="font-family: 'Times New Roman', Times, serif; font-size: 12px; font-weight: bold; color: #432918; letter-spacing: 1px;">ANGEL FASHION STUDIO PTY LTD</p>
-                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashion.au</p>
+                <p style="font-size: 10px; color: #7F8C8D;">IG: @AngelFashionStudio | W: angelfashionstudio.org</p>
             </div>
         </div>
     `;

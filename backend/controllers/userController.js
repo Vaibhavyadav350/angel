@@ -17,9 +17,10 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
             email: email || 'unknown'
         });
 
-        // Send welcome email if email is provided
+        // Send welcome email — fire-and-forget so profile creation isn't blocked on SMTP.
         if (email && email !== 'unknown') {
-            await sendWelcomeEmail({ name: name || 'Valued Client', email });
+            sendWelcomeEmail({ name: name || 'Valued Client', email })
+                .catch((e) => console.error(`[EMAIL FAILED] welcome email to ${email}: ${e.message}`));
         }
     }
 

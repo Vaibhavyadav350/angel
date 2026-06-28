@@ -144,9 +144,8 @@ app.get('/api/payment/callback', ewayCallbackController);
 // eWAY cancel route — user clicked "Cancel" on the hosted page
 // Routing through backend keeps the AccessCode out of the user's browser history
 app.get('/api/payment/cancel', async (req, res) => {
-  const FRONTEND_URL = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',')[0]
-    : 'http://localhost:3000';
+  // Single explicit customer URL (see note in webhookController) — not the CORS list.
+  const FRONTEND_URL = process.env.FRONTEND_PUBLIC_URL || 'https://www.angelfashionstudio.org';
   const { AccessCode } = req.query;
   if (AccessCode) {
     PendingCheckout.findOneAndUpdate(

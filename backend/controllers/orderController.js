@@ -158,13 +158,11 @@ exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
 
   console.info(`[ORDER STATUS MUTATION] Order: ${order._id} successfully transitioned to '${req.body.status}'.`);
 
-  // Send Email Notification
-  try {
-    if (['shipped', 'delivered', 'cancelled'].includes(req.body.status)) {
-      await sendStatusUpdate({ name: order.user.name, email: order.user.email }, order, req.body.status === 'shipped' ? req.body.trackingNumber : null);
-    }
-  } catch (emailError) {
-    console.error('Failed to send status update email', emailError);
+  // Send status email — fire-and-forget so a slow/failing SMTP never delays or
+  // breaks the status-change response (consistent with order confirmation).
+  if (['shipped', 'delivered', 'cancelled'].includes(req.body.status)) {
+    sendStatusUpdate({ name: order.user.name, email: order.user.email }, order, req.body.status === 'shipped' ? req.body.trackingNumber : null)
+      .catch((emailError) => console.error(`[EMAIL FAILED] status update for order ${order._id}: ${emailError.message}`));
   }
 
   res.status(200).json({
@@ -297,12 +295,10 @@ exports.updateReturnStatus = catchAsyncError(async (req, res, next) => {
 
   console.info(`[RETURN STATUS MUTATION] Return Request for Order ${order._id} transitioned to '${status}'.`);
 
-  try {
-    if (['approved', 'rejected', 'completed'].includes(status)) {
-      await sendReturnUpdate({ name: order.user.name, email: order.user.email }, order, status);
-    }
-  } catch (emailError) {
-    console.error('Failed to send return update email', emailError);
+  // Fire-and-forget — don't block the response on SMTP.
+  if (['approved', 'rejected', 'completed'].includes(status)) {
+    sendReturnUpdate({ name: order.user.name, email: order.user.email }, order, status)
+      .catch((emailError) => console.error(`[EMAIL FAILED] return update for order ${order._id}: ${emailError.message}`));
   }
 
   res.status(200).json({

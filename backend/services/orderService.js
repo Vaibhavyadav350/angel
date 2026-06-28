@@ -159,14 +159,30 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
 
     console.info(`[ORDER SERVICE SUCCESS] Order created: ${newOrder._id}`);
 
-    // Decrement Stock
+    // Decrement Stock — decrement the specific size/color VARIANT the customer
+    // bought, then keep the global `stock` field in sync as the sum of variants.
+    // (Decrementing only the global field left variant stock stale on the
+    // Inventory page, and was wiped whenever a product was edited because
+    // productController recomputes stock from variants.)
     for (const item of orderItems) {
         const product = await Product.findById(item.product);
-        if (product && product.stock >= item.quantity) {
-            product.stock -= item.quantity;
-            await product.save({ validateBeforeSave: false });
-            console.info(`[ORDER SERVICE STOCK] Decremented ${item.quantity} for ${product.name}`);
+        if (!product) continue;
+
+        if (product.variants && product.variants.length > 0) {
+            const variant = product.variants.find(v => v.size === item.size && v.color === item.color);
+            if (variant) {
+                variant.stock = Math.max(0, (Number(variant.stock) || 0) - item.quantity);
+                product.markModified('variants');
+            } else {
+                console.warn(`[ORDER SERVICE STOCK] No matching variant (${item.size}/${item.color}) for ${product.name} — adjusting global only.`);
+            }
+            product.stock = product.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+        } else {
+            product.stock = Math.max(0, (Number(product.stock) || 0) - item.quantity);
         }
+
+        await product.save({ validateBeforeSave: false });
+        console.info(`[ORDER SERVICE STOCK] Decremented ${item.quantity} (${item.size}/${item.color}) for ${product.name}. Global stock now ${product.stock}.`);
     }
 
     // Update user spend
@@ -182,9 +198,14 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
 
     // Send Confirmation Email (non-blocking — fire and forget)
     // Do NOT await this — SMTP timeout was causing 504 Gateway Timeout on DigitalOcean
+    // PDF failure is caught separately so email still sends even without the attachment
     pdfService.generateInvoiceBuffer(newOrder)
+        .catch(pdfError => {
+            console.error(`[PDF FAILED] Order ${newOrder._id}: ${pdfError.message} — sending email without attachment`);
+            return null;
+        })
         .then(pdfBuffer => sendOrderConfirmation(newOrder.user, newOrder, pdfBuffer))
-        .catch(emailError => console.error(`[EMAIL FAILED] To: ${newOrder.user?.email || 'unknown'} | Subject: "Order Confirmation - Angel Fashion Studio (#${newOrder._id?.toString().slice(-7).toUpperCase()})" | Error: ${emailError.message}`));
+        .catch(emailError => console.error(`[EMAIL FAILED] To: ${newOrder.user?.email || 'unknown'} | Error: ${emailError.message}`));
 
     return newOrder;
 };

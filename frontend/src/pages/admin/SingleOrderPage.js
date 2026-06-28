@@ -1,15 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { SidebarWithHeader, OrderDetails } from '../../components/admin';
 import { useOrderContext } from '../../context/admin_order_context';
-import { orderStatusList, admin_order_url } from '../../utils/constants';
+import { admin_order_url } from '../../utils/constants';
 import { FaFilePdf } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
+const NEXT_STATUS_OPTIONS = {
+  processing: [
+    { name: 'Confirmed', value: 'confirmed' },
+    { name: 'Cancelled', value: 'cancelled' },
+  ],
+  confirmed: [
+    { name: 'Shipped', value: 'shipped' },
+    { name: 'Cancelled', value: 'cancelled' },
+  ],
+  shipped: [
+    { name: 'Delivered', value: 'delivered' },
+    { name: 'Cancelled', value: 'cancelled' },
+  ],
+  delivered: [],
+  returned: [],
+  cancelled: [],
+};
+
 function SingleOrderPage() {
   const { id } = useParams();
-  const [statusList, setStatusList] = useState([...orderStatusList]);
   const {
     single_order_loading: loading,
     single_order_error: error,
@@ -20,6 +37,11 @@ function SingleOrderPage() {
     updateReturnStatus,
   } = useOrderContext();
 
+  const statusList = useMemo(
+    () => NEXT_STATUS_OPTIONS[single_order_status] || [],
+    [single_order_status]
+  );
+
   const [trackingInfo, setTrackingInfo] = useState({
     trackingNumber: '',
     carrier: 'Australia Post'
@@ -27,6 +49,7 @@ function SingleOrderPage() {
 
   const handleChange = async (e) => {
     const status = e.target.value;
+    if (!status) return;
     const response = await updateOrderStatus(status, id, trackingInfo.trackingNumber, trackingInfo.carrier);
     if (response.success) {
       toast.success(`Order ${response.status}`, { position: 'top-center' });
@@ -72,25 +95,6 @@ function SingleOrderPage() {
     // eslint-disable-next-line
   }, [id]);
 
-  useEffect(() => {
-    let tempList = [...orderStatusList];
-    if (single_order_status === 'processing' || single_order_status === 'rejected') {
-      tempList.splice(3, 2);
-      setStatusList([...tempList]);
-    }
-    if (single_order_status === 'confirmed') {
-      tempList.splice(0, 2);
-      setStatusList([...tempList]);
-    }
-    if (single_order_status === 'shipped') {
-      tempList.splice(0, 3);
-      setStatusList([...tempList]);
-    }
-    if (single_order_status === 'delivered') {
-      tempList.splice(0, 4);
-      setStatusList([...tempList]);
-    }
-  }, [id, single_order_status]);
 
   if (loading) {
     return (
@@ -138,22 +142,26 @@ function SingleOrderPage() {
                 <span className="bg-red-50 border border-red-200 text-red-700 rounded px-4 py-2.5 text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
                   Locked (Return Active)
                 </span>
+              ) : statusList.length === 0 ? (
+                <span className="bg-gray-50 border border-gray-200 text-gray-500 rounded px-4 py-2.5 text-[10px] font-black uppercase tracking-widest cursor-not-allowed">
+                  {single_order_status ? `${single_order_status} (Final)` : 'Loading…'}
+                </span>
               ) : (
                 <select
-                  value={single_order_status}
+                  value=""
                   onChange={handleChange}
                   className="bg-champagne/30 border border-bronze/20 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-bronze focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all cursor-pointer min-w-[200px]"
                 >
-                  {statusList.map((status, index) => {
-                    const { name, value } = status;
-                    return (
-                      <option key={index} value={value}>{name}</option>
-                    );
-                  })}
+                  <option value="" disabled>
+                    Current: {single_order_status} — move to…
+                  </option>
+                  {statusList.map((status, index) => (
+                    <option key={index} value={status.value}>{status.name}</option>
+                  ))}
                 </select>
               )}
 
-              {single_order_status === 'shipped' && (!order || order.returnStatus === 'none') && (
+              {single_order_status === 'confirmed' && (!order || order.returnStatus === 'none') && (
                 <div className="flex gap-3 animate-in fade-in slide-in-from-left-4 duration-500">
                   <input
                     type="text"

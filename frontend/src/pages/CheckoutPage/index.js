@@ -48,6 +48,7 @@ const CheckoutPage = () => {
     setSelectedAddons((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   const [guestEmail, setGuestEmail] = useState('');
+  const [guestEmailConfirm, setGuestEmailConfirm] = useState('');
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
 
@@ -88,6 +89,11 @@ const CheckoutPage = () => {
     }
     if (!finalEmail) {
       toast.error('Please enter your email address for order confirmation', { position: 'top-center' });
+      setProcessing(false);
+      return;
+    }
+    if (!currentUser && guestEmail !== guestEmailConfirm) {
+      toast.error('Email addresses do not match — please check and try again', { position: 'top-center' });
       setProcessing(false);
       return;
     }
@@ -151,6 +157,45 @@ const CheckoutPage = () => {
               </h2>
 
               <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit}>
+
+                {/* Email fields — shown first for guests so confirmation email is never missed */}
+                {!currentUser && (
+                  <>
+                    <div className="col-span-2 pb-6 border-b border-bronze/10">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-gold mb-6">
+                        Order Confirmation — your receipt and tracking will be sent here
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+                        <div>
+                          <label className={labelClasses}>Email Address</label>
+                          <input
+                            className={inputClasses}
+                            placeholder="your@email.com"
+                            type="email"
+                            value={guestEmail}
+                            onChange={(e) => setGuestEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className={labelClasses}>Confirm Email</label>
+                          <input
+                            className={`${inputClasses} ${guestEmailConfirm && guestEmail !== guestEmailConfirm ? 'border-red-400' : ''}`}
+                            placeholder="Retype your email"
+                            type="email"
+                            value={guestEmailConfirm}
+                            onChange={(e) => setGuestEmailConfirm(e.target.value)}
+                            required
+                          />
+                          {guestEmailConfirm && guestEmail !== guestEmailConfirm && (
+                            <p className="text-red-400 text-[9px] font-bold uppercase tracking-widest mt-2">Emails do not match</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div className="col-span-2">
                   <label className={labelClasses}>Full Name</label>
                   <input
@@ -223,20 +268,6 @@ const CheckoutPage = () => {
                     required
                   />
                 </div>
-
-                {!currentUser && (
-                  <div className="col-span-2">
-                    <label className={labelClasses}>Email Address (for order confirmation)</label>
-                    <input
-                      className={inputClasses}
-                      placeholder="your@email.com"
-                      type="email"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
 
                 <div className="col-span-2 pt-12 border-t border-bronze/10">
                   <button
