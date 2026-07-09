@@ -3,13 +3,12 @@ import { createPortal } from 'react-dom';
 import { formatPrice } from '../../utils/helpers';
 import { BiChevronDown } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-import { useAdminContext } from '../../context/admin_context';
-import { useOrderContext } from '../../context/admin_order_context';
+import { useAdminAuthStore, useAdminOrderStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 function OrdersTable({ orders, onRefresh }) {
-  const { currentAdmin: currentUser } = useAdminContext();
-  const { fetchOrders, deleteOrder, updateOrderStatus, updateReturnStatus } = useOrderContext();
+  const { currentAdmin: currentUser } = useAdminAuthStore();
+  const { fetchOrders, deleteOrder, updateOrderStatus, updateReturnStatus } = useAdminOrderStore();
   const [loading, setLoading] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });

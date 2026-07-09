@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { MdEmail, MdDelete } from 'react-icons/md';
 import { Stars } from '.';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminProductStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 function SingleProductReviews({ reviews, productId }) {
-  const { deleteReview } = useProductContext();
+  const { deleteReview } = useAdminProductStore();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async (reviewId) => {

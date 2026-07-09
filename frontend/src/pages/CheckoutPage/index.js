@@ -8,7 +8,7 @@ import { computeOrderSummary, shippingMethods, addonOptions } from '../../utils/
 import { useSettingsContext } from '../../context/settings_context';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useCouponContext } from '../../context/admin_coupon_context';
+import { useAdminCouponStore } from '../../stores';
 import { domain } from '../../utils/constants';
 
 const AU_STATES = [
@@ -33,7 +33,7 @@ const CheckoutPage = () => {
   const [deliveryMethod, setDeliveryMethod] = useState('standard');
   const [selectedAddons, setSelectedAddons] = useState([]);
 
-  const { validateCoupon } = useCouponContext();
+  const { validateCoupon } = useAdminCouponStore();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState({ amount: 0, code: '', type: '' });
   const [applying, setApplying] = useState(false);

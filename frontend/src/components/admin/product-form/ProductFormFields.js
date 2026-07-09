@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { categoryData, COLLECTION_OPTIONS } from '../../../utils/categoryData';
 import { formatPrice } from '../../../utils/helpers';
 import { unitSellingPrice } from '../../../utils/pricing';
-import TagInput from './TagInput';
+import SizePicker from './SizePicker';
 import ColorPicker from './ColorPicker';
 import { useVariantMatrix } from './useVariantMatrix';
 
@@ -34,6 +34,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
     variants = [],
     shipping = false,
     featured = false,
+    isTrending = false,
     discountPercent = 0,
     badgeText = '',
     leadTimeDays = '',
@@ -112,7 +113,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
             <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Featured</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={form.isTrending} onChange={(e) => onField('isTrending', e.target.checked)} className="accent-bronze" />
+            <input type="checkbox" checked={isTrending} onChange={(e) => onField('isTrending', e.target.checked)} className="accent-bronze" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Trending</span>
           </label>
         </div>
@@ -139,59 +140,11 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
         </div>
       </div>
 
-      {/* Right column: media, taxonomy & variant matrix */}
+      {/* Right column: taxonomy & media */}
       <div className="space-y-8">
-        {/* Section 3: Media Gallery */}
+        {/* Section 3: Taxonomy & Routing */}
         <div className="border-b border-bronze/10 pb-2 mb-4">
-          <h4 className={sectionHeading}>3. Media Gallery</h4>
-        </div>
-        
-        <div>
-          <div
-            className="flex flex-col items-center justify-center min-h-[140px] border-2 border-dashed border-bronze/30 rounded-xl bg-champagne/20 cursor-pointer hover:border-gold hover:bg-champagne/40 transition-all duration-300"
-            {...getRootProps()}
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p className="text-sm font-bold text-bronze uppercase tracking-widest">Drop images here...</p>
-            ) : (
-              <div className="text-center">
-                <span className="text-2xl opacity-50 block mb-2">📸</span>
-                <p className="text-xs font-bold text-bronze uppercase tracking-widest mb-1">Upload Product Images</p>
-                <p className="text-[10px] text-bronze/50">Drag & drop or click to browse</p>
-              </div>
-            )}
-          </div>
-
-          {imageList.length > 0 && (
-            <div className="grid grid-cols-4 gap-4 mt-6">
-              {imageList.map((img, index) => {
-                const src = img.url || (img instanceof File ? URL.createObjectURL(img) : '');
-                return (
-                  <div key={index} className="relative aspect-[3/4] group rounded-lg overflow-hidden border border-bronze/20 shadow-sm">
-                    <img src={src} alt="Upload preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    <button
-                      type="button"
-                      onClick={() => onRemoveImage(index)}
-                      className="absolute top-2 right-2 bg-white/90 text-red-500 hover:text-red-700 w-7 h-7 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:scale-110"
-                    >
-                      ✕
-                    </button>
-                    {index === 0 && (
-                      <div className="absolute bottom-0 inset-x-0 bg-bronze/90 text-white text-[9px] font-bold uppercase tracking-widest text-center py-1">
-                        Primary Cover
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Section 4: Taxonomy & Routing */}
-        <div className="border-b border-bronze/10 pb-2 mb-4">
-          <h4 className={sectionHeading}>4. Taxonomy & Routing</h4>
+          <h4 className={sectionHeading}>3. Taxonomy & Routing</h4>
         </div>
 
         <div>
@@ -200,6 +153,9 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
             onField('category', e.target.value);
             onField('subCategory', '');
             onField('productType', '');
+            onField('colors', []);
+            onField('sizes', []);
+            onField('variants', []);
           }}>
             <option value="">Select Category</option>
             {Object.keys(categoryData).map((cat) => (
@@ -254,45 +210,10 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           </div>
         </div>
 
-        <div className="flex gap-6 p-4 bg-bronze/5 rounded-lg border border-bronze/10">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={shipping} onChange={(e) => onField('shipping', e.target.checked)} className="accent-bronze w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/80">Requires Shipping</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={featured} onChange={(e) => onField('featured', e.target.checked)} className="accent-bronze w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/80">Highlight as Featured</span>
-          </label>
-        </div>
-
-        <div className="border-b border-bronze/10 pb-2 mb-4 mt-8">
-          <h4 className={sectionHeading}>3. Merchandising & Fulfilment</h4>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Badge Text</label>
-            <input className={inputClass} value={badgeText} onChange={(e) => onField('badgeText', e.target.value)} placeholder="Online Exclusive, Pre-Order..." />
-          </div>
-          <div>
-            <label className={labelClass}>Lead Time (Days to Dispatch)</label>
-            <input type="number" min="0" className={inputClass} value={leadTimeDays} onChange={(e) => onField('leadTimeDays', e.target.value === '' ? '' : Number(e.target.value))} placeholder="e.g. 7" />
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>Fabric Composition</label>
-          <input className={inputClass} value={composition} onChange={(e) => onField('composition', e.target.value)} placeholder="100% Pure Silk, Velvet + Zari border..." />
-        </div>
-
-        <div>
-          <label className={labelClass}>Care Instructions</label>
-          <textarea className={`${inputClass} min-h-[80px] resize-y`} value={careInstructions} onChange={(e) => onField('careInstructions', e.target.value)} placeholder="Dry Clean Only. Store in muslin bag..." />
-        </div>
       </div>
 
-      {/* Right column: variant matrix & media */}
-      <div className="lg:col-span-7 space-y-6">
+      {/* Full-width: variant matrix & media */}
+      <div className="lg:col-span-2 space-y-6">
         <div className="border-b border-bronze/10 pb-2 mb-4">
           <h4 className={sectionHeading}>4. Variant Matrix & Inventory</h4>
           <p className="text-[9px] text-bronze/50 italic mt-1">Add sizes and colors below; the SKU matrix is generated automatically.</p>
@@ -312,7 +233,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-champagne/10 p-5 rounded border border-bronze/10 mb-6">
             <div>
               <label className={labelClass}>Available Sizes</label>
-              <TagInput value={sizes} onChange={(next) => onField('sizes', next)} placeholder="S, M, L, XL" hint="Press Enter or comma to add each size" />
+              <SizePicker value={sizes} onChange={(next) => onField('sizes', next)} />
             </div>
             <div>
               <label className={labelClass}>Available Colors</label>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SidebarWithHeader, OrdersTable } from '../../components/admin';
-import { useOrderContext } from '../../context/admin_order_context';
+import { useAdminOrderStore } from '../../stores';
 import { MdRefresh, MdFilterList } from 'react-icons/md';
 
 function ReturnsPage() {
     const {
         fetchFilteredOrders,
-    } = useOrderContext();
+    } = useAdminOrderStore();
 
     const [returnOrders, setReturnOrders] = useState([]);
     const [loading, setLoading] = useState(true);

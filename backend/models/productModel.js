@@ -11,6 +11,8 @@ Object.values(taxonomy.categories).forEach(subCatObj => {
   });
 });
 const validCollections = taxonomy.collections;
+const validColors = (taxonomy.colors || []).map((c) => c.name);
+const validSizes = taxonomy.sizes || [];
 
 const productSchema = mongoose.Schema({
   name: {
@@ -54,9 +56,16 @@ const productSchema = mongoose.Schema({
     {
       type: String,
       required: true,
+      enum: validColors,
     },
   ],
-  sizes: [{ type: String, required: true }],
+  sizes: [
+    {
+      type: String,
+      required: true,
+      enum: validSizes,
+    },
+  ],
   company: {
     type: String,
     required: [true, 'Please enter product company'],

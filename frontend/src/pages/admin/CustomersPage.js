@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useAdminUserContext } from '../../context/admin_user_context';
+import { useAdminCustomerStore } from '../../stores';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
 import { formatPrice } from '../../utils/helpers';
 
 function CustomersPage() {
-    const { customers, loading, fetchCustomers } = useAdminUserContext();
+    const { customers, loading, fetchCustomers } = useAdminCustomerStore();
 
     useEffect(() => {
         fetchCustomers();

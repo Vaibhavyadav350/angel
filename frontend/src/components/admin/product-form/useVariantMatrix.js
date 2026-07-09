@@ -18,16 +18,20 @@ import { useEffect } from 'react';
 export function useVariantMatrix(colors, sizes, variants, category, onField) {
   const colorKey = colors.join('|');
   const sizeKey = sizes.join('|');
+  const categoryKey = category || 'none';
 
   useEffect(() => {
+    const isJewelry = category === 'Jewelry';
+
+    // Empty matrix: give Jewelry a default single-size row, clear everything else.
     if (colors.length === 0 && sizes.length === 0) {
-      if (category === 'Jewelry') {
+      if (isJewelry) {
         const hasDefault = variants.length === 1 && variants[0].size === 'One Size' && variants[0].color === 'Standard';
         if (!hasDefault) {
           onField('variants', [{ size: 'One Size', color: 'Standard', stock: 0, sku: '' }]);
         }
-      } else {
-        if (variants.length > 0 && variants[0]?.size !== 'One Size') onField('variants', []);
+      } else if (variants.length > 0) {
+        onField('variants', []);
       }
       return;
     }
@@ -56,7 +60,7 @@ export function useVariantMatrix(colors, sizes, variants, category, onField) {
 
     if (structureChanged) onField('variants', next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorKey, sizeKey]);
+  }, [colorKey, sizeKey, categoryKey]);
 
   const setVariantField = (index, field, value) => {
     const updated = variants.map((v, i) => (i === index ? { ...v, [field]: value } : v));

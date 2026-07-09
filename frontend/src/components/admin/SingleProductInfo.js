@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '../../utils/helpers';
-import { useAdminContext } from '../../context/admin_context';
-import { useProductContext } from '../../context/admin_product_context';
 import { Stars } from '.';
-import { useOrderContext } from '../../context/admin_order_context';
+import { useAdminUserStore, useAdminProductStore, useAdminOrderStore } from '../../stores';
 
 function SingleProductInfo({ product }) {
-  const { admins } = useAdminContext();
-  const { orders } = useOrderContext();
-  const { single_product_loading: loading } = useProductContext();
+  const { admins } = useAdminUserStore();
+  const { orders } = useAdminOrderStore();
+  const { single_product_loading: loading } = useAdminProductStore();
   const [createdBy, setCreatedBy] = useState('');
   const [unitSold, setUnitSold] = useState(0);
   const {

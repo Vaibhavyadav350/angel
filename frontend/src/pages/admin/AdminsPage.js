@@ -4,16 +4,16 @@ import {
   AdminsTable,
   CreateNewAdminModal,
 } from '../../components/admin';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminUserStore } from '../../stores';
 import { MdRefresh } from 'react-icons/md';
 
 function AdminsPage() {
   const {
     admins,
-    admins_loading: loading,
-    admins_error: error,
+    adminsLoading: loading,
+    adminsError: error,
     fetchAdmins,
-  } = useAdminContext();
+  } = useAdminUserStore();
 
   const handleRefresh = async () => {
     await fetchAdmins();

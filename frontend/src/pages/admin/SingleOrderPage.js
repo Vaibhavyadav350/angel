@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { SidebarWithHeader, OrderDetails } from '../../components/admin';
-import { useOrderContext } from '../../context/admin_order_context';
+import { useAdminOrderStore } from '../../stores';
 import { admin_order_url } from '../../utils/constants';
 import { FaFilePdf } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -35,7 +35,7 @@ function SingleOrderPage() {
     fetchSingleOrder,
     updateOrderStatus,
     updateReturnStatus,
-  } = useOrderContext();
+  } = useAdminOrderStore();
 
   const statusList = useMemo(
     () => NEXT_STATUS_OPTIONS[single_order_status] || [],

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
-import { useCategoryContext } from '../../context/admin_category_context';
+import { useAdminCategoryStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 const CategoryRow = ({ category, onEdit, onDelete, onAddSub, onDeleteSub }) => {
@@ -134,7 +134,7 @@ const CategoryFormModal = ({ category, onClose, onSave }) => {
 };
 
 const CategoriesPage = () => {
-    const { categories, getCategories, createCategory, updateCategory, deleteCategory, addSubcategory, deleteSubcategory } = useCategoryContext();
+    const { categories, getCategories, createCategory, updateCategory, deleteCategory, addSubcategory, deleteSubcategory } = useAdminCategoryStore();
     const [modalOpen, setModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
 

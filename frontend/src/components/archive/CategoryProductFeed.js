@@ -49,11 +49,6 @@ const CategoryProductFeed = ({ categoryName, subtitle, products, bgColor = "bg-c
                                         New
                                     </span>
                                 )}
-                                {product.isBespoke && (
-                                    <span className="bg-gold text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm shadow-sm">
-                                        Custom Stitch
-                                    </span>
-                                )}
                             </div>
 
                             <div className="absolute top-4 right-4 z-10">

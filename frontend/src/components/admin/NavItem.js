@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 export default function NavItem({ url, icon, children, ...rest }) {
   const location = useLocation();
-  const isActive = location.pathname === url;
+  const isActive = location.pathname === url || (url !== '/admin' && location.pathname.startsWith(url));
 
   return (
     <Link to={url}>

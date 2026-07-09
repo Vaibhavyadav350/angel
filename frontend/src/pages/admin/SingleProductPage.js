@@ -6,7 +6,7 @@ import {
   SingleProductInfo,
   SingleProductReviews,
 } from '../../components/admin';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminProductStore } from '../../stores';
 
 function SingleProductPage() {
   const { id } = useParams();
@@ -15,7 +15,7 @@ function SingleProductPage() {
     single_product_error: error,
     single_product: product,
     fetchSingleProduct,
-  } = useProductContext();
+  } = useAdminProductStore();
 
   useEffect(() => {
     fetchSingleProduct(id);

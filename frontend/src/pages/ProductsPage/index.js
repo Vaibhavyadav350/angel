@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useHistory, Link } from 'react-router-dom';
 import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
 import { Loading, Error } from '../../components';
@@ -37,12 +37,14 @@ const ProductsPage = () => {
   } = useProductsContext();
 
   const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     document.title = 'Angel Archive | Collections';
   }, []);
 
-  // Parse query params to set initial filters, ensuring one-way sync to prevent overriding sidebar interactions
+  // Parse query params to set initial filters. This is the only place filters are
+  // derived from the URL, so navigation from the homepage/navbar always wins.
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
 
@@ -62,9 +64,34 @@ const ProductsPage = () => {
       productType,
       collection,
     });
+  }, [location.search, products.length, clearFilters, setInitialFilters]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search, products.length]);
+  // Keep the URL in sync with category-level sidebar selections so refresh/
+  // share links reflect the current view, without clobbering the parse effect.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const urlCategory = normalizeFilterValue('category', params.get('category'));
+    const urlSubCategory = normalizeFilterValue('subCategory', params.get('subCategory'));
+    const urlProductType = normalizeFilterValue('productType', params.get('productType'));
+    const urlCollection = normalizeFilterValue('collection', params.get('collection'));
+
+    const matchesUrl =
+      (filters.category || 'all') === (urlCategory || 'all') &&
+      (filters.subCategory || 'all') === (urlSubCategory || 'all') &&
+      (filters.productType || 'all') === (urlProductType || 'all') &&
+      (filters.collection || 'all') === (urlCollection || 'all');
+
+    if (matchesUrl) return;
+
+    const newParams = new URLSearchParams();
+    if (filters.category && filters.category !== 'all') newParams.set('category', filters.category);
+    if (filters.subCategory && filters.subCategory !== 'all') newParams.set('subCategory', filters.subCategory);
+    if (filters.productType && filters.productType !== 'all') newParams.set('productType', filters.productType);
+    if (filters.collection && filters.collection !== 'all') newParams.set('collection', filters.collection);
+
+    const newSearch = newParams.toString();
+    history.replace({ pathname: location.pathname, search: newSearch ? `?${newSearch}` : '' });
+  }, [filters.category, filters.subCategory, filters.productType, filters.collection, history, location.pathname, location.search]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;

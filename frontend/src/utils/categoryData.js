@@ -2,6 +2,8 @@ import taxonomy from './taxonomy.json';
 
 export const categoryData = taxonomy.categories;
 export const collections = taxonomy.collections;
+export const colorOptions = taxonomy.colors || [];
+export const sizeOptions = taxonomy.sizes || [];
 
 const allSubCategories = Object.values(taxonomy.categories).flatMap((subCats) =>
   Object.keys(subCats)

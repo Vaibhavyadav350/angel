@@ -2,15 +2,14 @@ import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { BiChevronDown } from 'react-icons/bi';
 import { formatPrice } from '../../utils/helpers';
-import { useProductContext } from '../../context/admin_product_context';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminProductStore, useAdminAuthStore } from '../../stores';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import UpdateProductModal from './UpdateProductModal';
 
 function ProductsTable({ products }) {
-  const { currentAdmin: currentUser } = useAdminContext();
-  const { fetchProducts, deleteProduct } = useProductContext();
+  const { currentAdmin: currentUser } = useAdminAuthStore();
+  const { fetchProducts, deleteProduct } = useAdminProductStore();
   const [loading, setLoading] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });

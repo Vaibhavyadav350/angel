@@ -1,18 +1,20 @@
 import React from 'react';
-import { useOrderContext } from '../../context/admin_order_context';
-import { useProductContext } from '../../context/admin_product_context';
-import { useNewsletterContext } from '../../context/newsletter_context';
-import { useAdminUserContext } from '../../context/admin_user_context';
+import {
+  useAdminOrderStore,
+  useAdminProductStore,
+  useAdminNewsletterStore,
+  useAdminCustomerStore,
+} from '../../stores';
 import { FaShoppingCart, FaDollarSign, FaBox, FaMailBulk, FaCrown, FaExclamationTriangle } from 'react-icons/fa';
 import { MdSchedule, MdLocalShipping } from 'react-icons/md';
 import { formatPrice } from '../../utils/helpers';
 
 function DashboardCards() {
   const { orders, pending_orders, delivered_orders, total_revenue } =
-    useOrderContext();
-  const { products } = useProductContext();
-  const { subscribers } = useNewsletterContext();
-  const { customers } = useAdminUserContext();
+    useAdminOrderStore();
+  const { products } = useAdminProductStore();
+  const { subscribers } = useAdminNewsletterStore();
+  const { customers } = useAdminCustomerStore();
 
   const lowStockCount = products ? products.filter(p => p.stock < 5).length : 0;
   const vipCount = customers ? customers.filter(c => c.isVIP).length : 0;

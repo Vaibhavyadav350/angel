@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminUserStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 function CreateNewAdminModal() {
   const {
-    new_admin: { name, email, password, privilege },
+    newAdmin: { name, email, password, privilege },
     updateNewAdminDetails,
     createNewAdmin,
     fetchAdmins,
-  } = useAdminContext();
+  } = useAdminUserStore();
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);

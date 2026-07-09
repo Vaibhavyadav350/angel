@@ -53,23 +53,18 @@ export const FilterProvider = ({ children }) => {
   };
 
   const updateFilters = (e) => {
-    let name = e.target.name;
-    let value = e.target.value;
-
-    if (name === 'category' || name === 'subCategory' || name === 'productType') {
-      value = e.target.textContent.trim();
-    }
+    const { name, type } = e.currentTarget;
+    let value = e.currentTarget.value;
 
     if (name === 'color') {
-      value = e.target.dataset.color;
-    }
-
-    if (name === 'price') {
+      value = e.currentTarget.dataset.color;
+    } else if (name === 'price') {
       value = Number(value);
-    }
-
-    if (name === 'shipping') {
-      value = e.target.checked;
+    } else if (name === 'shipping') {
+      value = e.currentTarget.checked;
+    } else if (type === 'button') {
+      // Category / subCategory / productType / color reset buttons carry canonical values
+      value = e.currentTarget.getAttribute('value') ?? value;
     }
 
     dispatch({ type: UPDATE_FILTERS, payload: { name, value } });

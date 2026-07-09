@@ -1,55 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { colorOptions } from '../../../utils/categoryData';
 
 /**
  * Fashion-oriented colour palette for the admin product form.
  *
- * Shows a grid of preset swatches that can be toggled on/off, plus a free-text
- * input for custom colours not in the palette. Replaces the old TagInput for
- * the "colors" field.
+ * Shows a grid of preset swatches that can be toggled on/off. The palette is
+ * sourced from taxonomy.json so the storefront filters and admin form stay in
+ * sync. Custom colours are no longer allowed — this prevents inconsistent
+ * labelling (e.g. "Red", "red", "Maroon") that breaks filter aggregation.
  *
  * Interface: value (string[]), onChange (callback) — same contract as TagInput.
  */
-
-const FASHION_COLORS = [
-  { name: 'Red', hex: '#C62828' },
-  { name: 'Maroon', hex: '#6A1B29' },
-  { name: 'Magenta', hex: '#AD1457' },
-  { name: 'Pink', hex: '#E91E63' },
-  { name: 'Peach', hex: '#FFAB91' },
-  { name: 'Orange', hex: '#E65100' },
-  { name: 'Gold', hex: '#C6993E' },
-  { name: 'Yellow', hex: '#F9A825' },
-  { name: 'Cream', hex: '#FFFDD0' },
-  { name: 'Beige', hex: '#D4C5A9' },
-  { name: 'Off-White', hex: '#FAF0E6' },
-  { name: 'White', hex: '#FFFFFF' },
-  { name: 'Olive', hex: '#6B8E23' },
-  { name: 'Green', hex: '#2E7D32' },
-  { name: 'Emerald Green', hex: '#046307' },
-  { name: 'Teal', hex: '#00695C' },
-  { name: 'Turquoise', hex: '#00BCD4' },
-  { name: 'Sky Blue', hex: '#4FC3F7' },
-  { name: 'Blue', hex: '#1565C0' },
-  { name: 'Navy Blue', hex: '#1A237E' },
-  { name: 'Purple', hex: '#6A1B9A' },
-  { name: 'Lavender', hex: '#CE93D8' },
-  { name: 'Mauve', hex: '#7B4F7B' },
-  { name: 'Brown', hex: '#5D4037' },
-  { name: 'Tan', hex: '#D2B48C' },
-  { name: 'Rust', hex: '#BF360C' },
-  { name: 'Copper', hex: '#B87333' },
-  { name: 'Silver', hex: '#C0C0C0' },
-  { name: 'Grey', hex: '#757575' },
-  { name: 'Black', hex: '#212121' },
-  { name: 'Multicolour', hex: null },
-];
 
 // Gradient used for the "Multicolour" swatch
 const multiGradient = 'linear-gradient(135deg, #E91E63 0%, #FF9800 25%, #FFEB3B 50%, #4CAF50 75%, #2196F3 100%)';
 
 function ColorPicker({ value = [], onChange }) {
-  const [customDraft, setCustomDraft] = useState('');
-
   const toggle = (name) => {
     if (value.includes(name)) {
       onChange(value.filter((v) => v !== name));
@@ -58,31 +24,17 @@ function ColorPicker({ value = [], onChange }) {
     }
   };
 
-  const addCustom = (raw) => {
-    const tag = raw.trim();
-    setCustomDraft('');
-    if (!tag || value.includes(tag)) return;
-    onChange([...value, tag]);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      addCustom(customDraft);
-    }
-  };
-
   const isSelected = (name) => value.includes(name);
 
-  // Find custom colours (ones not in the palette)
-  const paletteNames = FASHION_COLORS.map((c) => c.name);
+  // Find legacy/custom colours (ones not in the current taxonomy palette)
+  const paletteNames = colorOptions.map((c) => c.name);
   const customColors = value.filter((v) => !paletteNames.includes(v));
 
   return (
     <div className="space-y-3">
       {/* Preset palette grid */}
       <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-1.5">
-        {FASHION_COLORS.map(({ name, hex }) => {
+        {colorOptions.map(({ name, hex }) => {
           const selected = isSelected(name);
           return (
             <button
@@ -149,25 +101,11 @@ function ColorPicker({ value = [], onChange }) {
         </div>
       )}
 
-      {/* Custom color input */}
-      <div className="flex gap-2 items-center">
-        <input
-          className="flex-1 bg-champagne/50 border border-bronze/20 rounded px-3 py-2 text-sm text-bronze placeholder:text-bronze/30 focus:outline-none focus:border-gold transition-colors"
-          value={customDraft}
-          onChange={(e) => setCustomDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={() => addCustom(customDraft)}
-          placeholder="Custom colour name..."
-        />
-        <button
-          type="button"
-          onClick={() => addCustom(customDraft)}
-          className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-bronze/60 border border-bronze/20 rounded hover:bg-bronze/5 transition-colors"
-        >
-          Add
-        </button>
-      </div>
-      <p className="text-[9px] text-bronze/40">Click swatches above to toggle, or type a custom colour name below.</p>
+      {customColors.length > 0 && (
+        <p className="text-[9px] text-bronze/40">
+          Legacy custom colours are shown above. Remove them to keep the catalog aligned with the standard palette.
+        </p>
+      )}
     </div>
   );
 }

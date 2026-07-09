@@ -11,6 +11,10 @@ const badgeOptions = [
   { label: 'ARCHIVE PIECE', condition: () => true },
 ];
 
+// Do not surface bespoke / custom-stitch copy on product cards per business rule.
+const isBespokeBadge = (text) =>
+  /\b(bespoke|custom\s*stitch|stitch|stitching)\b/i.test(text || '');
+
 const Product = ({ image, name, price, id, category, subCategory, shipping, featured, discountPercent, badgeText }) => {
   const { wishlist, toggleWishlistItem, currentUser } = useUserContext();
   const isWishlisted = wishlist.some(item => (item._id || item) === id);
@@ -26,10 +30,10 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
     if (!res.success) toast.error(res.message);
   };
 
-  // Pick badge
-  let badgeLabel = badgeText;
+  // Pick badge. Ignore admin badgeText if it mentions bespoke/custom stitching.
+  let badgeLabel = isBespokeBadge(badgeText) ? null : badgeText;
   if (!badgeLabel) {
-    const badge = badgeOptions.find(b => b.condition({ shipping, featured })) || badgeOptions[2];
+    const badge = badgeOptions.find(b => b.condition({ shipping, featured })) || badgeOptions[1];
     badgeLabel = badge.label;
   }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminAuthStore } from '../../stores';
 import { useLocation, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiMenu, FiChevronRight, FiChevronDown, FiLogOut } from 'react-icons/fi';
@@ -9,7 +9,7 @@ export default function MobileNav({ onOpen, ...rest }) {
   const {
     currentAdmin: currentUser,
     logoutAdmin: logout,
-  } = useAdminContext();
+  } = useAdminAuthStore();
   const name = currentUser?.name;
   const location = useLocation();
 
@@ -22,17 +22,12 @@ export default function MobileNav({ onOpen, ...rest }) {
   };
 
   useEffect(() => {
-    let path = location.pathname.substring(1).split('/');
-    path = path.map((item, index) => {
-      if (item === '') {
-        return { name: 'home', path: '/' };
-      }
-      return {
-        name: item,
-        path: `${index === 1 ? `/${path[0]}/${item}` : `/${item}`}`,
-      };
-    });
-    setBreadCrumbs(path);
+    const segments = location.pathname.split('/').filter(Boolean);
+    const crumbs = segments.map((item, index) => ({
+      name: item,
+      path: `/${segments.slice(0, index + 1).join('/')}`,
+    }));
+    setBreadCrumbs(crumbs);
   }, [location]);
 
   return (

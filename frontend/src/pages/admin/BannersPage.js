@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
-import { useBannerContext } from '../../context/admin_banner_context';
+import { useAdminBannerStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 const PLACEMENTS = ['hero', 'promotional', 'announcement'];
@@ -115,7 +115,7 @@ const BannerFormModal = ({ banner, onClose, onSave }) => {
 };
 
 const BannersPage = () => {
-    const { banners, getBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } = useBannerContext();
+    const { banners, getBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } = useAdminBannerStore();
     const [modalOpen, setModalOpen] = useState(false);
     const [editingBanner, setEditingBanner] = useState(null);
 

@@ -48,13 +48,14 @@ const Filters = () => {
               key={index}
               type="button"
               name="category"
+              value={item}
               onClick={updateFilters}
               className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors ${category === item
                 ? 'text-gold border-b border-gold pb-0.5'
                 : 'text-bronze/60 hover:text-gold'
                 }`}
             >
-              {item}
+              {item === 'all' ? 'All' : item}
             </button>
           ))}
         </div>
@@ -68,7 +69,7 @@ const Filters = () => {
             <button
               type="button"
               name="subCategory"
-              data-value="all"
+              value="all"
               onClick={updateFilters}
               className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-4 ${subCategory === 'all'
                 ? 'text-gold border-l-2 border-gold pl-2'
@@ -82,6 +83,7 @@ const Filters = () => {
                 key={index}
                 type="button"
                 name="subCategory"
+                value={item}
                 onClick={updateFilters}
                 className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-4 ${subCategory === item
                   ? 'text-gold border-l-2 border-gold pl-2'
@@ -103,7 +105,7 @@ const Filters = () => {
             <button
               type="button"
               name="productType"
-              data-value="all"
+              value="all"
               onClick={updateFilters}
               className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-8 ${productType === 'all'
                 ? 'text-gold border-l-2 border-gold pl-2'
@@ -117,6 +119,7 @@ const Filters = () => {
                 key={index}
                 type="button"
                 name="productType"
+                value={item}
                 onClick={updateFilters}
                 className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-8 ${productType === item
                   ? 'text-gold border-l-2 border-gold pl-2'

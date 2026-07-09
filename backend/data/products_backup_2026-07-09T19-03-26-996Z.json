@@ -1,0 +1,810 @@
+[
+  {
+    "_id": "6a37b420668c90c3e45a536d",
+    "name": "Fandy Silk Suit",
+    "description": "This wine fandy silk suit stands out with its rich tone and classic sweetheart neckline complemented by a smooth U shape back for an elegant refined profile.\nThe half sleeves and ankle length flare create a timeless festive silhouette suitable for formal celebrations and thanksgiving gatherings.\nThe coordinated palazzo pants crafted in the same color fabric come with a fully elastic waist providing ease and comfort throughout the occasion.\nThe embroidered sequins dupatta enhances the outfit with luminous detailing bringing a luxurious finish to this graceful ensemble",
+    "price": 75,
+    "discountPercent": 10,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/kd8rxi07nlwpk58bpgrb",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1782035487/angel-fashion-studio/kd8rxi07nlwpk58bpgrb.jpg",
+        "_id": "6a37b420668c90c3e45a536e"
+      }
+    ],
+    "colors": [
+      "GREEN",
+      "RED",
+      "YELLOW",
+      "BLUE"
+    ],
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "company": "Angel Fashion Studio",
+    "category": "Women",
+    "subCategory": "SALWAR KAMEEZ",
+    "productType": "palazzo suits",
+    "collections": [],
+    "variants": [
+      {
+        "size": "M",
+        "color": "GREEN",
+        "stock": 2,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a1"
+      },
+      {
+        "size": "M",
+        "color": "RED",
+        "stock": 0,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a2"
+      },
+      {
+        "size": "M",
+        "color": "YELLOW",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a3"
+      },
+      {
+        "size": "M",
+        "color": "BLUE",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a4"
+      },
+      {
+        "size": "L",
+        "color": "GREEN",
+        "stock": 3,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a5"
+      },
+      {
+        "size": "L",
+        "color": "RED",
+        "stock": 2,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a6"
+      },
+      {
+        "size": "L",
+        "color": "YELLOW",
+        "stock": 3,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a7"
+      },
+      {
+        "size": "L",
+        "color": "BLUE",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a8"
+      },
+      {
+        "size": "XL",
+        "color": "GREEN",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280a9"
+      },
+      {
+        "size": "XL",
+        "color": "RED",
+        "stock": 0,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280aa"
+      },
+      {
+        "size": "XL",
+        "color": "YELLOW",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280ab"
+      },
+      {
+        "size": "XL",
+        "color": "BLUE",
+        "stock": 0,
+        "sku": "",
+        "_id": "6a39719a87c8aa76321280ac"
+      }
+    ],
+    "stock": 15,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "Online ",
+    "leadTimeDays": 8,
+    "composition": "SILK",
+    "careInstructions": "DRY CLEAN",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-06-21T09:51:28.388Z",
+    "__v": 4
+  },
+  {
+    "_id": "6a436934f96e69cdf193f197",
+    "name": "Anarkali Suit ",
+    "description": "MULTI EMBROIDERY MIRROR ANARKALI ",
+    "price": 160,
+    "discountPercent": 10,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/dmbnt1d4m8ktvq66hkdb",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1782802739/angel-fashion-studio/dmbnt1d4m8ktvq66hkdb.jpg",
+        "_id": "6a436934f96e69cdf193f198"
+      }
+    ],
+    "colors": [
+      "MULTI"
+    ],
+    "sizes": [
+      "XL"
+    ],
+    "company": "ANGEL FASHION STUDIO ",
+    "category": "Women",
+    "subCategory": "SALWAR KAMEEZ",
+    "productType": "Anarkali suits",
+    "collections": [
+      "best sellers",
+      "ready to ship"
+    ],
+    "variants": [
+      {
+        "size": "XL",
+        "color": "MULTI",
+        "stock": 0,
+        "sku": "",
+        "_id": "6a436934f96e69cdf193f199"
+      }
+    ],
+    "stock": 0,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": true,
+    "isTrending": false,
+    "badgeText": "",
+    "leadTimeDays": 0,
+    "composition": "",
+    "careInstructions": "",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-06-30T06:59:00.961Z",
+    "__v": 1
+  },
+  {
+    "_id": "6a4779b9f96e69cdf193fa26",
+    "name": "Traditional Multicolour Jaduau Earrings",
+    "description": "Real Jadau Earrring in multicolour with Gold Plating in very Permium quality.Multicolored stones work and pearls with earrings.",
+    "price": 28,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/pfmjx1cuhbcpiguvyfez",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783069111/angel-fashion-studio/pfmjx1cuhbcpiguvyfez.jpg",
+        "_id": "6a4779b9f96e69cdf193fa27"
+      }
+    ],
+    "colors": [
+      "multicolore"
+    ],
+    "sizes": [
+      "m"
+    ],
+    "company": "ANGEL FASHION STUDIO",
+    "category": "Jewelry",
+    "subCategory": "Casual",
+    "productType": "Casual Wear jewelery",
+    "collections": [
+      "sale"
+    ],
+    "variants": [
+      {
+        "size": "m",
+        "color": "multicolore",
+        "stock": 3,
+        "sku": "",
+        "_id": "6a4779b9f96e69cdf193fa28"
+      }
+    ],
+    "stock": 3,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": true,
+    "isTrending": false,
+    "badgeText": "15",
+    "leadTimeDays": 3,
+    "composition": "",
+    "careInstructions": "",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-03T08:58:33.511Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a477b00f96e69cdf193fa3d",
+    "name": "traditional golden Jadau earring ",
+    "description": "Real Jadau Gold Plated Earring with pearl work .",
+    "price": 28,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/nggvyuhxibov8bvs6ubt",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783069440/angel-fashion-studio/nggvyuhxibov8bvs6ubt.jpg",
+        "_id": "6a477b00f96e69cdf193fa3e"
+      }
+    ],
+    "colors": [
+      "gold"
+    ],
+    "sizes": [
+      "m"
+    ],
+    "company": "ANGEL FASHION STUDIO",
+    "category": "Jewelry",
+    "subCategory": "Casual",
+    "productType": "Casual Wear jewelery",
+    "collections": [
+      "new arrivals",
+      "ready to ship"
+    ],
+    "variants": [
+      {
+        "size": "m",
+        "color": "gold",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a477b00f96e69cdf193fa3f"
+      }
+    ],
+    "stock": 1,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "",
+    "leadTimeDays": 0,
+    "composition": "",
+    "careInstructions": "",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-03T09:04:00.903Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4a1777f96e69cdf193fdf3",
+    "name": "Green Embroidery Anarkali suit with dupatta  ",
+    "description": "chinon febric with Sequins Embroidered work.with Georgette dupata",
+    "price": 145,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/ovothjvjks2qoqjse3ao",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783240567/angel-fashion-studio/ovothjvjks2qoqjse3ao.jpg",
+        "_id": "6a4a1777f96e69cdf193fdf4"
+      }
+    ],
+    "colors": [
+      "Red"
+    ],
+    "sizes": [
+      "S M"
+    ],
+    "company": "Angel Fashion Studio",
+    "category": "Women",
+    "subCategory": "SALWAR KAMEEZ",
+    "productType": "Anarkali suits",
+    "collections": [
+      "new arrivals",
+      "ready to ship"
+    ],
+    "variants": [
+      {
+        "size": "S M",
+        "color": "Red",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4a1777f96e69cdf193fdf5"
+      }
+    ],
+    "stock": 1,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": true,
+    "isTrending": false,
+    "badgeText": "",
+    "leadTimeDays": 0,
+    "composition": "chinon fabric and dupatta ",
+    "careInstructions": "hand wash only",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-05T08:36:07.869Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4da7acf96e69cdf19402bc",
+    "name": "Silk Saree",
+    "description": "Very light weight satin silk Saree in very vibrant colour .\nBlouse Fabric:- Fendy Satin  \nSaree :- Satin silk with all side Gota lace .\nwork - shaded with Lace Border ",
+    "price": 155,
+    "discountPercent": 10,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/lelxjlgxway9va6ajnak",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783474091/angel-fashion-studio/lelxjlgxway9va6ajnak.jpg",
+        "_id": "6a4da7acf96e69cdf19402bd"
+      }
+    ],
+    "colors": [
+      "RED"
+    ],
+    "sizes": [
+      "S M L XL"
+    ],
+    "company": "Angel Fashion Studio",
+    "category": "Women",
+    "subCategory": "SAREES",
+    "productType": "casual wear",
+    "collections": [
+      "new arrivals",
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "S M L XL",
+        "color": "RED",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4da7acf96e69cdf19402be"
+      }
+    ],
+    "stock": 1,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": true,
+    "isTrending": false,
+    "badgeText": "",
+    "leadTimeDays": 5,
+    "composition": "pure Satin Silk ",
+    "careInstructions": "Dry clean And Hand wash only ",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-08T01:28:12.216Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4ded41f96e69cdf1940981",
+    "name": "Royal Purple Embroidered Sharara Suit",
+    "description": "Elevate your ethnic wardrobe with this elegant Royal Purple Embroidered Sharara Suit Set from Angel Fashion Studio. Crafted from a premium silk blend, this luxurious ensemble features...",
+    "price": 200,
+    "discountPercent": 20,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/veo9nvk9wrrsjpmwisiy",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783491903/angel-fashion-studio/veo9nvk9wrrsjpmwisiy.jpg",
+        "_id": "6a4ded41f96e69cdf1940982"
+      }
+    ],
+    "colors": [
+      "PURPLE"
+    ],
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "company": "Angel fashion studio",
+    "category": "Women",
+    "subCategory": "SALWAR KAMEEZ",
+    "productType": "sharara suits",
+    "collections": [
+      "new arrivals",
+      "best sellers",
+      "plus sizes",
+      "sale",
+      "ready to ship"
+    ],
+    "variants": [
+      {
+        "size": "M",
+        "color": "PURPLE",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4ded41f96e69cdf1940983"
+      },
+      {
+        "size": "L",
+        "color": "PURPLE",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4ded41f96e69cdf1940984"
+      },
+      {
+        "size": "XL",
+        "color": "PURPLE",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4ded41f96e69cdf1940985"
+      }
+    ],
+    "stock": 3,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "Premium Collection",
+    "leadTimeDays": 7,
+    "composition": "Premium Silk Blend Kurta & Garara",
+    "careInstructions": "Dry clean and Hand wash",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-08T06:25:05.044Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4df2dff96e69cdf1940a73",
+    "name": "ONION PINK EMBROIDED SHORT KURTI LEHNGA ",
+    "description": "Gracefully crafted in a soft lavender hue, this embroidered garara suit features intricate zari work, a matching flared garara, and a delicate embellished dupatta. Perfect for weddings, festive celebrations, and special occasions.",
+    "price": 350,
+    "discountPercent": 10,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/dmhde3aancceaw0yursb",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783493342/angel-fashion-studio/dmhde3aancceaw0yursb.jpg",
+        "_id": "6a4df2dff96e69cdf1940a74"
+      }
+    ],
+    "colors": [
+      "ONION PINK"
+    ],
+    "sizes": [
+      "M",
+      "L",
+      "XL"
+    ],
+    "company": "ANGEL FASHION STUDIO",
+    "category": "Women",
+    "subCategory": "LEHENGAS",
+    "productType": "Bridesmaid Lehengas",
+    "collections": [
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "M",
+        "color": "ONION PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4df2dff96e69cdf1940a75"
+      },
+      {
+        "size": "L",
+        "color": "ONION PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4df2dff96e69cdf1940a76"
+      },
+      {
+        "size": "XL",
+        "color": "ONION PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4df2dff96e69cdf1940a77"
+      }
+    ],
+    "stock": 3,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "ETHNIC WEAR",
+    "leadTimeDays": 3,
+    "composition": "FENDI SILK ",
+    "careInstructions": "HAND WASH AND DRY CLEAN",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-08T06:49:03.285Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4f1740f96e69cdf1940eee",
+    "name": "Emerald Heritage Kundan Choker Set",
+    "description": "A beautifully handcrafted traditional Kundan choker set featuring premium gold-tone detailing, sparkling white Kundan stones, elegant pearl accents, and rich emerald green bead drops. This statement jewellery set includes a matching pair of earrings, making it perfect for weddings, receptions, festive celebrations, and traditional occasions. Designed to complement lehengas, sarees, and Indo-western outfits with timeless elegance.",
+    "price": 160,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/q3rvvpmnj9i0mmozvujz",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783568191/angel-fashion-studio/q3rvvpmnj9i0mmozvujz.jpg",
+        "_id": "6a4f1740f96e69cdf1940eef"
+      }
+    ],
+    "colors": [
+      "GREEN",
+      "AQUA GREEN",
+      "HOT PINK",
+      "MEHROON"
+    ],
+    "sizes": [
+      "FREE SIZE"
+    ],
+    "company": "Angel Fashion Studio",
+    "category": "Jewelry",
+    "subCategory": "Bridal",
+    "productType": "bridal wear jewelery",
+    "collections": [
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "FREE SIZE",
+        "color": "GREEN",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1740f96e69cdf1940ef0"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "AQUA GREEN",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1740f96e69cdf1940ef1"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "HOT PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1740f96e69cdf1940ef2"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "MEHROON",
+        "stock": 2,
+        "sku": "",
+        "_id": "6a4f1740f96e69cdf1940ef3"
+      }
+    ],
+    "stock": 5,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "New Arrival",
+    "leadTimeDays": 4,
+    "composition": "Premium Alloy Base | Gold Plating | Kundan Stones | Faux Pearls | Emerald Green Beads",
+    "careInstructions": "Store in a dry, airtight jewellery box.\nKeep away from water, perfumes, and chemicals.\nWipe gently with a soft cloth after use.\nHandle carefully to maintain shine and finish.",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-09T03:36:32.620Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4f199ff96e69cdf1940f1b",
+    "name": "Handcrafted Multicolor Beaded Statement Necklace Set",
+    "description": "Make a bold statement with this handcrafted multicolor necklace set featuring premium natural-look stone beads, intricate enamel detailing, sparkling crystal embellishments, and a luxurious gold-tone finish. The necklace is paired with matching stud earrings, making it the perfect accessory for festive celebrations, weddings, parties, and ethnic occasions. Designed to complement sarees, lehengas, salwar suits, and Indo-western outfits.",
+    "price": 65,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/lqunulta2q2qvzs1ifmn",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783568798/angel-fashion-studio/lqunulta2q2qvzs1ifmn.jpg",
+        "_id": "6a4f199ff96e69cdf1940f1c"
+      }
+    ],
+    "colors": [
+      "GREEN & PEACH",
+      "NAVY BLUE & MAROON"
+    ],
+    "sizes": [
+      "FREE SIZE"
+    ],
+    "company": "Angel Fashion Studio",
+    "category": "Jewelry",
+    "subCategory": "Casual",
+    "productType": "Casual Wear jewelery",
+    "collections": [
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "FREE SIZE",
+        "color": "GREEN & PEACH",
+        "stock": 2,
+        "sku": "",
+        "_id": "6a4f199ff96e69cdf1940f1d"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "NAVY BLUE & MAROON",
+        "stock": 0,
+        "sku": "",
+        "_id": "6a4f199ff96e69cdf1940f1e"
+      }
+    ],
+    "stock": 2,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": true,
+    "isTrending": false,
+    "badgeText": "NEW ARRIVALS",
+    "leadTimeDays": 3,
+    "composition": "Premium Alloy Base | Gold Plating | Crystal Stones | Enamel Work | Glass Beads | Natural-look Stone Beads",
+    "careInstructions": "Store in a dry jewellery box after use.\nAvoid contact with water, perfume, and chemicals.\nClean gently with a soft, dry cloth.\nHandle with care to preserve the finish.",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-09T03:46:39.523Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4f1b69f96e69cdf1940f4a",
+    "name": "Mint Green Crystal Pendant Necklace Set",
+    "description": "Add a touch of elegance to your jewellery collection with this sophisticated mint green pendant necklace set. Featuring a sparkling crystal chain, a statement teardrop pendant, and matching drop earrings, this set offers a timeless and luxurious look. Crafted with a premium silver-tone finish and high-quality crystal accents, it is perfect for weddings, receptions, parties, evening events, and formal occasions.",
+    "price": 70,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/xqb6vytvfqtbpe3wuur7",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783569256/angel-fashion-studio/xqb6vytvfqtbpe3wuur7.jpg",
+        "_id": "6a4f1b69f96e69cdf1940f4b"
+      }
+    ],
+    "colors": [
+      "BLACK",
+      "BOTTLE GREEN",
+      "HOT PINK",
+      "LIGHT PINK"
+    ],
+    "sizes": [
+      "FREE SIZE"
+    ],
+    "company": "ANGEL FASHION STUDIO",
+    "category": "Jewelry",
+    "subCategory": "Casual",
+    "productType": "Casual Wear jewelery",
+    "collections": [
+      "new arrivals",
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "FREE SIZE",
+        "color": "BLACK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1b69f96e69cdf1940f4c"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "BOTTLE GREEN",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1b69f96e69cdf1940f4d"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "HOT PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1b69f96e69cdf1940f4e"
+      },
+      {
+        "size": "FREE SIZE",
+        "color": "LIGHT PINK",
+        "stock": 1,
+        "sku": "",
+        "_id": "6a4f1b69f96e69cdf1940f4f"
+      }
+    ],
+    "stock": 4,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "NEW ARRIVALS ",
+    "leadTimeDays": 3,
+    "composition": "Premium Alloy Base | Silver Rhodium Finish | High-Quality Crystal Stones | Mint Green Cat's Eye Glass Stone",
+    "careInstructions": "Store in a dry jewellery box after use.\nKeep away from water, perfumes, lotions, and chemicals.\nClean with a soft, dry cloth.\nAvoid dropping or scratching the stones.\n",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-09T03:54:17.706Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a4f26b0f96e69cdf1941182",
+    "name": "Designer Multicolor Floral Chandbali Hoop Earrings",
+    "description": "Add a vibrant touch to your jewellery collection with these handcrafted designer Chandbali hoop earrings. Featuring intricate floral and peacock-inspired motifs with colourful enamel detailing, these lightweight statement earrings are finished in a premium gold-tone polish. Perfect for festive celebrations, weddings, mehendi, haldi, parties, and traditional occasions, they pair beautifully with sarees, lehengas, salwar suits, and Indo-western outfits.",
+    "price": 50,
+    "discountPercent": 0,
+    "taxPercent": 10,
+    "rating": 0,
+    "images": [
+      {
+        "public_id": "angel-fashion-studio/isozectpoqtdvpdybdae",
+        "url": "http://res.cloudinary.com/dj5qns6gm/image/upload/v1783572143/angel-fashion-studio/isozectpoqtdvpdybdae.jpg",
+        "_id": "6a4f26b0f96e69cdf1941183"
+      }
+    ],
+    "colors": [
+      "RED"
+    ],
+    "sizes": [
+      "M"
+    ],
+    "company": "ANGEL FASHION STUDIO ",
+    "category": "Jewelry",
+    "subCategory": "Casual",
+    "productType": "Casual Wear jewelery",
+    "collections": [
+      "new arrivals",
+      "ready to ship",
+      "best sellers"
+    ],
+    "variants": [
+      {
+        "size": "M",
+        "color": "RED",
+        "stock": 3,
+        "sku": "",
+        "_id": "6a4f26b0f96e69cdf1941184"
+      }
+    ],
+    "stock": 3,
+    "numberOfReviews": 0,
+    "shipping": true,
+    "featured": false,
+    "isTrending": false,
+    "badgeText": "NEW ARRIVALS",
+    "leadTimeDays": 3,
+    "composition": "MENAKARI ",
+    "careInstructions": "Store in a dry jewellery box.\nKeep away from water, perfumes, and chemicals.\nWipe with a soft cloth after use.\nHandle carefully to maintain the enamel finish",
+    "crossSellProducts": [],
+    "admin": "6a37ac62e36e5989dfef80b9",
+    "reviews": [],
+    "createdAt": "2026-07-09T04:42:24.603Z",
+    "__v": 0
+  }
+]

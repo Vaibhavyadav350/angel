@@ -19,7 +19,8 @@
     "react-scripts": "^5.0.0",
     "react-toastify": "^8.1.0",
     "recharts": "^2.15.4",
-    "three": "^0.183.2"
+    "three": "^0.183.2",
+    "zustand": "^5.0.14"
   },
   "scripts": {
     "start": "react-scripts start",

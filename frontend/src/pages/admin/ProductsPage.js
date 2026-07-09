@@ -5,7 +5,7 @@ import {
   CreateNewProductModal,
 } from '../../components/admin';
 import { MdRefresh } from 'react-icons/md';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminProductStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 function ProductsPage() {
@@ -15,7 +15,7 @@ function ProductsPage() {
     products_error: error,
     fetchProducts,
     exportProductsToExcel,
-  } = useProductContext();
+  } = useAdminProductStore();
 
   const [exporting, setExporting] = React.useState(false);
 

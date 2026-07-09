@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminAuthStore } from '../../stores';
 import { toast } from 'react-toastify';
 import { PreLoader } from '../../components/admin';
 import useMounted from '../../hooks/useMounted';
 
 export default function LoginPage() {
-  const { loginAdmin, adminAuthLoading: authLoading } = useAdminContext();
+  const { loginAdmin, adminAuthLoading: authLoading } = useAdminAuthStore();
   const history = useHistory();
   const mounted = useMounted();
 

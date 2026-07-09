@@ -1,16 +1,18 @@
 import React from 'react';
 import { SidebarWithHeader, DashboardCards, OrdersTable } from '../../components/admin';
-import { useOrderContext } from '../../context/admin_order_context';
-import { useAnalyticsContext } from '../../context/admin_analytics_context';
+import {
+  useAdminOrderStore,
+  useAdminAnalyticsStore,
+  useAdminCustomerStore,
+} from '../../stores';
 import SalesAreaChart from '../../components/admin/charts/SalesAreaChart';
 import CategoryPieChart from '../../components/admin/charts/CategoryPieChart';
-import { useAdminUserContext } from '../../context/admin_user_context';
 import { formatPrice } from '../../utils/helpers';
 
 export default function Dashboard() {
-  const { recent_orders, fetchOrders } = useOrderContext();
-  const { sales_stats, category_stats, kpi_stats, fetchAnalytics, analytics_loading } = useAnalyticsContext();
-  const { fetchCustomers } = useAdminUserContext();
+  const { recent_orders, fetchOrders } = useAdminOrderStore();
+  const { sales_stats, category_stats, kpi_stats, fetchAnalytics, analytics_loading } = useAdminAnalyticsStore();
+  const { fetchCustomers } = useAdminCustomerStore();
 
   React.useEffect(() => {
     fetchAnalytics();

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { SidebarWithHeader } from '../../components/admin';
-import { useCouponContext } from '../../context/admin_coupon_context';
+import { useAdminCouponStore } from '../../stores';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CouponsPage = () => {
-    const { coupons, fetchCoupons, createCoupon, deleteCoupon } = useCouponContext();
+    const { coupons, fetchCoupons, createCoupon, deleteCoupon } = useAdminCouponStore();
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         code: '',
@@ -21,7 +21,7 @@ const CouponsPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const success = await createCoupon(formData);
+        const { success } = await createCoupon(formData);
         if (success) {
             setShowModal(false);
             setFormData({ code: '', discountType: 'PERCENTAGE', amount: '', expiryDate: '', minPurchase: 0, usageLimit: 100 });

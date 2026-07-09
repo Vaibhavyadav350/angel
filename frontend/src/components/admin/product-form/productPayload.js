@@ -2,9 +2,13 @@
  * Shared validation + payload construction for the product Create/Edit modals,
  * so both submit the exact same shape to the API.
  */
+import { colorOptions, sizeOptions } from '../../../utils/categoryData';
+
+const validColorNames = colorOptions.map((c) => c.name);
+const validSizeNames = sizeOptions;
 
 export function validateProduct(form, imageList) {
-  const { name, price, description, category, subCategory, company } = form;
+  const { name, price, description, category, subCategory, company, colors = [], sizes = [] } = form;
   const variants = form.variants || [];
   if (!name || !price || !description || !category || !subCategory || !company) {
     return 'Please provide all primary details';
@@ -14,6 +18,14 @@ export function validateProduct(form, imageList) {
   }
   if (!imageList || imageList.length < 1) {
     return 'Add at least one image';
+  }
+  const invalidColors = colors.filter((c) => !validColorNames.includes(c));
+  if (invalidColors.length > 0) {
+    return `Invalid colour(s): ${invalidColors.join(', ')}. Use the standard palette.`;
+  }
+  const invalidSizes = sizes.filter((s) => !validSizeNames.includes(s));
+  if (invalidSizes.length > 0) {
+    return `Invalid size(s): ${invalidSizes.join(', ')}. Use the standard size taxonomy.`;
   }
   return null;
 }

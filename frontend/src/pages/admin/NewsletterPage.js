@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { SidebarWithHeader, PreLoader } from '../../components/admin';
-import { useNewsletterContext } from '../../context/newsletter_context';
+import { useAdminNewsletterStore } from '../../stores';
 import { toast } from 'react-toastify';
 import { FiTrash2, FiRefreshCcw } from 'react-icons/fi';
 
@@ -11,7 +11,7 @@ const NewsletterPage = () => {
         subscribers_error,
         fetchSubscribers,
         deleteSubscriber,
-    } = useNewsletterContext();
+    } = useAdminNewsletterStore();
 
     useEffect(() => {
         fetchSubscribers();

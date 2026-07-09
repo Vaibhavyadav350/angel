@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminProductStore } from '../../stores';
 import { toast } from 'react-toastify';
 import ProductFormFields from './product-form/ProductFormFields';
 import ProductFormModalShell from './product-form/ProductFormModalShell';
@@ -14,7 +14,7 @@ function UpdateProductModal({ id, externalOpen, onClose }) {
     fetchSingleProduct,
     setExistingProductField,
     updateProduct,
-  } = useProductContext();
+  } = useAdminProductStore();
 
   const { imageList, setImageList, addFiles, removeImage } = useImageList([]);
   const [loading, setLoading] = useState(false);

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
-import { useInventoryContext } from '../../context/admin_inventory_context';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminInventoryStore, useAdminProductStore } from '../../stores';
 import { Link } from 'react-router-dom';
 
 const InventoryPage = () => {
-    const { inventory, lowStockCount, outOfStockCount, computeInventory } = useInventoryContext();
-    const { products, fetchProducts } = useProductContext();
+    const { inventory, lowStockCount, outOfStockCount, computeInventory } = useAdminInventoryStore();
+    const { products, fetchProducts } = useAdminProductStore();
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // all | low | out
 

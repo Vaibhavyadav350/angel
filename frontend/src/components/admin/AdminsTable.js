@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminUserStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 function AdminsTable({ admins }) {
-  const { updateAdminPrivilege, deleteAdmin, fetchAdmins } = useAdminContext();
+  const { updateAdminPrivilege, deleteAdmin, fetchAdmins } = useAdminUserStore();
   const [loading, setLoading] = useState(false);
 
   const privilegeClasses = {

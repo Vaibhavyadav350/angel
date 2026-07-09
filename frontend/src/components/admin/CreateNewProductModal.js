@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useProductContext } from '../../context/admin_product_context';
+import { useAdminProductStore } from '../../stores';
 import { toast } from 'react-toastify';
 import ProductFormFields from './product-form/ProductFormFields';
 import ProductFormModalShell from './product-form/ProductFormModalShell';
@@ -7,7 +7,7 @@ import { useImageList } from './product-form/useImageList';
 import { validateProduct, buildProductPayload } from './product-form/productPayload';
 
 function CreateNewProductModal() {
-  const { new_product, setNewProductField, resetNewProduct, createNewProduct } = useProductContext();
+  const { new_product, setNewProductField, resetNewProduct, createNewProduct } = useAdminProductStore();
   const { imageList, setImageList, addFiles, removeImage } = useImageList([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ function CreateNewProductModal() {
     const res = await createNewProduct(buildProductPayload(new_product, imageList));
     setLoading(false);
     if (res.success) {
-      toast.success('Product completely mapped and created', { position: 'top-center' });
+      toast.success('Product created', { position: 'top-center' });
       closeAndReset();
     } else {
       toast.error(res.message, { position: 'top-center' });
@@ -36,7 +36,7 @@ function CreateNewProductModal() {
   const footer = (
     <div className="flex justify-between items-center">
       <p className="text-[10px] text-bronze/40 font-bold uppercase tracking-widest">
-        Check all requirements before compiling block.
+        Fill all required fields before creating the product.
       </p>
       <div className="flex gap-4">
         <button
@@ -50,7 +50,7 @@ function CreateNewProductModal() {
           disabled={loading}
           className="px-8 py-3 bg-bronze text-white text-[10px] font-bold uppercase tracking-[0.3em] rounded-lg hover:bg-gold hover:text-bronze shadow-lg shadow-bronze/20 transition-all duration-300 disabled:opacity-50 disabled:shadow-none min-w-[180px]"
         >
-          {loading ? 'Compiling...' : 'Compile Product'}
+          {loading ? 'Creating...' : 'Create Product'}
         </button>
       </div>
     </div>
@@ -72,8 +72,8 @@ function CreateNewProductModal() {
 
       {isOpen && (
         <ProductFormModalShell
-          title="Enterprise Product Creator"
-          subtitle="Configure Details, Taxonomy, and Inventory Matrix"
+          title="Create Product"
+          subtitle="Details, taxonomy, variants and media"
           onClose={closeAndReset}
           footer={footer}
         >

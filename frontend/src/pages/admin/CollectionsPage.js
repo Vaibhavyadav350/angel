@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
-import { useCollectionContext } from '../../context/admin_collection_context';
+import { useAdminCollectionStore } from '../../stores';
 import { toast } from 'react-toastify';
 
 const emptyCollection = {
@@ -84,7 +84,7 @@ const CollectionFormModal = ({ collection, onClose, onSave }) => {
 };
 
 const CollectionsPage = () => {
-    const { collections, getCollections, createCollection, updateCollection, deleteCollection, toggleVisibility } = useCollectionContext();
+    const { collections, getCollections, createCollection, updateCollection, deleteCollection, toggleVisibility } = useAdminCollectionStore();
     const [modalOpen, setModalOpen] = useState(false);
     const [editingCollection, setEditingCollection] = useState(null);
 

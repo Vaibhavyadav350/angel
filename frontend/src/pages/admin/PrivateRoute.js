@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Redirect, useLocation } from 'react-router-dom';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminAuthStore } from '../../stores';
 
 const PrivateRoute = ({ children, ...rest }) => {
-  const { currentAdmin: currentUser } = useAdminContext();
+  const { currentAdmin: currentUser } = useAdminAuthStore();
   const location = useLocation();
 
   if (

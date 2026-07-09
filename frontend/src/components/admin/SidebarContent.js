@@ -1,56 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import NavItem from './NavItem';
 import { LinkItems } from '../../utils/constants';
-import { useAdminContext } from '../../context/admin_context';
+import { useAdminAuthStore } from '../../stores';
 import logo from '../../assets/logo.png';
 
-export default function SidebarContent({ onClose, className = '' }) {
-  const {
-    currentAdmin: currentUser,
-  } = useAdminContext();
-  const privilege = currentUser?.privilege;
-  const [Links, setLinks] = useState([]);
+const LINKS_BY_PRIVILEGE = {
+  super: LinkItems,
+  moderate: LinkItems.filter((link) => link.name !== 'Admins' && link.name !== 'Customers'),
+  low: LinkItems.filter((link) => !['Admins', 'Products', 'Newsletter', 'Customers', 'Banners', 'Collections', 'Categories', 'Inventory', 'Settings'].includes(link.name)),
+};
 
-  useEffect(() => {
-    if (privilege === 'super') {
-      setLinks(LinkItems);
-    }
-    if (privilege === 'moderate') {
-      const tempLinks = LinkItems.filter((link) =>
-        link.name !== 'Admins' && link.name !== 'Customers'
-      );
-      setLinks(tempLinks);
-    }
-    if (privilege === 'low') {
-      const tempLinks = LinkItems.filter(
-        (link) =>
-          link.name !== 'Admins' &&
-          link.name !== 'Products' &&
-          link.name !== 'Newsletter' &&
-          link.name !== 'Customers' &&
-          link.name !== 'Banners' &&
-          link.name !== 'Collections' &&
-          link.name !== 'Categories' &&
-          link.name !== 'Inventory' &&
-          link.name !== 'Settings'
-      );
-      setLinks(tempLinks);
-    }
-    // eslint-disable-next-line
-  }, [privilege]);
+export default function SidebarContent({ onClose, className = '' }) {
+  const { currentAdmin: currentUser } = useAdminAuthStore();
+  const privilege = currentUser?.privilege || 'low';
+  const links = useMemo(() => LINKS_BY_PRIVILEGE[privilege] || LINKS_BY_PRIVILEGE.low, [privilege]);
 
   return (
     <div
-      className={`bg-white border-r border-bronze/10 w-60 fixed h-screen flex flex-col transition-all duration-300 ${className}`}
+      className={`bg-white border-r border-bronze/10 w-60 h-full flex flex-col transition-all duration-300 ${className}`}
     >
       {/* Brand Header */}
       <div className="py-4 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center w-full justify-center">
-          <img src={logo} alt="Angel Fashion Studio Logo" className="w-40 h-auto object-contain" />
+          <img src={logo} alt="Angel Fashion Studio Logo" className="w-32 md:w-36 h-auto object-contain" />
         </div>
         <button
           className="md:hidden text-bronze/50 hover:text-bronze transition-colors p-1"
           onClick={onClose}
+          aria-label="Close navigation"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -70,7 +47,7 @@ export default function SidebarContent({ onClose, className = '' }) {
 
       {/* Nav Items */}
       <nav className="flex-1 min-h-0 overflow-y-auto py-2 custom-scrollbar">
-        {Links.map((link) => (
+        {links.map((link) => (
           <NavItem key={link.name} icon={link.icon} url={link.url}>
             {link.name}
           </NavItem>
