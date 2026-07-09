@@ -20,10 +20,15 @@ export function useVariantMatrix(colors, sizes, variants, category, onField) {
   const sizeKey = sizes.join('|');
 
   useEffect(() => {
-    if (category === 'Jewelry') return; // Handled manually by ProductFormFields
-
     if (colors.length === 0 && sizes.length === 0) {
-      if (variants.length > 0 && variants[0]?.size !== 'One Size') onField('variants', []);
+      if (category === 'Jewelry') {
+        const hasDefault = variants.length === 1 && variants[0].size === 'One Size' && variants[0].color === 'Standard';
+        if (!hasDefault) {
+          onField('variants', [{ size: 'One Size', color: 'Standard', stock: 0, sku: '' }]);
+        }
+      } else {
+        if (variants.length > 0 && variants[0]?.size !== 'One Size') onField('variants', []);
+      }
       return;
     }
 

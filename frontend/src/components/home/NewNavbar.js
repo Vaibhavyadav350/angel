@@ -63,11 +63,12 @@ const NewNavbar = () => {
   const iconColor = isHomePage && !scrolled ? 'text-white hover:text-[#C5A059]' : 'text-[#3D2B1F] hover:text-[#C5A059]';
 
   const mainNavLinks = [
+    { label: 'NEW ARRIVALS', key: null, url: '/products?collection=new%20arrivals' },
     { label: 'WOMEN', key: 'Women', url: '/products?category=Women' },
     { label: 'MEN', key: 'Men', url: '/products?category=Men' },
     { label: 'KIDS', key: 'Kids', url: '/products?category=Kids' },
     { label: 'JEWELRY', key: 'Jewelry', url: '/products?category=Jewelry' },
-    { label: 'HERITAGE', key: null, url: '/about' },
+    { label: 'ABOUT', key: null, url: '/about' },
     { label: 'SALE', key: null, url: '/products?collection=sale', sale: true },
   ];
 

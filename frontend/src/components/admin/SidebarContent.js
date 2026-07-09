@@ -41,12 +41,12 @@ export default function SidebarContent({ onClose, className = '' }) {
 
   return (
     <div
-      className={`bg-white border-r border-bronze/10 w-60 fixed h-full flex flex-col transition-all duration-300 ${className}`}
+      className={`bg-white border-r border-bronze/10 w-60 fixed h-screen flex flex-col transition-all duration-300 ${className}`}
     >
       {/* Brand Header */}
-      <div className="h-32 flex items-center justify-between px-4">
-        <div className="flex items-center w-full">
-          <img src={logo} alt="Angel Fashion Studio Logo" className="w-full h-auto max-h-[110px] object-contain" />
+      <div className="py-6 flex items-center justify-between px-4">
+        <div className="flex items-center w-full justify-center">
+          <img src={logo} alt="Angel Fashion Studio Logo" className="w-[120%] max-w-[120%] h-auto object-contain transform scale-125" />
         </div>
         <button
           className="md:hidden text-bronze/50 hover:text-bronze transition-colors p-1"

@@ -89,10 +89,10 @@ function ColorPicker({ value = [], onChange }) {
               key={name}
               type="button"
               onClick={() => toggle(name)}
-              className={`flex flex-col items-center gap-1 px-1 py-2 rounded-lg border-2 transition-all duration-150
+              className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-150
                 ${selected
-                  ? 'border-bronze bg-bronze/10 shadow-sm'
-                  : 'border-transparent hover:border-bronze/20 hover:bg-champagne/30'
+                  ? 'border-bronze shadow-md scale-110'
+                  : 'border-transparent hover:border-bronze/40 hover:scale-105'
                 }`}
               title={name}
             >
@@ -121,11 +121,6 @@ function ColorPicker({ value = [], onChange }) {
                     />
                   </svg>
                 )}
-              </span>
-              <span className={`text-[8px] font-bold uppercase tracking-wider leading-tight text-center
-                ${selected ? 'text-bronze' : 'text-bronze/50'}`}
-              >
-                {name}
               </span>
             </button>
           );
