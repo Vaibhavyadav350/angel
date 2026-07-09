@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useReducer } from 'react';
 import reducer from '../reducers/products_reducer';
 import { products_url as url, domain } from '../utils/constants';
+import { ensureHttps } from '../utils/helpers';
 import {
   SIDEBAR_OPEN,
   SIDEBAR_CLOSE,
@@ -25,6 +26,24 @@ const fallbackProducts = [
   { id: '7', name: 'Georgette Lehenga Choli', category: 'Women', subCategory: 'Lehengas', price: 88000, image: '/assets/landing/lehenga-1.jpg', shipping: true, featured: false, description: 'Flowing georgette lehenga with mirror work.' },
   { id: '8', name: 'Polki Earrings', category: 'Jewelry', subCategory: 'Bridal', price: 55000, image: '/assets/landing/cat-jewelry.jpg', shipping: true, featured: false, description: 'Uncut diamond polki drop earrings.' }
 ];
+
+const normalizeProductImages = (product) => {
+  if (!product) return product;
+  return {
+    ...product,
+    image: ensureHttps(product.image),
+    images: Array.isArray(product.images)
+      ? product.images.map((img) =>
+          typeof img === 'string'
+            ? ensureHttps(img)
+            : { ...img, url: ensureHttps(img.url), src: ensureHttps(img.src) }
+        )
+      : product.images,
+  };
+};
+
+const normalizeProducts = (products) =>
+  Array.isArray(products) ? products.map(normalizeProductImages) : products;
 
 const initialState = {
   isSidebarOpen: false,
@@ -60,11 +79,11 @@ export const ProductsProvider = ({ children }) => {
     try {
       const response = await axios.get(url);
       const products = response.data;
-      dispatch({ type: GET_PRODUCTS_SUCCESS, payload: products.data });
+      dispatch({ type: GET_PRODUCTS_SUCCESS, payload: normalizeProducts(products.data) });
     } catch (error) {
       console.warn("Backend API unavailable, injecting robust fallback catalog data.");
       // Fallback injection so UI renders beautifully without backend
-      dispatch({ type: GET_PRODUCTS_SUCCESS, payload: fallbackProducts });
+      dispatch({ type: GET_PRODUCTS_SUCCESS, payload: normalizeProducts(fallbackProducts) });
     }
   }, []);
 
@@ -76,7 +95,7 @@ export const ProductsProvider = ({ children }) => {
       if (singleProduct.success && singleProduct.data) {
         dispatch({
           type: GET_SINGLE_PRODUCT_SUCCESS,
-          payload: singleProduct.data,
+          payload: normalizeProductImages(singleProduct.data),
         });
       } else {
         dispatch({ type: GET_SINGLE_PRODUCT_ERROR });

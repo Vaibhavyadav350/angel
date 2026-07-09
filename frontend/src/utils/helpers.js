@@ -1,3 +1,12 @@
+/**
+ * Force a URL to HTTPS. Cloudinary and some legacy uploads stored images as
+ * http://, which causes mixed-content warnings on the HTTPS storefront.
+ */
+export const ensureHttps = (url) => {
+  if (!url || typeof url !== 'string') return url;
+  return url.replace(/^http:\/\//i, 'https://');
+};
+
 export const formatPrice = (number) => {
   // Always show cents so the storefront matches invoices/admin (e.g. $206.18,
   // not $206). Money is AUD, GST-inclusive.

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useHistory, Link } from 'react-router-dom';
 import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
@@ -38,37 +38,41 @@ const ProductsPage = () => {
 
   const location = useLocation();
   const history = useHistory();
+  const lastProcessedSearch = useRef(null);
 
   useEffect(() => {
     document.title = 'Angel Archive | Collections';
   }, []);
 
-  // Parse query params to set initial filters. This is the only place filters are
-  // derived from the URL, so navigation from the homepage/navbar always wins.
+  // Two-way sync between URL query params and filter state.
+  // When the URL changes (e.g. category pills / back button), we parse it and
+  // set filters. When filters change from the sidebar, we update the URL.
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
+    // URL changed: derive filters from the URL.
+    if (location.search !== lastProcessedSearch.current) {
+      lastProcessedSearch.current = location.search;
+      const searchParams = new URLSearchParams(location.search);
 
-    if (!location.search) {
-      clearFilters();
+      if (!location.search) {
+        clearFilters();
+        return;
+      }
+
+      const category = normalizeFilterValue('category', searchParams.get('category'));
+      const subCategory = normalizeFilterValue('subCategory', searchParams.get('subCategory'));
+      const collection = normalizeFilterValue('collection', searchParams.get('collection'));
+      const productType = normalizeFilterValue('productType', searchParams.get('productType'));
+
+      setInitialFilters({
+        category,
+        subCategory,
+        productType,
+        collection,
+      });
       return;
     }
 
-    const category = normalizeFilterValue('category', searchParams.get('category'));
-    const subCategory = normalizeFilterValue('subCategory', searchParams.get('subCategory'));
-    const collection = normalizeFilterValue('collection', searchParams.get('collection'));
-    const productType = normalizeFilterValue('productType', searchParams.get('productType'));
-
-    setInitialFilters({
-      category,
-      subCategory,
-      productType,
-      collection,
-    });
-  }, [location.search, products.length, clearFilters, setInitialFilters]);
-
-  // Keep the URL in sync with category-level sidebar selections so refresh/
-  // share links reflect the current view, without clobbering the parse effect.
-  useEffect(() => {
+    // Filters changed: derive URL from filters.
     const params = new URLSearchParams(location.search);
     const urlCategory = normalizeFilterValue('category', params.get('category'));
     const urlSubCategory = normalizeFilterValue('subCategory', params.get('subCategory'));
@@ -89,9 +93,12 @@ const ProductsPage = () => {
     if (filters.productType && filters.productType !== 'all') newParams.set('productType', filters.productType);
     if (filters.collection && filters.collection !== 'all') newParams.set('collection', filters.collection);
 
-    const newSearch = newParams.toString();
-    history.replace({ pathname: location.pathname, search: newSearch ? `?${newSearch}` : '' });
-  }, [filters.category, filters.subCategory, filters.productType, filters.collection, history, location.pathname, location.search]);
+    const nextSearch = newParams.toString();
+    const nextLocationSearch = nextSearch ? `?${nextSearch}` : '';
+    if (nextLocationSearch !== location.search) {
+      history.replace({ pathname: location.pathname, search: nextLocationSearch });
+    }
+  }, [location.search, filters.category, filters.subCategory, filters.productType, filters.collection, clearFilters, setInitialFilters, history, location.pathname]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;

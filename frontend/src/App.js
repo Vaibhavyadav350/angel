@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { Toast, ErrorBoundary } from './components';
 import { CheckoutNavbar, ScrollToTop } from './components/archive';
 import NewNavbar from './components/home/NewNavbar';
 import NewFooter from './components/home/NewFooter';
 import { useProductsContext } from './context/products_context';
+import { useAdminAuthStore } from './stores';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Home,
@@ -50,64 +51,72 @@ import {
 } from './pages/admin';
 
 // Admin routes — no context providers needed with Zustand
-const AdminRoutes = () => (
-  <Switch>
-    <Route exact path='/'>
-      <Redirect to="/admin" />
-    </Route>
-    <AdminPrivateRoute exact path='/admin/login'>
-      <AdminLogin />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin'>
-      <AdminDashboard />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/products'>
-      <AdminProducts />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/products/:id'>
-      <AdminSingleProductPage />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/orders'>
-      <AdminOrders />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/orders/:id'>
-      <AdminSingleOrderPage />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/admins'>
-      <AdminUsers />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/newsletter'>
-      <AdminNewsletter />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/coupons'>
-      <AdminCoupons />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/returns'>
-      <AdminReturns />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/customers'>
-      <AdminCustomers />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/banners'>
-      <AdminBanners />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/collections'>
-      <AdminCollections />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/categories'>
-      <AdminCategories />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/inventory'>
-      <AdminInventory />
-    </AdminPrivateRoute>
-    <AdminPrivateRoute exact path='/admin/settings'>
-      <AdminSettings />
-    </AdminPrivateRoute>
-    <Route exact path='*'>
-      <Error />
-    </Route>
-  </Switch>
-);
+const AdminRoutes = () => {
+  const checkAdminAuth = useAdminAuthStore((state) => state.checkAdminAuth);
+
+  useEffect(() => {
+    checkAdminAuth();
+  }, [checkAdminAuth]);
+
+  return (
+    <Switch>
+      <Route exact path='/'>
+        <Redirect to="/admin" />
+      </Route>
+      <AdminPrivateRoute exact path='/admin/login'>
+        <AdminLogin />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin'>
+        <AdminDashboard />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/products'>
+        <AdminProducts />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/products/:id'>
+        <AdminSingleProductPage />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/orders'>
+        <AdminOrders />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/orders/:id'>
+        <AdminSingleOrderPage />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/admins'>
+        <AdminUsers />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/newsletter'>
+        <AdminNewsletter />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/coupons'>
+        <AdminCoupons />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/returns'>
+        <AdminReturns />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/customers'>
+        <AdminCustomers />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/banners'>
+        <AdminBanners />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/collections'>
+        <AdminCollections />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/categories'>
+        <AdminCategories />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/inventory'>
+        <AdminInventory />
+      </AdminPrivateRoute>
+      <AdminPrivateRoute exact path='/admin/settings'>
+        <AdminSettings />
+      </AdminPrivateRoute>
+      <Route exact path='*'>
+        <Error />
+      </Route>
+    </Switch>
+  );
+};
 
 // Customer routes — no admin providers mounted
 const CustomerRoutes = () => (

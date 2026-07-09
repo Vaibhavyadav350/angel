@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import adminApi, { extractError } from '../services/adminApi';
+import { ensureHttps } from '../utils/helpers';
 
 const initialNewProduct = {
   name: '',
@@ -27,6 +28,24 @@ const initialNewProduct = {
 let lastProductsFetch = 0;
 const CACHE_TTL = 60000;
 
+const normalizeProductImages = (product) => {
+  if (!product) return product;
+  return {
+    ...product,
+    image: ensureHttps(product.image),
+    images: Array.isArray(product.images)
+      ? product.images.map((img) =>
+          typeof img === 'string'
+            ? ensureHttps(img)
+            : { ...img, url: ensureHttps(img.url), src: ensureHttps(img.src) }
+        )
+      : product.images,
+  };
+};
+
+const normalizeProducts = (products) =>
+  Array.isArray(products) ? products.map(normalizeProductImages) : products;
+
 /**
  * Admin product catalog state.
  */
@@ -48,7 +67,7 @@ const useAdminProductStore = create((set, get) => ({
     try {
       const { data } = await adminApi.get('/products');
       lastProductsFetch = Date.now();
-      set({ products: data.data, productsLoading: false });
+      set({ products: normalizeProducts(data.data), productsLoading: false });
       return { success: true, data: data.data };
     } catch (error) {
       set({ productsError: true, productsLoading: false });
@@ -60,7 +79,7 @@ const useAdminProductStore = create((set, get) => ({
     set({ single_product_loading: true, single_product_error: false });
     try {
       const { data } = await adminApi.get(`/products/${id}`);
-      set({ single_product: data.data, single_product_loading: false });
+      set({ single_product: normalizeProductImages(data.data), single_product_loading: false });
       return { success: true, data: data.data };
     } catch (error) {
       set({ single_product_error: true, single_product_loading: false });

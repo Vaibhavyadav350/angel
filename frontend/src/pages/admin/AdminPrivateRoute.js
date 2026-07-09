@@ -1,13 +1,22 @@
-import React from 'react';
-import { Route, Redirect, useLocation } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { Redirect, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../../stores';
 
 const AdminPrivateRoute = ({ children, ...rest }) => {
   const { currentAdmin, adminAuthLoading } = useAdminAuthStore();
   const location = useLocation();
 
+  const loginRedirect = useMemo(
+    () => ({ pathname: '/admin/login', state: { from: location.pathname } }),
+    [location.pathname]
+  );
+
   if (adminAuthLoading) {
-    return <div>Loading...</div>; // Or your loading component
+    return (
+      <div className='min-h-screen bg-champagne flex items-center justify-center font-body text-bronze'>
+        <div className='w-8 h-8 border-2 border-bronze/10 border-t-gold rounded-full animate-spin' />
+      </div>
+    );
   }
 
   // Admin login page - redirect if already logged in
@@ -15,7 +24,7 @@ const AdminPrivateRoute = ({ children, ...rest }) => {
     return currentAdmin ? (
       <Redirect to={location.state?.from || '/admin'} />
     ) : (
-      <Route {...rest}>{children}</Route>
+      children
     );
   }
 
@@ -23,7 +32,7 @@ const AdminPrivateRoute = ({ children, ...rest }) => {
   if (rest.path === '/admin/products') {
     return currentAdmin &&
       ['super', 'moderate'].includes(currentAdmin.privilege) ? (
-      <Route {...rest}>{children}</Route>
+      children
     ) : (
       <Redirect to={location.state?.from || '/admin'} />
     );
@@ -32,24 +41,14 @@ const AdminPrivateRoute = ({ children, ...rest }) => {
   // Admins page - only super
   if (rest.path === '/admin/admins') {
     return currentAdmin && currentAdmin.privilege === 'super' ? (
-      <Route {...rest}>{children}</Route>
+      children
     ) : (
       <Redirect to={location.state?.from || '/admin'} />
     );
   }
 
   // Other admin routes - require any admin
-  return currentAdmin ? (
-    <Route {...rest}>{children}</Route>
-  ) : (
-    <Redirect
-      to={{
-        pathname: '/admin/login',
-        state: { from: location.pathname },
-      }}
-    />
-  );
+  return currentAdmin ? children : <Redirect to={loginRedirect} />;
 };
 
 export default AdminPrivateRoute;
-

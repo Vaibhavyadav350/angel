@@ -70,17 +70,17 @@ export const FilterProvider = ({ children }) => {
     dispatch({ type: UPDATE_FILTERS, payload: { name, value } });
   };
 
-  const setFilterValue = (name, value) => {
+  const setFilterValue = React.useCallback((name, value) => {
     dispatch({ type: UPDATE_FILTERS, payload: { name, value } });
-  };
+  }, []);
 
-  const setInitialFilters = (filters) => {
+  const setInitialFilters = React.useCallback((filters) => {
     dispatch({ type: SET_INITIAL_FILTERS, payload: filters });
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = React.useCallback(() => {
     dispatch({ type: CLEAR_FILTERS });
-  };
+  }, []);
 
   useEffect(() => {
     dispatch({ type: LOAD_PRODUCTS, payload: products });

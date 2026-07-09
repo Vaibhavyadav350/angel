@@ -12,6 +12,7 @@ import { domain } from '../utils/constants';
 const adminApi = axios.create({
   baseURL: `${domain}/api`,
   withCredentials: true,
+  timeout: 10000,
 });
 
 /**
