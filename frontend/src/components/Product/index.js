@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 
 const badgeOptions = [
-  { label: 'BESPOKE STITCHING', condition: (p) => p.shipping },
   { label: 'NEW ARRIVAL', condition: (p) => p.featured },
   { label: 'ARCHIVE PIECE', condition: () => true },
 ];

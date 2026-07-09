@@ -57,7 +57,7 @@ export const FilterProvider = ({ children }) => {
     let value = e.target.value;
 
     if (name === 'category' || name === 'subCategory' || name === 'productType') {
-      value = e.target.textContent;
+      value = e.target.textContent.trim();
     }
 
     if (name === 'color') {
