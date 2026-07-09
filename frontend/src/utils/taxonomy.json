@@ -13,18 +13,15 @@
         "sale"
       ],
       "SAREES": [
-        "LEHENGA SAREES",
-        "PARTYWEAR",
-        "WEDDIND SAREES",
+        "WEDDING SAREES",
         "casual wear"
       ],
       "LEHENGAS": [
         "Bridal Lehengas",
-        "Bridesmaid Lehengas",
-        "Cocktail Lehengas",
-        "Engagement Lehenga",
-        "Mehendi Ceremony",
         "Partywear Lehengas"
+      ],
+      "INDOWESTERN": [
+        "indowestern"
       ]
     },
     "Men": {

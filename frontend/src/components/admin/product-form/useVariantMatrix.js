@@ -11,16 +11,19 @@ import { useEffect } from 'react';
  * @param {string[]} colors
  * @param {string[]} sizes
  * @param {Array} variants  current variants array
+ * @param {string} category product category
  * @param {(name: string, value: any) => void} onField  field setter
  * @returns {{ setVariantField: Function, totalStock: number }}
  */
-export function useVariantMatrix(colors, sizes, variants, onField) {
+export function useVariantMatrix(colors, sizes, variants, category, onField) {
   const colorKey = colors.join('|');
   const sizeKey = sizes.join('|');
 
   useEffect(() => {
+    if (category === 'Jewelry') return; // Handled manually by ProductFormFields
+
     if (colors.length === 0 && sizes.length === 0) {
-      if (variants.length > 0) onField('variants', []);
+      if (variants.length > 0 && variants[0]?.size !== 'One Size') onField('variants', []);
       return;
     }
 

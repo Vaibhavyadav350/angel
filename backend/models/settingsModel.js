@@ -5,11 +5,11 @@ const settingsSchema = new mongoose.Schema(
         // --- Shipping (AUD, GST-inclusive) ---
         standardShippingPrice: {
             type: Number,
-            default: 15,
+            default: 8,
         },
         expressShippingPrice: {
             type: Number,
-            default: 65,
+            default: 18,
         },
         expressEnabled: {
             type: Boolean,
@@ -19,7 +19,7 @@ const settingsSchema = new mongoose.Schema(
         // above this amount. 0 disables free shipping.
         freeShippingThreshold: {
             type: Number,
-            default: 0,
+            default: 200,
         },
         // --- Tax ---
         gstRate: {

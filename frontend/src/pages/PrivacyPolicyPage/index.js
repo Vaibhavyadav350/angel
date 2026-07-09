@@ -43,7 +43,7 @@ const PrivacyPolicyPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Contact</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            For privacy-related enquiries, please contact us at info@angelfashionstudio.au.
+                            For privacy-related enquiries, you can contact us through the chat option on our website or email us at angelfashion01@gmail.com.
                         </p>
                     </div>
                 </div>

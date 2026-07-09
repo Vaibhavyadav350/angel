@@ -19,10 +19,10 @@
 // Fallback defaults — used only until Store Settings are loaded. The real
 // values come from the Settings document via `config`.
 export const DEFAULT_PRICING = {
-  standardShippingPrice: 15,
-  expressShippingPrice: 65,
+  standardShippingPrice: 8,
+  expressShippingPrice: 18,
   expressEnabled: true,
-  freeShippingThreshold: 0,
+  freeShippingThreshold: 200,
   gstRate: 10, // percent
 };
 
@@ -44,9 +44,9 @@ export const addonOptions = (config = {}) =>
 export const shippingMethods = (config = {}) => {
   const std = config.standardShippingPrice ?? DEFAULT_PRICING.standardShippingPrice;
   const exp = config.expressShippingPrice ?? DEFAULT_PRICING.expressShippingPrice;
-  const methods = { standard: { key: 'standard', label: 'Standard', fee: std, eta: '3–6 business days' } };
+  const methods = { standard: { key: 'standard', label: 'Regular Post', fee: std, eta: '3–10 business days' } };
   if (config.expressEnabled ?? DEFAULT_PRICING.expressEnabled) {
-    methods.express = { key: 'express', label: 'Express', fee: exp, eta: '1–2 business days' };
+    methods.express = { key: 'express', label: 'Express Post', fee: exp, eta: 'Next day – 2 days' };
   }
   return methods;
 };

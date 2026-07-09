@@ -97,8 +97,9 @@ export const ProductProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { message } = error.response?.data || {};
-      return { success: false, message: message || 'Failed to delete product' };
+      const { data } = error.response || {};
+      const message = typeof data === 'string' ? data : (data?.message || 'Failed to delete product');
+      return { success: false, message };
     }
   }, []);
 
@@ -126,8 +127,9 @@ export const ProductProvider = ({ children }) => {
       fetchProducts(true);
       return { success, data };
     } catch (error) {
-      const { message } = error.response?.data || {};
-      return { success: false, message: message || 'Failed to create product' };
+      const { data } = error.response || {};
+      const message = typeof data === 'string' ? data : (data?.message || 'Failed to create product');
+      return { success: false, message };
     }
   }, [fetchProducts]);
 
@@ -137,8 +139,9 @@ export const ProductProvider = ({ children }) => {
       const { success, message } = response.data;
       return { success, message };
     } catch (error) {
-      const { message } = error.response?.data || {};
-      return { success: false, message: message || 'Failed to update product' };
+      const { data } = error.response || {};
+      const message = typeof data === 'string' ? data : (data?.message || 'Failed to update product');
+      return { success: false, message };
     }
   }, []);
 
@@ -153,8 +156,9 @@ export const ProductProvider = ({ children }) => {
       fetchSingleProduct(productId);
       return { success, message };
     } catch (error) {
-      const { message } = error.response?.data || {};
-      return { success: false, message: message || 'Failed to delete review' };
+      const { data } = error.response || {};
+      const message = typeof data === 'string' ? data : (data?.message || 'Failed to delete review');
+      return { success: false, message };
     }
   }, [fetchSingleProduct]);
 

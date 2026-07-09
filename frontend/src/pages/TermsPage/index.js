@@ -22,7 +22,7 @@ const TermsPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Orders & Payment</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            All prices are displayed in Indian Rupees (INR) and include applicable taxes unless stated otherwise. We reserve the right to cancel any order due to product availability, pricing errors, or suspected fraud. Payment is processed securely via eWAY.
+                            All prices are displayed in Australian Dollars (AUD) and include applicable taxes unless stated otherwise. We reserve the right to cancel any order due to product availability, pricing errors, or suspected fraud. Payment is processed securely via eWAY.
                         </p>
                     </div>
                     <div className="h-px bg-bronze/10" />
@@ -50,7 +50,7 @@ const TermsPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Governing Law</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            These terms shall be governed by and construed in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts of New Delhi, India.
+                            These terms shall be governed by and construed in accordance with the laws of Australia. Any disputes shall be subject to the exclusive jurisdiction of the courts of New South Wales, Australia.
                         </p>
                     </div>
                 </div>

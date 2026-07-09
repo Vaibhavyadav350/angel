@@ -131,7 +131,7 @@ app.use('/api', limiter);
 
 const strictLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 150, // Increased: admin dashboard fires 5+ calls/page, 20 was causing false rate-limit errors
+  max: 1000, // Increased: Admin bulk actions (like uploading multiple products with images) easily exceed lower limits
   message: 'Too many sensitive requests, please try again after 10 minutes',
 });
 
@@ -156,7 +156,8 @@ app.get('/api/payment/cancel', async (req, res) => {
   return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
 });
 
-app.use(express.json({ limit: '20mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
 // basic api route

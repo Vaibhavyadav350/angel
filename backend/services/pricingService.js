@@ -44,10 +44,10 @@ exports.resolveAddons = (keys = [], settings = {}) =>
  */
 exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standard', couponCode = '', addons = [] } = {}) => {
   const settings = (await Settings.findOne()) || {};
-  const standardFee = Number(settings.standardShippingPrice ?? 15);
-  const expressFee = Number(settings.expressShippingPrice ?? 65);
+  const standardFee = Number(settings.standardShippingPrice ?? 8);
+  const expressFee = Number(settings.expressShippingPrice ?? 18);
   const expressEnabled = settings.expressEnabled ?? true;
-  const freeThreshold = Number(settings.freeShippingThreshold ?? 0);
+  const freeThreshold = Number(settings.freeShippingThreshold ?? 200);
   const gstRate = Number(settings.gstRate ?? 10);
 
   // Authoritative line items + subtotal from product documents.
