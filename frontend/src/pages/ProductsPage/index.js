@@ -39,6 +39,7 @@ const ProductsPage = () => {
   const location = useLocation();
   const history = useHistory();
   const lastProcessedSearch = useRef(null);
+  const applyingUrlFilters = useRef(false);
 
   useEffect(() => {
     document.title = 'Angel Archive | Collections';
@@ -51,26 +52,36 @@ const ProductsPage = () => {
     // URL changed: derive filters from the URL.
     if (location.search !== lastProcessedSearch.current) {
       lastProcessedSearch.current = location.search;
-      const searchParams = new URLSearchParams(location.search);
+      applyingUrlFilters.current = true;
 
       if (!location.search) {
         clearFilters();
-        return;
+      } else {
+        const searchParams = new URLSearchParams(location.search);
+
+        const category = normalizeFilterValue('category', searchParams.get('category'));
+        const subCategory = normalizeFilterValue('subCategory', searchParams.get('subCategory'));
+        const collection = normalizeFilterValue('collection', searchParams.get('collection'));
+        const productType = normalizeFilterValue('productType', searchParams.get('productType'));
+
+        setInitialFilters({
+          category,
+          subCategory,
+          productType,
+          collection,
+        });
       }
 
-      const category = normalizeFilterValue('category', searchParams.get('category'));
-      const subCategory = normalizeFilterValue('subCategory', searchParams.get('subCategory'));
-      const collection = normalizeFilterValue('collection', searchParams.get('collection'));
-      const productType = normalizeFilterValue('productType', searchParams.get('productType'));
-
-      setInitialFilters({
-        category,
-        subCategory,
-        productType,
-        collection,
-      });
+      // Release the guard after the synchronous dispatch has flushed so the
+      // filter -> URL branch below doesn't fight the URL -> filter branch.
+      setTimeout(() => {
+        applyingUrlFilters.current = false;
+      }, 0);
       return;
     }
+
+    // Ignore filter changes that were just produced from the URL above.
+    if (applyingUrlFilters.current) return;
 
     // Filters changed: derive URL from filters.
     const params = new URLSearchParams(location.search);

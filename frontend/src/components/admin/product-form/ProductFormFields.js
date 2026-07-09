@@ -210,27 +210,23 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           </div>
         </div>
 
-      </div>
-
-      {/* Full-width: variant matrix & media */}
-      <div className="lg:col-span-2 space-y-6">
+        {/* Section 4: Variant Options */}
         <div className="border-b border-bronze/10 pb-2 mb-4">
-          <h4 className={sectionHeading}>4. Variant Matrix & Inventory</h4>
-          <p className="text-[9px] text-bronze/50 italic mt-1">Add sizes and colors below; the SKU matrix is generated automatically.</p>
+          <h4 className={sectionHeading}>4. Variant Options</h4>
+          <p className="text-[9px] text-bronze/50 italic mt-1">
+            {category === 'Jewelry'
+              ? 'Jewelry items default to a single stock value. Select colors below to track stock by color.'
+              : 'Pick the sizes and colours available for this product.'}
+          </p>
         </div>
 
         {category === 'Jewelry' ? (
-          <div className="bg-champagne/10 p-5 rounded border border-bronze/10 mb-6">
-            <div className="mb-4">
-              <label className={labelClass}>Available Colors</label>
-              <ColorPicker value={colors} onChange={(next) => onField('colors', next)} />
-            </div>
-            {colors.length === 0 && (
-              <p className="text-[9px] text-bronze/50 mt-2">Jewelry items default to a single stock value below. Select colors above to track stock by color.</p>
-            )}
+          <div className="bg-champagne/10 p-5 rounded border border-bronze/10">
+            <label className={labelClass}>Available Colors</label>
+            <ColorPicker value={colors} onChange={(next) => onField('colors', next)} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-champagne/10 p-5 rounded border border-bronze/10 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-champagne/10 p-5 rounded border border-bronze/10">
             <div>
               <label className={labelClass}>Available Sizes</label>
               <SizePicker value={sizes} onChange={(next) => onField('sizes', next)} />
@@ -242,65 +238,73 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           </div>
         )}
 
+      </div>
+
+      {/* Full-width: variant matrix & media */}
+      <div className="lg:col-span-2 space-y-6">
+        <div className="border-b border-bronze/10 pb-2 mb-4">
+          <h4 className={sectionHeading}>5. Variant Matrix & Inventory</h4>
+          <p className="text-[9px] text-bronze/50 italic mt-1">Stock is generated automatically from the sizes and colours selected in section 4.</p>
+        </div>
+
         {variants.length > 0 ? (
-              <div className="bg-white border border-bronze/20 rounded-lg overflow-hidden shadow-sm">
-                <div className="bg-bronze text-white px-4 py-2 flex justify-between items-center">
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Stock Matrix Mapping</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded">Total Units: {totalStock}</span>
-                </div>
-                <div className="max-h-[300px] overflow-y-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-champagne/20 sticky top-0">
-                      <tr>
-                        <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Size</th>
-                        <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Color</th>
-                        <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Variant SKU (Opt)</th>
-                        <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10 w-24">Stock LvL</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {variants.map((v, index) => (
-                        <tr key={`${v.size}-${v.color}-${index}`} className="border-b border-bronze/5 hover:bg-champagne/5 transition-colors">
-                          <td className="p-3 font-medium text-bronze">{v.size}</td>
-                          <td className="p-3 font-medium text-bronze">
-                            <div className="flex items-center gap-2">
-                              {typeof v.color === 'string' && v.color.startsWith('#') && <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: v.color }} />}
-                              {v.color}
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <input
-                              className="w-full bg-transparent border-b border-transparent hover:border-bronze/20 focus:border-bronze outline-none px-2 py-1 text-xs text-bronze"
-                              placeholder="Auto-generate"
-                              value={v.sku || ''}
-                              onChange={(e) => setVariantField(index, 'sku', e.target.value)}
-                            />
-                          </td>
-                          <td className="p-2">
-                            <input
-                              type="number"
-                              className="w-full border border-bronze/20 rounded px-2 py-1 outline-none focus:border-gold text-bronze text-center font-bold"
-                              value={v.stock}
-                              min="0"
-                              onChange={(e) => setVariantField(index, 'stock', Number(e.target.value))}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="p-8 border border-dashed border-bronze/20 rounded-lg text-center bg-champagne/5">
-                <p className="text-xs text-bronze/50 font-medium">Variant matrix will be generated once you add sizes and/or colors above.</p>
-                <p className="text-[10px] text-bronze/30 uppercase tracking-widest font-black mt-2">Required for checkout</p>
-              </div>
-            )}
+          <div className="bg-white border border-bronze/20 rounded-lg overflow-hidden shadow-sm">
+            <div className="bg-bronze text-white px-4 py-2 flex justify-between items-center">
+              <span className="text-[10px] font-bold uppercase tracking-widest">Stock Matrix Mapping</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded">Total Units: {totalStock}</span>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-champagne/20 sticky top-0">
+                  <tr>
+                    <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Size</th>
+                    <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Color</th>
+                    <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10">Variant SKU (Opt)</th>
+                    <th className="p-3 text-[10px] font-black uppercase tracking-widest text-bronze border-b border-bronze/10 w-24">Stock LvL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {variants.map((v, index) => (
+                    <tr key={`${v.size}-${v.color}-${index}`} className="border-b border-bronze/5 hover:bg-champagne/5 transition-colors">
+                      <td className="p-3 font-medium text-bronze">{v.size}</td>
+                      <td className="p-3 font-medium text-bronze">
+                        <div className="flex items-center gap-2">
+                          {typeof v.color === 'string' && v.color.startsWith('#') && <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: v.color }} />}
+                          {v.color}
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <input
+                          className="w-full bg-transparent border-b border-transparent hover:border-bronze/20 focus:border-bronze outline-none px-2 py-1 text-xs text-bronze"
+                          placeholder="Auto-generate"
+                          value={v.sku || ''}
+                          onChange={(e) => setVariantField(index, 'sku', e.target.value)}
+                        />
+                      </td>
+                      <td className="p-2">
+                        <input
+                          type="number"
+                          className="w-full border border-bronze/20 rounded px-2 py-1 outline-none focus:border-gold text-bronze text-center font-bold"
+                          value={v.stock}
+                          min="0"
+                          onChange={(e) => setVariantField(index, 'stock', Number(e.target.value))}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="p-8 border border-dashed border-bronze/20 rounded-lg text-center bg-champagne/5">
+            <p className="text-xs text-bronze/50 font-medium">Variant matrix will be generated once you add sizes and/or colors above.</p>
+            <p className="text-[10px] text-bronze/30 uppercase tracking-widest font-black mt-2">Required for checkout</p>
+          </div>
         )}
 
         <div className="border-b border-bronze/10 pb-2 mb-4 mt-8">
-          <h4 className={sectionHeading}>5. Media Gallery</h4>
+          <h4 className={sectionHeading}>6. Media Gallery</h4>
         </div>
 
         <div>
