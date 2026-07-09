@@ -28,15 +28,15 @@ function SingleProductInfo({ product }) {
   } = product;
 
   useEffect(() => {
-    const createdBy = admins.find((x) => x.id === admin);
+    const createdBy = admins?.find((x) => x.id === admin || x._id === admin);
     if (createdBy) {
       setCreatedBy(createdBy.name);
     } else {
       setCreatedBy('No Details');
     }
 
-    const productOrders = orders.reduce((arr, order) => {
-      const item = order.orderItems.find((x) => x.product === id);
+    const productOrders = (orders || []).reduce((arr, order) => {
+      const item = order.orderItems?.find((x) => x.product === id || x.product?._id === id);
       if (item) { arr.push(item); }
       return arr;
     }, []);

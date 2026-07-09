@@ -82,6 +82,7 @@ const useAdminProductStore = create((set, get) => ({
       set({ single_product: normalizeProductImages(data.data), single_product_loading: false });
       return { success: true, data: data.data };
     } catch (error) {
+      console.error('[Admin] fetchSingleProduct failed:', error?.response?.status, error?.response?.data || error?.message);
       set({ single_product_error: true, single_product_loading: false });
       return { success: false, message: extractError(error, 'Failed to fetch product') };
     }
