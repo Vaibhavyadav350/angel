@@ -47,7 +47,7 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
       <div className="relative aspect-[3/4] overflow-hidden bg-white mb-8">
         <Link to={`/products/${id}`}>
           <img
-            src={image}
+            src={image?.replace(/^http:\/\//i, 'https://')}
             alt={name}
             className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
           />

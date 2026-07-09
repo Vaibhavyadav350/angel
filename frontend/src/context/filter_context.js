@@ -9,6 +9,7 @@ import {
   UPDATE_FILTERS,
   FILTER_PRODUCTS,
   CLEAR_FILTERS,
+  SET_INITIAL_FILTERS,
 } from '../actions';
 import { useProductsContext } from './products_context';
 
@@ -78,6 +79,10 @@ export const FilterProvider = ({ children }) => {
     dispatch({ type: UPDATE_FILTERS, payload: { name, value } });
   };
 
+  const setInitialFilters = (filters) => {
+    dispatch({ type: SET_INITIAL_FILTERS, payload: filters });
+  };
+
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS });
   };
@@ -100,6 +105,7 @@ export const FilterProvider = ({ children }) => {
         updateSort,
         updateFilters,
         setFilterValue,
+        setInitialFilters,
         clearFilters,
       }}
     >

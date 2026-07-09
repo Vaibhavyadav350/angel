@@ -7,6 +7,7 @@ import {
   UPDATE_FILTERS,
   FILTER_PRODUCTS,
   CLEAR_FILTERS,
+  SET_INITIAL_FILTERS,
 } from '../actions';
 
 const filter_reducer = (state, action) => {
@@ -87,6 +88,16 @@ const filter_reducer = (state, action) => {
     if (name === 'subCategory') {
       newFilters.productType = 'all';
     }
+    return { ...state, filters: newFilters };
+  }
+
+  if (action.type === SET_INITIAL_FILTERS) {
+    const { category, subCategory, productType, collection } = action.payload;
+    let newFilters = { ...state.filters };
+    newFilters.category = category || 'all';
+    newFilters.subCategory = subCategory || 'all';
+    newFilters.productType = productType || 'all';
+    newFilters.collection = collection || 'all';
     return { ...state, filters: newFilters };
   }
 

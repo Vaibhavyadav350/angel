@@ -52,34 +52,34 @@ const showcases = [
       {
         title: "LEHENGAS",
         items: [
-          { name: "Bridal", sub: "PALACE", img: "/assets/landing/catalog/subcat_bridallehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
+          { name: "Bridal", sub: "PALACE", img: "/assets/landing/catalog/subcat_bridallehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Bridal%20Lehengas" },
           { name: "Bridesmaid", sub: "PASTEL", img: "/assets/landing/catalog/subcat_bridesmaidlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
           { name: "Cocktail", sub: "GLAM", img: "/assets/landing/catalog/subcat_cocktaillehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
           { name: "Engagement", sub: "ELEGANT", img: "/assets/landing/catalog/subcat_engagementlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
           { name: "Mehendi", sub: "VIBRANT", img: "/assets/landing/catalog/subcat_mehendilehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
-          { name: "Partywear", sub: "MODERN", img: "/assets/landing/catalog/subcat_partywearlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" }
+          { name: "Partywear", sub: "MODERN", img: "/assets/landing/catalog/subcat_partywearlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Partywear%20Lehengas" }
         ]
       },
       {
         title: "SAREES",
         items: [
-          { name: "Wedding", sub: "HEAVY", img: "/assets/landing/catalog/subcat_weddingsaree.jpg", url: "/products?category=Women&subCategory=SAREES" },
+          { name: "Wedding", sub: "HEAVY", img: "/assets/landing/catalog/subcat_weddingsaree.jpg", url: "/products?category=Women&subCategory=SAREES&productType=WEDDING%20SAREES" },
           { name: "Lehenga Saree", sub: "FUSION", img: "/assets/landing/catalog/subcat_lehengasaree.jpg", url: "/products?category=Women&subCategory=SAREES" },
           { name: "Partywear", sub: "GLAM", img: "/assets/landing/catalog/subcat_partywearsaree.jpg", url: "/products?category=Women&subCategory=SAREES" },
-          { name: "Casual", sub: "MINIMAL", img: "/assets/landing/catalog/subcat_casualsaree.jpg", url: "/products?category=Women&subCategory=SAREES" }
+          { name: "Casual", sub: "MINIMAL", img: "/assets/landing/catalog/subcat_casualsaree.jpg", url: "/products?category=Women&subCategory=SAREES&productType=casual%20wear" }
         ]
       },
       {
         title: "SALWAR KAMEEZ",
         items: [
-          { name: "Anarkali", sub: "FLARE", img: "/assets/landing/catalog/subcat_anarkali.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Gharara", sub: "ROYAL", img: "/assets/landing/catalog/subcat_gharara.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Sharara", sub: "WIDE", img: "/assets/landing/catalog/subcat_sharara.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Pakistani", sub: "STRAIGHT", img: "/assets/landing/catalog/subcat_pakistani.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Palazzo", sub: "MODERN", img: "/assets/landing/catalog/subcat_palazzo.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Pant Suit", sub: "MINIMAL", img: "/assets/landing/catalog/subcat_pantsuit.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Punjabi", sub: "PATIALA", img: "/assets/landing/catalog/subcat_punjabi.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
-          { name: "Kurti", sub: "CASUAL", img: "/assets/landing/catalog/subcat_kurti.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" }
+          { name: "Anarkali", sub: "FLARE", img: "/assets/landing/catalog/subcat_anarkali.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=Anarkali%20suits" },
+          { name: "Gharara", sub: "ROYAL", img: "/assets/landing/catalog/subcat_gharara.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=Gharara%20suit" },
+          { name: "Sharara", sub: "WIDE", img: "/assets/landing/catalog/subcat_sharara.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=sharara%20suits" },
+          { name: "Pakistani", sub: "STRAIGHT", img: "/assets/landing/catalog/subcat_pakistani.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=pakistani%20suits" },
+          { name: "Palazzo", sub: "MODERN", img: "/assets/landing/catalog/subcat_palazzo.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=palazzo%20suits" },
+          { name: "Pant Suit", sub: "MINIMAL", img: "/assets/landing/catalog/subcat_pantsuit.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=pant%20suits" },
+          { name: "Punjabi", sub: "PATIALA", img: "/assets/landing/catalog/subcat_punjabi.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=punjabi%20suits" },
+          { name: "Kurti", sub: "CASUAL", img: "/assets/landing/catalog/subcat_kurti.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=kurti" }
         ]
       }
     ]
@@ -95,18 +95,18 @@ const showcases = [
       {
         title: "SHERWANIS & JACKETS",
         items: [
-          { name: "Classic Sherwani", sub: "GROOM", img: "/assets/landing/catalog/subcat_classicsherwani.jpg", url: "/products?category=Men&subCategory=SHERWANIS" },
-          { name: "Indowestern", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Men&subCategory=SHERWANIS" },
-          { name: "Jacket Sets", sub: "MODERN", img: "/assets/landing/catalog/subcat_jacketset.jpg", url: "/products?category=Men&subCategory=JACKET" },
-          { name: "Jodhpuri", sub: "ROYAL", img: "/assets/landing/catalog/subcat_jodhpuri.jpg", url: "/products?category=Men&subCategory=JACKET" }
+          { name: "Classic Sherwani", sub: "GROOM", img: "/assets/landing/catalog/subcat_classicsherwani.jpg", url: "/products?category=Men&subCategory=SHERWANIS&productType=Classic%20Sherwani" },
+          { name: "Indowestern", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Men&subCategory=SHERWANIS&productType=Indowestern%20Sherwani" },
+          { name: "Jacket Sets", sub: "MODERN", img: "/assets/landing/catalog/subcat_jacketset.jpg", url: "/products?category=Men&subCategory=JACKET&productType=jacket%20sets" },
+          { name: "Jodhpuri", sub: "ROYAL", img: "/assets/landing/catalog/subcat_jodhpuri.jpg", url: "/products?category=Men&subCategory=JACKET&productType=jodhpuri%20jaket%20sets" }
         ]
       },
       {
         title: "KURTA EDITS",
         items: [
-          { name: "Kurta Pajama", sub: "TRADITIONAL", img: "/assets/landing/catalog/subcat_kurtapajama.jpg", url: "/products?category=Men&subCategory=KURTAS" },
-          { name: "Long Kurta", sub: "CLASSIC", img: "/assets/landing/catalog/subcat_longkurta.jpg", url: "/products?category=Men&subCategory=KURTAS" },
-          { name: "Short Kurta", sub: "CASUAL", img: "/assets/landing/catalog/subcat_shortkurta.jpg", url: "/products?category=Men&subCategory=KURTAS" }
+          { name: "Kurta Pajama", sub: "TRADITIONAL", img: "/assets/landing/catalog/subcat_kurtapajama.jpg", url: "/products?category=Men&subCategory=KURTAS&productType=kurta%20pajama%20sets" },
+          { name: "Long Kurta", sub: "CLASSIC", img: "/assets/landing/catalog/subcat_longkurta.jpg", url: "/products?category=Men&subCategory=KURTAS&productType=long%20kurta%20set" },
+          { name: "Short Kurta", sub: "CASUAL", img: "/assets/landing/catalog/subcat_shortkurta.jpg", url: "/products?category=Men&subCategory=KURTAS&productType=short%20kurta%20set" }
         ]
       }
     ]

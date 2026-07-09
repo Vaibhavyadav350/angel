@@ -13,7 +13,7 @@ const CartItem = ({ id, image, name, color, price, amount, size, mrp, discountPe
     <div className="grid grid-cols-[auto,1fr,auto,auto,auto] gap-6 items-center py-8 border-b border-bronze/10">
       {/* Image */}
       <div className="w-20 h-24 flex-shrink-0">
-        <img src={image} alt={name} className="w-full h-full object-cover" />
+        <img src={image?.replace(/^http:\/\//i, 'https://')} alt={name} className="w-full h-full object-cover" />
       </div>
 
       {/* Name & Details */}

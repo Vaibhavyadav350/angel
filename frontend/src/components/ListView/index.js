@@ -15,7 +15,7 @@ const ListView = ({ products }) => {
             {/* Image */}
             <div className="relative w-full sm:w-48 aspect-[3/4] shrink-0 overflow-hidden bg-sand/20">
               <img
-                src={image}
+                src={image?.replace(/^http:\/\//i, 'https://')}
                 alt={name}
                 className="w-full h-full object-cover object-top transition-transform duration-[2000ms] group-hover:scale-110"
               />

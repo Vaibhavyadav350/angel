@@ -24,8 +24,10 @@ const ProductsPage = () => {
   const {
     filtered_products: products,
     grid_view,
+    updateFilters,
     setFilterValue,
     clearFilters,
+    setInitialFilters,
     filters
   } = useFilterContext();
 
@@ -55,18 +57,15 @@ const ProductsPage = () => {
     const collection = searchParams.get('collection') || 'all';
     const productType = searchParams.get('productType') || 'all';
 
-    setFilterValue('category', category);
-    
-    // Small timeout ensures the category cascade-reset (which sets subCategory to 'all') 
-    // completes before we apply the specific subCategory from the URL.
-    setTimeout(() => {
-      if (subCategory !== 'all') setFilterValue('subCategory', subCategory);
-      if (productType !== 'all') setFilterValue('productType', productType);
-      if (collection !== 'all') setFilterValue('collection', collection);
-    }, 10);
+    setInitialFilters({
+      category,
+      subCategory,
+      productType,
+      collection,
+    });
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
+  }, [location.search, products.length]);
 
   if (loading) return <Loading />;
   if (error) return <Error />;
