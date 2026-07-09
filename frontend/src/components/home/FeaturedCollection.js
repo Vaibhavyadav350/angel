@@ -57,7 +57,7 @@ const FeaturedCollection = () => {
                 The <br /> <span className="text-[#C5A059] italic font-light">Bridal</span> Edit
               </h2>
               <Link
-                to="/products?category=Women&subCategory=Lehengas"
+                to="/products?category=Women&subCategory=LEHENGAS"
                 className="inline-flex items-center gap-3 border border-white px-10 py-3.5 rounded-full text-[11px] font-bold tracking-[0.2em] hover:bg-white hover:text-[#3D2B1F] transition-all uppercase"
               >
                 View Collection <span className="text-base">→</span>

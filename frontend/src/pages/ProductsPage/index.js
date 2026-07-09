@@ -1,19 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
 import { Loading, Error } from '../../components';
 import { useProductsContext } from '../../context/products_context';
-import { useState } from 'react';
+import { normalizeFilterValue } from '../../utils/categoryData';
 
 const CATEGORY_PILLS = [
   { label: 'ALL', category: 'all', url: '/products' },
   { label: 'WOMEN', category: 'Women', url: '/products?category=Women' },
-  { label: 'BRIDAL LEHENGAS', category: 'Women', subCategory: 'Lehengas', url: '/products?category=Women&subCategory=Lehengas' },
-  { label: 'SILK SAREES', category: 'Women', subCategory: 'Sarees', url: '/products?category=Women&subCategory=Sarees' },
-  { label: 'ANARKALI', category: 'Women', subCategory: 'Salwar Kameez', url: '/products?category=Women&subCategory=Salwar+Kameez' },
+  { label: 'BRIDAL LEHENGAS', category: 'Women', subCategory: 'LEHENGAS', url: '/products?category=Women&subCategory=LEHENGAS' },
+  { label: 'SILK SAREES', category: 'Women', subCategory: 'SAREES', url: '/products?category=Women&subCategory=SAREES' },
+  { label: 'ANARKALI', category: 'Women', subCategory: 'SALWAR KAMEEZ', url: '/products?category=Women&subCategory=SALWAR+KAMEEZ' },
   { label: 'MEN', category: 'Men', url: '/products?category=Men' },
-  { label: 'SHERWANIS', category: 'Men', subCategory: 'Sherwanis', url: '/products?category=Men&subCategory=Sherwanis' },
+  { label: 'SHERWANIS', category: 'Men', subCategory: 'SHERWANIS', url: '/products?category=Men&subCategory=SHERWANIS' },
   { label: 'JEWELLERY', category: 'Jewelry', url: '/products?category=Jewelry' },
   { label: 'KIDS', category: 'Kids', url: '/products?category=Kids' },
 ];
@@ -24,7 +24,6 @@ const ProductsPage = () => {
   const {
     filtered_products: products,
     grid_view,
-    updateFilters,
     setFilterValue,
     clearFilters,
     setInitialFilters,
@@ -46,16 +45,16 @@ const ProductsPage = () => {
   // Parse query params to set initial filters, ensuring one-way sync to prevent overriding sidebar interactions
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    
+
     if (!location.search) {
       clearFilters();
       return;
     }
 
-    const category = searchParams.get('category') || 'all';
-    const subCategory = searchParams.get('subCategory') || 'all';
-    const collection = searchParams.get('collection') || 'all';
-    const productType = searchParams.get('productType') || 'all';
+    const category = normalizeFilterValue('category', searchParams.get('category'));
+    const subCategory = normalizeFilterValue('subCategory', searchParams.get('subCategory'));
+    const collection = normalizeFilterValue('collection', searchParams.get('collection'));
+    const productType = normalizeFilterValue('productType', searchParams.get('productType'));
 
     setInitialFilters({
       category,
@@ -63,7 +62,7 @@ const ProductsPage = () => {
       productType,
       collection,
     });
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search, products.length]);
 
@@ -182,8 +181,8 @@ const ProductsPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { label: 'Sarees', img: '/assets/landing/hero-saree.jpg', url: '/products?category=Women&subCategory=Sarees', count: 'Heritage Drapes' },
-                { label: 'Lehengas', img: '/assets/landing/hero-lehenga.jpg', url: '/products?category=Women&subCategory=Lehengas', count: 'Bridal Archive' },
+                { label: 'Sarees', img: '/assets/landing/hero-saree.jpg', url: '/products?category=Women&subCategory=SAREES', count: 'Heritage Drapes' },
+                { label: 'Lehengas', img: '/assets/landing/hero-lehenga.jpg', url: '/products?category=Women&subCategory=LEHENGAS', count: 'Bridal Archive' },
                 { label: 'Menswear', img: '/assets/landing/hero-men.jpg', url: '/products?category=Men', count: 'Royal Heritage' },
               ].map((cat) => (
                 <Link key={cat.label} to={cat.url} className="group relative aspect-[4/5] overflow-hidden rounded-sm hover-lift">

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SectionHeading from './SectionHeading';
+import taxonomy from '../../utils/taxonomy.json';
 
 const AutoCarousel = ({ children }) => {
   const scrollRef = useRef(null);
@@ -152,6 +153,25 @@ const showcases = [
   }
 ];
 
+const getViewMoreUrl = (sectionCategory, subTitle) => {
+  const subCats = taxonomy.categories[sectionCategory];
+  if (!subCats) return `/products?category=${sectionCategory}`;
+
+  // Exact match against taxonomy keys (e.g. "SALWAR KAMEEZ")
+  if (subCats[subTitle]) {
+    return `/products?category=${sectionCategory}&subCategory=${encodeURIComponent(subTitle)}`;
+  }
+
+  // Fallback: try the first word (e.g. "SHERWANIS" from "SHERWANIS & JACKETS")
+  const firstWord = subTitle.replace('& ', '').split(' ')[0];
+  if (subCats[firstWord]) {
+    return `/products?category=${sectionCategory}&subCategory=${encodeURIComponent(firstWord)}`;
+  }
+
+  // No matching subcategory — link to the category page
+  return `/products?category=${sectionCategory}`;
+};
+
 const CategoryShowcase = () => {
   return (
     <>
@@ -235,7 +255,7 @@ const CategoryShowcase = () => {
 
                       {/* View More Card (Desktop only to maintain mobile grid symmetry) */}
                       <Link
-                        to={`/products?category=${section.category}&subCategory=${encodeURIComponent(sub.title.replace('& ', '').split(' ')[0])}`}
+                        to={getViewMoreUrl(section.category, sub.title)}
                         className="hidden lg:flex flex-none w-[320px] snap-start items-center justify-center bg-[#F5EFE4] rounded-2xl group border-2 border-dashed border-[#D4C5B5] hover:border-[#C5A059] transition-colors"
                       >
                         <div className="text-center">

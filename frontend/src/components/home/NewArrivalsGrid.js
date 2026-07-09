@@ -13,7 +13,7 @@ const NewArrivalsGrid = () => {
 
   const filteredProducts = products.filter(product => {
     if (activeFilter === "All") return true;
-    if (activeFilter === "Sale") return product.collection === "sale";
+    if (activeFilter === "Sale") return product.collections?.includes("sale");
     return product.category === activeFilter;
   }).slice(0, 8); // Show max 8 on landing page
 

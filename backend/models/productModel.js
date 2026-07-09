@@ -3,8 +3,12 @@ const taxonomy = require('../../frontend/src/utils/taxonomy.json');
 
 const validCategories = Object.keys(taxonomy.categories);
 let validSubCategories = [];
+let validProductTypes = [];
 Object.values(taxonomy.categories).forEach(subCatObj => {
   validSubCategories = [...validSubCategories, ...Object.keys(subCatObj)];
+  Object.values(subCatObj).forEach(types => {
+    validProductTypes = [...validProductTypes, ...types];
+  });
 });
 const validCollections = taxonomy.collections;
 
@@ -70,6 +74,7 @@ const productSchema = mongoose.Schema({
   productType: {
     type: String,
     default: '',
+    enum: [...validProductTypes, ''],
   },
   collections: {
     type: [String],

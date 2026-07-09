@@ -5,15 +5,15 @@ import logo from '../../assets/logo.png';
 
 const footerLinks = {
   "Shop Women": [
-    { name: "Salwar Kameez", url: "/products?category=Women&subCategory=Salwar+Kameez" },
-    { name: "Silk Sarees", url: "/products?category=Women&subCategory=Sarees" },
-    { name: "Bridal Lehengas", url: "/products?category=Women&subCategory=Lehengas" },
+    { name: "Salwar Kameez", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ" },
+    { name: "Silk Sarees", url: "/products?category=Women&subCategory=SAREES" },
+    { name: "Bridal Lehengas", url: "/products?category=Women&subCategory=LEHENGAS" },
     { name: "Plus Sizes", url: "/products?collection=plus+sizes" },
     { name: "New Arrivals", url: "/products?collection=new+arrivals" }
   ],
   "Shop Men & Kids": [
-    { name: "Classic Sherwanis", url: "/products?category=Men&subCategory=Sherwanis" },
-    { name: "Indowestern", url: "/products?category=Men&subCategory=Sherwanis" },
+    { name: "Classic Sherwanis", url: "/products?category=Men&subCategory=SHERWANIS" },
+    { name: "Indowestern", url: "/products?category=Men&subCategory=SHERWANIS" },
     { name: "Girls Ethnic", url: "/products?category=Kids" },
     { name: "Boys Ethnic", url: "/products?category=Kids" },
     { name: "Men's Jackets", url: "/products?category=Men&subCategory=JACKET" }

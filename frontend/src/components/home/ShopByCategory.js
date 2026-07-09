@@ -45,12 +45,6 @@ const categories = [
     url: '/products?category=Jewelry'
   },
   {
-    name: 'Accessories',
-    sub: 'Potlis · Belts · More',
-    image: '/assets/landing/circ-velvet.jpg',
-    url: '/products?category=Accessories'
-  },
-  {
     name: 'New Arrivals',
     sub: 'Fresh Style · Just In',
     image: '/assets/landing/hero-lehenga.jpg',

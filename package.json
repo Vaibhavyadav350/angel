@@ -1,0 +1,12 @@
+{
+  "name": "angel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Angel Fashion Studio — monorepo with React storefront/admin frontend and Node/Express backend",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm start"
+  }
+}
