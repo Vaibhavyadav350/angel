@@ -44,9 +44,9 @@ export default function SidebarContent({ onClose, className = '' }) {
       className={`bg-white border-r border-bronze/10 w-60 fixed h-screen flex flex-col transition-all duration-300 ${className}`}
     >
       {/* Brand Header */}
-      <div className="py-6 flex items-center justify-between px-4">
+      <div className="py-4 flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center w-full justify-center">
-          <img src={logo} alt="Angel Fashion Studio Logo" className="w-[120%] max-w-[120%] h-auto object-contain transform scale-125" />
+          <img src={logo} alt="Angel Fashion Studio Logo" className="w-40 h-auto object-contain" />
         </div>
         <button
           className="md:hidden text-bronze/50 hover:text-bronze transition-colors p-1"
@@ -59,17 +59,17 @@ export default function SidebarContent({ onClose, className = '' }) {
       </div>
 
       {/* Divider */}
-      <div className="mx-6 h-px bg-bronze/10" />
+      <div className="mx-6 h-px bg-bronze/10 shrink-0" />
 
       {/* Admin Label */}
-      <div className="px-7 pt-6 pb-2">
+      <div className="px-7 pt-4 pb-2 shrink-0">
         <span className="text-[9px] font-bold uppercase tracking-[0.5em] text-bronze/30">
           Management
         </span>
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 min-h-0 overflow-y-auto py-2">
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2 custom-scrollbar">
         {Links.map((link) => (
           <NavItem key={link.name} icon={link.icon} url={link.url}>
             {link.name}
@@ -78,7 +78,7 @@ export default function SidebarContent({ onClose, className = '' }) {
       </nav>
 
       {/* Bottom branding & Subdomain Link */}
-      <div className="px-6 py-4 border-t border-bronze/10 flex flex-col gap-3">
+      <div className="px-6 py-4 border-t border-bronze/10 flex flex-col gap-3 shrink-0">
         <a href="https://angelfashionstudio.org" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 hover:text-gold transition-colors">
           <span className="material-symbols-outlined text-sm">storefront</span>
           Back to Store
