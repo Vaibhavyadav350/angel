@@ -10,14 +10,18 @@ exports.createProduct = catchAsyncError(async (req, res, next) => {
   let newImages = [];
   if (req.body.images && Array.isArray(req.body.images)) {
     let images = req.body.images;
-    for (let i = 0; i < images.length; i++) {
-      const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+    const uploadPromises = images.map(img =>
+      cloudinary.uploader.upload(img, {
         folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
         fetch_format: 'auto',
         quality: 'auto'
-      });
-      newImages.push({ public_id, url });
-    }
+      })
+    );
+    const uploadedImages = await Promise.all(uploadPromises);
+    newImages = uploadedImages.map(img => ({
+      public_id: img.public_id,
+      url: img.url
+    }));
   }
   req.body.images = newImages;
 
@@ -48,18 +52,19 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
   let newImages = [];
   if (req.body.images && Array.isArray(req.body.images)) {
     let images = req.body.images;
-    for (let i = 0; i < images.length; i++) {
-      if (typeof images[i] === 'string') {
-        const { public_id, url } = await cloudinary.uploader.upload(images[i], {
+    const uploadPromises = images.map(async (img) => {
+      if (typeof img === 'string') {
+        const { public_id, url } = await cloudinary.uploader.upload(img, {
           folder: process.env.CLOUDINARY_FOLDER || 'angel-fashion-studio',
           fetch_format: 'auto',
           quality: 'auto'
         });
-        newImages.push({ public_id, url });
+        return { public_id, url };
       } else {
-        newImages.push(images[i]);
+        return img;
       }
-    }
+    });
+    newImages = await Promise.all(uploadPromises);
     req.body.images = [...newImages];
   } else {
     // If no new images array is sent, preserve existing images by not overwriting req.body.images
