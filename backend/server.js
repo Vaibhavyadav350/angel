@@ -11,6 +11,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 // initialize express
 const app = express();
+app.set('trust proxy', 1);
 
 // requiring routers
 const paymentRouter = require('./routes/paymentRouter');
