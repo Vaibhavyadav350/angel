@@ -19,7 +19,7 @@ const Footer = () => {
           const { url, text, id } = link;
           return (
             <div key={id}>
-              {id === 4 ? <a href='mailto:info@angelfashionstudio.au'>{text}</a>
+              {id === 4 ? <a href='mailto:support@angelfashionstudio.com'>{text}</a>
                 :
                 <Link to={url}>{text}</Link>
               }

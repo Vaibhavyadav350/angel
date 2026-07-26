@@ -33,20 +33,19 @@ export const FILTER_OPTIONS = [
 
 export const SOCIAL_LINKS = {
   instagram: 'https://instagram.com',
-  email: 'mailto:info@angelfashionstudio.au',
-  phone: 'tel:0466853704',
+  email: 'mailto:support@angelfashionstudio.com',
+  phone: 'tel:+61466853704',
 };
 
-export const COMPANY_INFO = {
-  name: 'ANGEL FASHION STUDIO',
-  fullName: 'Angel Fashion Studio',
+export const contactDetails = {
   address: {
-    line1: 'Archival House, 12 Heritage Lane, Mehrauli',
-    city: 'New Delhi',
-    country: 'India',
+    line1: 'Angel Fashion Studio, Unit 32/150 Palmers Road',
+    line2: 'Truganina VIC 3029',
+    city: 'Melbourne',
+    country: 'Australia',
   },
-  contact: '0466853704',
-  email: 'info@angelfashionstudio.au',
+  phone: '+61 466 853 704',
+  email: 'support@angelfashionstudio.com',
 };
 
 export const FOOTER_LINKS = {

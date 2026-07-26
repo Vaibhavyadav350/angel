@@ -39,7 +39,7 @@ const CartPage = () => {
             THE<br />ARCHIVE <span className="text-gold italic font-light">CART</span>
           </h1>
           <div className="flex flex-col lg:flex-row items-center gap-6 mt-8">
-            <span className="text-[10px] font-bold tracking-[0.5em] text-gold uppercase">EST. 1994 // BRIDAL &amp; MENSWEAR</span>
+            <span className="text-[10px] font-bold tracking-[0.5em] text-gold uppercase">EST. 2004 // BRIDAL &amp; MENSWEAR</span>
             <div className="hidden lg:block h-px w-24 bg-gold/30"></div>
             <span className="text-[10px] font-bold tracking-[0.5em] text-bronze/40 uppercase">{cart.length} ITEMS IN YOUR COLLECTION</span>
           </div>

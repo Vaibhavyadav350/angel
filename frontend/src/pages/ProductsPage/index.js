@@ -192,7 +192,7 @@ const ProductsPage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-chocolate/20 to-chocolate/80" />
         </div>
         <div className="relative z-10 text-center px-6">
-          <p className="text-[10px] font-bold tracking-[0.8em] text-gold mb-4 uppercase">Established 1994</p>
+          <p className="text-[10px] font-bold tracking-[0.8em] text-gold mb-4 uppercase">Established 2004</p>
           <h2 className="text-6xl lg:text-9xl font-editorial font-black text-champagne uppercase tracking-tighter mb-4 leading-none">
             {filters.category !== 'all' ? filters.category : filters.collection !== 'all' ? filters.collection : 'THE ARCHIVE'}
           </h2>

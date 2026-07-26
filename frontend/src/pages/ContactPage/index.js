@@ -25,14 +25,14 @@ const ContactPage = () => {
                             </div>
                             <div>
                                 <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold mb-4">Call Us</h3>
-                                <a href="tel:+61398765432" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
-                                    +61 3 9876 5432
+                                <a href="tel:+61466853704" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
+                                    +61 466 853 704
                                 </a>
                             </div>
                             <div>
                                 <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold mb-4">Email</h3>
-                                <a href="mailto:atelier@angelfashion.au" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
-                                    atelier@angelfashion.au
+                                <a href="mailto:support@angelfashionstudio.com" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
+                                    support@angelfashionstudio.com
                                 </a>
                             </div>
                             <div>

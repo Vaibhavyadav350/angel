@@ -81,7 +81,7 @@ function LoginPage() {
             <div className="flex items-center gap-6">
               <div className="h-px w-16 bg-gold/40" />
               <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-bronze/30">
-                Est. 1994
+                Est. 2004
               </span>
             </div>
           </div>

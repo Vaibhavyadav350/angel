@@ -67,7 +67,7 @@ const AboutPage = () => {
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo" />
                 <div className="absolute -bottom-10 -right-10 bg-white p-8 border fine-line hidden lg:block">
                   <span className="font-barcode text-4xl block text-bronze/40">AUS-3000</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gold uppercase">EST. 1994
+                  <span className="text-[10px] font-bold tracking-widest text-gold uppercase">EST. 2004
                     MELBOURNE</span>
                 </div>
               </div>
@@ -75,7 +75,7 @@ const AboutPage = () => {
             <div className="w-full lg:w-2/5 order-1 lg:order-2 space-y-12">
               <div className="space-y-6">
                 <span className="text-gold text-[10px] font-bold uppercase tracking-[0.6em] block">SINCE
-                  1994</span>
+                  2004</span>
                 <h2
                   className="text-6xl lg:text-8xl font-editorial font-black text-bronze leading-[0.9] uppercase">
                   OUR<br />STORY</h2>
@@ -92,8 +92,7 @@ const AboutPage = () => {
                   collection is a testament to the enduring beauty of heritage textiles.
                 </p>
                 <div className="pt-12 border-t border-bronze/10">
-                  <span className="text-[11px] font-bold tracking-[0.4em] uppercase text-gold">MELBOURNE —
-                    SYDNEY — LONDON</span>
+                  <span className="text-[11px] font-bold tracking-[0.4em] uppercase text-gold">MELBOURNE</span>
                 </div>
               </div>
             </div>
