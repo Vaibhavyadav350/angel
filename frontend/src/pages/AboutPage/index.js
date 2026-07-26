@@ -129,7 +129,7 @@ const AboutPage = () => {
               <div className="space-y-4">
                 <h3 className="text-4xl font-editorial font-bold text-bronze uppercase">Visit the Archive</h3>
                 <div className="space-y-2">
-                  <p className="text-lg text-bronze font-medium">Archival House, 124 Collins Street,<br />Melbourne VIC 3000,
+                  <p className="text-lg text-bronze font-medium">Angel Fashion Studio<br />Unit 32/150 Palmers Road,<br />Truganina VIC 3029,<br />
                     Australia</p>
                 </div>
               </div>

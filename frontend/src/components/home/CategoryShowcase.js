@@ -82,6 +82,15 @@ const showcases = [
           { name: "Punjabi", sub: "PATIALA", img: "/assets/landing/catalog/subcat_punjabi.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=punjabi%20suits" },
           { name: "Kurti", sub: "CASUAL", img: "/assets/landing/catalog/subcat_kurti.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=kurti" }
         ]
+      },
+      {
+        title: "INDO WESTERN",
+        items: [
+          { name: "Indo Western Suits", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Indo%20Western%20Suits" },
+          { name: "Fusion Wear", sub: "MODERN", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Fusion%20Wear" },
+          { name: "Cape Sets", sub: "ELEGANT", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Cape%20Sets" },
+          { name: "Coord Sets", sub: "CHIC", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Coord%20Sets" }
+        ]
       }
     ]
   },

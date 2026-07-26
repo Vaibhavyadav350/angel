@@ -129,6 +129,7 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       price,
       images,
       colors,
+      sizes,
       variants,
       company,
       description,
@@ -136,6 +137,11 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       stock,
       shipping,
       featured,
+      isTrending,
+      badgeText,
+      discountPercent,
+      rating,
+      numberOfReviews,
     } = item;
     return {
       id,
@@ -143,6 +149,7 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       price,
       image: images && images.length > 0 ? images[0].url : '',
       colors,
+      sizes: sizes || [],
       variants: variants || [],
       company,
       description,
@@ -153,6 +160,11 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       stock,
       shipping,
       featured,
+      isTrending: isTrending || false,
+      badgeText: badgeText || '',
+      discountPercent: discountPercent || 0,
+      rating: rating || 0,
+      numberOfReviews: numberOfReviews || 0,
     };
   });
   res.status(200).json({

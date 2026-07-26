@@ -12,6 +12,7 @@ const CATEGORY_PILLS = [
   { label: 'BRIDAL LEHENGAS', category: 'Women', subCategory: 'LEHENGAS', url: '/products?category=Women&subCategory=LEHENGAS' },
   { label: 'SILK SAREES', category: 'Women', subCategory: 'SAREES', url: '/products?category=Women&subCategory=SAREES' },
   { label: 'ANARKALI', category: 'Women', subCategory: 'SALWAR KAMEEZ', url: '/products?category=Women&subCategory=SALWAR+KAMEEZ' },
+  { label: 'INDO WESTERN', category: 'Women', subCategory: 'INDO WESTERN', url: '/products?category=Women&subCategory=INDO+WESTERN' },
   { label: 'MEN', category: 'Men', url: '/products?category=Men' },
   { label: 'SHERWANIS', category: 'Men', subCategory: 'SHERWANIS', url: '/products?category=Men&subCategory=SHERWANIS' },
   { label: 'JEWELLERY', category: 'Jewelry', url: '/products?category=Jewelry' },

@@ -17,8 +17,9 @@ const ContactPage = () => {
                             <div>
                                 <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold mb-4">Visit Us</h3>
                                 <p className="text-base font-medium leading-relaxed text-bronze/70">
-                                    Archival House, 124 Collins Street<br />
-                                    Melbourne VIC 3000<br />
+                                    Angel Fashion Studio<br />
+                                    Unit 32/150 Palmers Road<br />
+                                    Truganina VIC 3029<br />
                                     Australia
                                 </p>
                             </div>

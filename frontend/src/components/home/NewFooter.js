@@ -13,7 +13,7 @@ const footerLinks = {
   ],
   "Shop Men & Kids": [
     { name: "Classic Sherwanis", url: "/products?category=Men&subCategory=SHERWANIS" },
-    { name: "Indowestern", url: "/products?category=Men&subCategory=SHERWANIS" },
+    { name: "Indo Western", url: "/products?category=Women&subCategory=INDO+WESTERN" },
     { name: "Girls Ethnic", url: "/products?category=Kids" },
     { name: "Boys Ethnic", url: "/products?category=Kids" },
     { name: "Men's Jackets", url: "/products?category=Men&subCategory=JACKET" }

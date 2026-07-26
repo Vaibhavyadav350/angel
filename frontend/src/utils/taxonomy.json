@@ -9,8 +9,7 @@
         "punjabi suits",
         "sharara suits",
         "pakistani suits",
-        "kurti",
-        "sale"
+        "kurti"
       ],
       "SAREES": [
         "WEDDING SAREES",
@@ -18,8 +17,13 @@
       ],
       "LEHENGAS": [
         "Bridal Lehengas",
-        "Partywear Lehengas",
-        "Indowestern"
+        "Partywear Lehengas"
+      ],
+      "INDO WESTERN": [
+        "Indo Western Suits",
+        "Fusion Wear",
+        "Cape Sets",
+        "Coord Sets"
       ]
     },
     "Men": {

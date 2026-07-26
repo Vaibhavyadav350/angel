@@ -76,7 +76,7 @@ const NewArrivalsGrid = () => {
                     Featured
                   </span>
                 )}
-                {product.collection === 'sale' && (
+                {product.collections?.includes('sale') && (
                   <span className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase shadow-sm">
                     Sale
                   </span>
