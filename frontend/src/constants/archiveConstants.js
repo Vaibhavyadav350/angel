@@ -37,6 +37,19 @@ export const SOCIAL_LINKS = {
   phone: 'tel:+61466853704',
 };
 
+export const COMPANY_INFO = {
+  name: 'ANGEL FASHION STUDIO',
+  fullName: 'Angel Fashion Studio',
+  address: {
+    line1: 'Angel Fashion Studio, Unit 32/150 Palmers Road',
+    line2: 'Truganina VIC 3029',
+    city: 'Melbourne',
+    country: 'Australia',
+  },
+  contact: '+61 466 853 704',
+  email: 'support@angelfashionstudio.com',
+};
+
 export const contactDetails = {
   address: {
     line1: 'Angel Fashion Studio, Unit 32/150 Palmers Road',
