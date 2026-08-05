@@ -4,14 +4,14 @@ import taxonomy from '../../utils/taxonomy.json';
 
 // Placeholder elegant texture/fabric images for categories
 const categories = [
-    { label: 'A-LINE', img: '/assets/landing/circ-aline.jpg', link: `/products${taxonomy.landing_page_mappings.circular_lehenga}` },
-    { label: 'FISHTAIL', img: '/assets/landing/circ-fishtail.jpg', link: `/products${taxonomy.landing_page_mappings.circular_anarkali}` },
-    { label: 'BANARASI', img: '/assets/landing/circ-banarasi.jpg', link: `/products${taxonomy.landing_page_mappings.circular_saree}` },
-    { label: 'SILK', img: '/assets/landing/circ-silk.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
-    { label: 'VELVET', img: '/assets/landing/circ-velvet.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
-    { label: 'GEORGETTE', img: '/assets/landing/circ-georgette.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
-    { label: 'NET', img: '/assets/landing/circ-net.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
-    { label: 'ORGANZA', img: '/assets/landing/circ-organza.jpg', link: `/products${taxonomy.landing_page_mappings.circular_women}` },
+    { label: 'A-LINE', img: '/assets/landing/circ-aline.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_aline || ''}` },
+    { label: 'FISHTAIL', img: '/assets/landing/circ-fishtail.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_fishtail || ''}` },
+    { label: 'BANARASI', img: '/assets/landing/circ-banarasi.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_banarasi || ''}` },
+    { label: 'SILK', img: '/assets/landing/circ-silk.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_silk || ''}` },
+    { label: 'VELVET', img: '/assets/landing/circ-velvet.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_velvet || ''}` },
+    { label: 'GEORGETTE', img: '/assets/landing/circ-georgette.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_georgette || ''}` },
+    { label: 'NET', img: '/assets/landing/circ-net.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_net || ''}` },
+    { label: 'ORGANZA', img: '/assets/landing/circ-organza.jpg', link: `/products${taxonomy.landing_page_mappings?.circular_organza || ''}` },
 ];
 
 const CircularCategories = () => {

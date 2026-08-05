@@ -50,7 +50,7 @@ const TermsPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Governing Law</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            These terms shall be governed by and construed in accordance with the laws of Australia. Any disputes shall be subject to the exclusive jurisdiction of the courts of New South Wales, Australia.
+                            These terms shall be governed by and construed in accordance with the laws of Australia. Any disputes shall be subject to the exclusive jurisdiction of the courts of Victoria, Australia.
                         </p>
                     </div>
                 </div>

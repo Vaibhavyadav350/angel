@@ -17,13 +17,8 @@
       ],
       "LEHENGAS": [
         "Bridal Lehengas",
-        "Partywear Lehengas"
-      ],
-      "INDO WESTERN": [
-        "Indo Western Suits",
-        "Fusion Wear",
-        "Cape Sets",
-        "Coord Sets"
+        "Partywear Lehengas",
+        "Indo Western"
       ]
     },
     "Men": {
@@ -131,10 +126,14 @@
     "hero_bridal_edit": "?category=Women&subCategory=LEHENGAS",
     "hero_royal_drapes": "?category=Women&subCategory=SAREES",
     "hero_mens_heritage": "?category=Men",
-    "circular_lehenga": "?category=Women&subCategory=LEHENGAS",
-    "circular_anarkali": "?category=Women&subCategory=SALWAR%20KAMEEZ",
-    "circular_saree": "?category=Women&subCategory=SAREES",
-    "circular_women": "?category=Women",
+    "circular_aline": "?category=Women&subCategory=LEHENGAS",
+    "circular_fishtail": "?category=Women&subCategory=LEHENGAS&productType=Partywear%20Lehengas",
+    "circular_banarasi": "?category=Women&subCategory=SAREES&productType=WEDDING%20SAREES",
+    "circular_silk": "?category=Women&subCategory=SAREES",
+    "circular_velvet": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=palazzo%20suits",
+    "circular_georgette": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=Anarkali%20suits",
+    "circular_net": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=sharara%20suits",
+    "circular_organza": "?category=Women&subCategory=SAREES&productType=casual%20wear",
     "directory_bridal_lehengas": "?category=Women&subCategory=LEHENGAS",
     "directory_pure_silk_sarees": "?category=Women&subCategory=SAREES",
     "directory_sherwanis": "?category=Men&subCategory=SHERWANIS",

@@ -16,24 +16,6 @@ const httpError = (message, statusCode) => {
   return err;
 };
 
-// Optional add-on services and the Settings field each is priced from.
-const ADDON_DEFS = {
-  hemming: { name: 'Hemming / Alteration', priceKey: 'hemmingPrice' },
-  giftBox: { name: 'Gift Box', priceKey: 'giftBoxPrice' },
-  petticoat: { name: 'Petticoat', priceKey: 'petticoatPrice' },
-};
-
-// Resolve selected add-on keys to { name, price } using the live settings prices.
-exports.resolveAddons = (keys = [], settings = {}) =>
-  (keys || [])
-    .map((key) => {
-      const def = ADDON_DEFS[key];
-      if (!def) return null;
-      const price = Number(settings[def.priceKey] || 0);
-      return price > 0 ? { key, name: def.name, price } : null;
-    })
-    .filter(Boolean);
-
 /**
  * The authoritative, server-computed pricing for an order. NEVER trusts amounts
  * sent by the browser — prices come from the product documents, shipping/GST from
@@ -42,7 +24,7 @@ exports.resolveAddons = (keys = [], settings = {}) =>
  * @param {Array} cart  client cart entries: { productId|id, amount|quantity, color, size }
  * @param {{ shippingMethod?: string, couponCode?: string }} opts
  */
-exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standard', couponCode = '', addons = [] } = {}) => {
+exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standard', couponCode = '' } = {}) => {
   const settings = (await Settings.findOne()) || {};
   const standardFee = Number(settings.standardShippingPrice ?? 8);
   const expressFee = Number(settings.expressShippingPrice ?? 18);
@@ -60,7 +42,46 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
     if (!product) throw httpError(`Product not found: ${entry.name || productId}`, 404);
 
     const qty = Number(entry.amount || entry.quantity || 1);
-    if (product.stock < qty) throw httpError(`Stock Error: Only ${product.stock} left for ${product.name}.`, 400);
+    let color = entry.color || '';
+    let size = entry.size || '';
+
+    // Stock must be checked against the exact size/colour being bought. Checking the
+    // aggregate `stock` field let someone order size XL while only S was in stock,
+    // because the total across all variants covered the quantity.
+    //
+    // Sizeless products (jewellery) are stored inconsistently as "M" / "Free Size" /
+    // "One Size", so resolve leniently rather than rejecting a legitimate order:
+    // match case-insensitively, and fall back to the only variant when there is one.
+    const variants = product.variants || [];
+    if (variants.length > 0) {
+      const eq = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+      let variant = variants.find((v) => eq(v.size, size) && eq(v.color, color));
+
+      if (!variant && variants.length === 1) variant = variants[0];
+      if (!variant && !size) variant = variants.find((v) => eq(v.color, color));
+      if (!variant && !color) variant = variants.find((v) => eq(v.size, size));
+
+      if (!variant) {
+        const available = variants.map((v) => `${v.size} / ${v.color}`).join(', ');
+        throw httpError(
+          `${product.name} is not available in ${size || 'that size'} / ${color || 'that colour'}. Available: ${available}.`,
+          400
+        );
+      }
+      if (Number(variant.stock || 0) < qty) {
+        throw httpError(
+          `Stock Error: Only ${Number(variant.stock || 0)} left for ${product.name} in ${variant.size} / ${variant.color}.`,
+          400
+        );
+      }
+      // Record what we actually validated, so the order and the stock decrement agree.
+      size = variant.size;
+      color = variant.color;
+    } else {
+      if (product.stock < qty) throw httpError(`Stock Error: Only ${product.stock} left for ${product.name}.`, 400);
+      size = size || 'Standard';
+      color = color || 'Standard';
+    }
 
     const selling = sellingPriceOf(product);
     sellingTotal += selling * qty;
@@ -70,17 +91,11 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
       selling,
       mrp: Number(product.price) || 0,
       name: product.name,
-      color: entry.color || 'Standard',
-      size: entry.size || 'M',
+      color,
+      size,
     });
   }
   sellingTotal = round2(sellingTotal);
-
-  // Shipping from settings (Express only if enabled; free over threshold).
-  const method = shippingMethod === 'express' && expressEnabled ? 'express' : 'standard';
-  let shipping = method === 'express' ? expressFee : standardFee;
-  if (method === 'standard' && freeThreshold > 0 && sellingTotal >= freeThreshold) shipping = 0;
-  if (items.length === 0) shipping = 0;
 
   // Coupon re-validated server-side (same rules as the public validate endpoint).
   let couponDiscount = 0;
@@ -99,12 +114,19 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
     }
   }
 
-  // Add-on services, priced from settings (never from the client).
-  const resolvedAddons = exports.resolveAddons(addons, settings);
-  const addonsTotal = round2(resolvedAddons.reduce((s, a) => s + a.price, 0));
+  // What the customer actually pays for goods, after the product markdown AND the
+  // coupon. The free-shipping threshold is tested against THIS, not the pre-coupon
+  // subtotal — otherwise a $210 cart with a $50 coupon paid $160 and still shipped free.
+  const goodsPayable = round2(Math.max(0, sellingTotal - couponDiscount));
 
-  const total = round2(Math.max(0, sellingTotal - couponDiscount) + shipping + addonsTotal);
+  // Shipping from settings (Express only if enabled; free standard over threshold).
+  const method = shippingMethod === 'express' && expressEnabled ? 'express' : 'standard';
+  let shipping = method === 'express' ? expressFee : standardFee;
+  if (method === 'standard' && freeThreshold > 0 && goodsPayable >= freeThreshold) shipping = 0;
+  if (items.length === 0) shipping = 0;
+
+  const total = round2(goodsPayable + shipping);
   const gstAmount = round2(total - total / (1 + gstRate / 100));
 
-  return { items, sellingTotal, shipping, method, couponDiscount, couponCode: validCouponCode, addons: resolvedAddons, addonsTotal, total, gstAmount, gstRate };
+  return { items, sellingTotal, goodsPayable, shipping, method, couponDiscount, couponCode: validCouponCode, total, gstAmount, gstRate };
 };

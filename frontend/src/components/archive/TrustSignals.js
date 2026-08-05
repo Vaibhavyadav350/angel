@@ -20,7 +20,7 @@ const trustItems = [
     {
         icon: "handshake",
         title: "Heritage Craft",
-        desc: "Handwoven by artisans since 1994"
+        desc: "Handwoven by artisans since 2024"
     }
 ];
 

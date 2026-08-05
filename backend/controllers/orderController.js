@@ -138,10 +138,26 @@ exports.updateOrderStatus = catchAsyncError(async (req, res, next) => {
     for (let index = 0; index < order.orderItems.length; index++) {
       const item = order.orderItems[index];
       const product = await Product.findById(item.product);
-      if (product) {
+      if (!product) continue;
+
+      // Restore the specific size/colour variant, mirroring the decrement in
+      // orderService. Adding to the global `stock` field alone was silently lost:
+      // productController recomputes `stock` from the variants on every product
+      // edit, so the restored quantity vanished the next time the product was saved.
+      if (product.variants && product.variants.length > 0) {
+        const variant = product.variants.find((v) => v.size === item.size && v.color === item.color);
+        if (variant) {
+          variant.stock = (Number(variant.stock) || 0) + item.quantity;
+          product.markModified('variants');
+        } else {
+          console.warn(`[ORDER STOCK RESTORE] No matching variant (${item.size}/${item.color}) for ${product.name} — adjusting global only.`);
+        }
+        product.stock = product.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+      } else {
         product.stock += item.quantity;
-        await product.save({ validateBeforeSave: false });
       }
+
+      await product.save({ validateBeforeSave: false });
     }
     console.info(`[ORDER CANCELLED] Order ${order._id} cancelled. Stock restored for ${order.orderItems.length} items.`);
   }
@@ -284,10 +300,26 @@ exports.updateReturnStatus = catchAsyncError(async (req, res, next) => {
     for (let index = 0; index < order.orderItems.length; index++) {
       const item = order.orderItems[index];
       const product = await Product.findById(item.product);
-      if (product) {
+      if (!product) continue;
+
+      // Restore the specific size/colour variant, mirroring the decrement in
+      // orderService. Adding to the global `stock` field alone was silently lost:
+      // productController recomputes `stock` from the variants on every product
+      // edit, so the restored quantity vanished the next time the product was saved.
+      if (product.variants && product.variants.length > 0) {
+        const variant = product.variants.find((v) => v.size === item.size && v.color === item.color);
+        if (variant) {
+          variant.stock = (Number(variant.stock) || 0) + item.quantity;
+          product.markModified('variants');
+        } else {
+          console.warn(`[ORDER STOCK RESTORE] No matching variant (${item.size}/${item.color}) for ${product.name} — adjusting global only.`);
+        }
+        product.stock = product.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+      } else {
         product.stock += item.quantity;
-        await product.save({ validateBeforeSave: false });
       }
+
+      await product.save({ validateBeforeSave: false });
     }
   }
 

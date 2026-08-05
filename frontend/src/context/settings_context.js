@@ -8,9 +8,6 @@ import { DEFAULT_PRICING } from '../utils/pricing';
 // Settings page edits it. Falls back to sensible defaults until loaded.
 const defaultSettings = {
   ...DEFAULT_PRICING,
-  hemmingPrice: 800,
-  giftBoxPrice: 400,
-  petticoatPrice: 600,
   announcementText: '',
 };
 

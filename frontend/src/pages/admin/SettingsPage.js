@@ -23,9 +23,6 @@ const SettingsPage = () => {
       expressEnabled: !!form.expressEnabled,
       freeShippingThreshold: Number(form.freeShippingThreshold) || 0,
       gstRate: Number(form.gstRate) || 0,
-      hemmingPrice: Number(form.hemmingPrice) || 0,
-      giftBoxPrice: Number(form.giftBoxPrice) || 0,
-      petticoatPrice: Number(form.petticoatPrice) || 0,
       announcementText: form.announcementText || '',
     });
     setSaving(false);
@@ -54,7 +51,7 @@ const SettingsPage = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-editorial font-black text-bronze uppercase tracking-widest">Store Settings</h1>
-          <p className="text-[10px] text-bronze/40 mt-2 font-bold uppercase tracking-[0.3em]">Shipping · Tax · Services · Announcement</p>
+          <p className="text-[10px] text-bronze/40 mt-2 font-bold uppercase tracking-[0.3em]">Shipping · Tax · Announcement</p>
         </div>
         <button
           onClick={handleSave}
@@ -94,16 +91,6 @@ const SettingsPage = () => {
               <label className={labelClass}>GST Rate (%)</label>
               <input className={inputClass} type="number" min="0" value={form.gstRate ?? ''} onChange={(e) => setField('gstRate', e.target.value)} />
               <p className="text-[9px] text-bronze/40 mt-1">Prices are GST-inclusive; this is shown as "Includes GST" on invoices.</p>
-            </div>
-          </div>
-
-          {/* Add-on services */}
-          <div className={card}>
-            <h4 className={heading}>Add-on Services (AUD · incl. GST)</h4>
-            <div className="grid grid-cols-2 gap-4">
-              {moneyField('hemmingPrice', 'Hemming / Alteration')}
-              {moneyField('giftBoxPrice', 'Gift Box')}
-              {moneyField('petticoatPrice', 'Petticoat')}
             </div>
           </div>
 

@@ -30,7 +30,9 @@ const productSchema = mongoose.Schema({
   },
   discountPercent: {
     type: Number,
-    default: 20,
+    // Must default to 0. A non-zero default silently marks down every product added
+    // without touching this field — the owner was setting 41 of 58 back to 0 by hand.
+    default: 0,
   },
   taxPercent: {
     type: Number,

@@ -55,7 +55,7 @@ const CollectionFormModal = ({ collection, onClose, onSave }) => {
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className={labelClass}>CTA Link</label>
-                            <input className={inputClass} value={form.ctaLink} onChange={e => handleChange('ctaLink', e.target.value)} placeholder="/products?collection=Bridal" />
+                            <input className={inputClass} value={form.ctaLink} onChange={e => handleChange('ctaLink', e.target.value)} placeholder="/products?collection=new arrivals" />
                         </div>
                         <div>
                             <label className={labelClass}>Sort Order</label>

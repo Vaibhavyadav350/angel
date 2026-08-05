@@ -67,7 +67,7 @@ const AboutPage = () => {
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo" />
                 <div className="absolute -bottom-10 -right-10 bg-white p-8 border fine-line hidden lg:block">
                   <span className="font-barcode text-4xl block text-bronze/40">AUS-3000</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gold uppercase">EST. 2004
+                  <span className="text-[10px] font-bold tracking-widest text-gold uppercase">EST. 2024
                     MELBOURNE</span>
                 </div>
               </div>
@@ -75,7 +75,7 @@ const AboutPage = () => {
             <div className="w-full lg:w-2/5 order-1 lg:order-2 space-y-12">
               <div className="space-y-6">
                 <span className="text-gold text-[10px] font-bold uppercase tracking-[0.6em] block">SINCE
-                  2004</span>
+                  2024</span>
                 <h2
                   className="text-6xl lg:text-8xl font-editorial font-black text-bronze leading-[0.9] uppercase">
                   OUR<br />STORY</h2>
@@ -124,31 +124,53 @@ const AboutPage = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-oatmeal p-12 lg:p-20 space-y-12 border fine-line">
+            <div className="bg-oatmeal p-12 lg:p-20 space-y-8 border fine-line">
               <div className="space-y-4">
-                <h3 className="text-4xl font-editorial font-bold text-bronze uppercase">Visit the Archive</h3>
-                <div className="space-y-2">
-                  <p className="text-lg text-bronze font-medium">Angel Fashion Studio<br />Unit 32/150 Palmers Road,<br />Truganina VIC 3029,<br />
-                    Australia</p>
+                <h3 className="text-4xl font-editorial font-bold text-bronze uppercase">Visit the Store</h3>
+                <div className="space-y-3">
+                  <p className="text-lg text-bronze font-medium leading-relaxed">
+                    Angel Fashion Studio<br />
+                    Unit 32/150 Palmers Road,<br />
+                    Truganina VIC 3029, Australia
+                  </p>
+                  <div className="pt-2 space-y-1">
+                    <p className="text-sm font-semibold text-bronze">
+                      Phone: <a href="tel:+61466853704" className="text-gold hover:underline">+61 466 853 704</a>
+                    </p>
+                    <p className="text-sm font-semibold text-bronze">
+                      Email: <a href="mailto:support@angelfashionstudio.com" className="text-gold hover:underline">support@angelfashionstudio.com</a>
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div
-                className="aspect-video bg-sand/30 relative overflow-hidden border fine-line flex items-center justify-center">
-                <div
-                  className="absolute inset-0 opacity-20 bg-[radial-gradient(#7A5C41_1px,transparent_1px)] [background-size:20px_20px]">
-                </div>
-                <div className="relative flex flex-col items-center">
-                  <div className="size-4 bg-bronze rounded-full animate-pulse"></div>
-                  <div className="h-20 w-px bg-bronze/20 mt-2"></div>
-                  <span className="text-[9px] font-bold uppercase tracking-widest mt-4 text-bronze">Point of
-                    Heritage</span>
-                </div>
+              <div className="w-full aspect-video rounded-sm overflow-hidden border fine-line shadow-sm">
+                <iframe
+                  src="https://maps.google.com/maps?q=Angel+Fashion+Studio+Unit+32+150+Palmers+Road+Truganina+VIC+3029+Australia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Angel Fashion Studio Store Location"
+                ></iframe>
               </div>
-              <Link
-                to="/contact"
-                className="w-full block text-center py-6 border border-bronze text-bronze hover:bg-bronze hover:text-white transition-all text-[11px] font-bold uppercase tracking-[0.4em]">
-                Book a Private Viewing
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <a
+                  href="https://maps.app.goo.gl/TNGxFUNJoRq93a2N6"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center py-4 bg-bronze text-white hover:bg-gold transition-all text-[10px] font-bold uppercase tracking-[0.3em]"
+                >
+                  Open in Google Maps ↗
+                </a>
+                <Link
+                  to="/contact"
+                  className="flex-1 text-center py-4 border border-bronze text-bronze hover:bg-bronze hover:text-white transition-all text-[10px] font-bold uppercase tracking-[0.3em]"
+                >
+                  Contact Concierge
+                </Link>
+              </div>
             </div>
           </div>
         </div>

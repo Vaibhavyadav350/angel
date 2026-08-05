@@ -12,7 +12,7 @@ const CATEGORY_PILLS = [
   { label: 'BRIDAL LEHENGAS', category: 'Women', subCategory: 'LEHENGAS', url: '/products?category=Women&subCategory=LEHENGAS' },
   { label: 'SILK SAREES', category: 'Women', subCategory: 'SAREES', url: '/products?category=Women&subCategory=SAREES' },
   { label: 'ANARKALI', category: 'Women', subCategory: 'SALWAR KAMEEZ', url: '/products?category=Women&subCategory=SALWAR+KAMEEZ' },
-  { label: 'INDO WESTERN', category: 'Women', subCategory: 'INDO WESTERN', url: '/products?category=Women&subCategory=INDO+WESTERN' },
+  { label: 'INDO WESTERN', category: 'Women', subCategory: 'LEHENGAS', url: '/products?category=Women&subCategory=LEHENGAS&productType=Indo+Western' },
   { label: 'MEN', category: 'Men', url: '/products?category=Men' },
   { label: 'SHERWANIS', category: 'Men', subCategory: 'SHERWANIS', url: '/products?category=Men&subCategory=SHERWANIS' },
   { label: 'JEWELLERY', category: 'Jewelry', url: '/products?category=Jewelry' },
@@ -119,6 +119,21 @@ const ProductsPage = () => {
     (featured_products && featured_products.length > 0) ? featured_products[0].image :
       'https://images.unsplash.com/photo-1583391733975-203ea0223027?q=80&w=2670&auto=format&fit=crop';
 
+  // A visitor who arrived from the menu/home page (category, sub-category, product type or
+  // collection) without narrowing anything themselves is browsing a section that simply has no
+  // stock yet — that deserves "arriving soon", not "no results, fix your filters".
+  const hasNavigationFilter =
+    filters.category !== 'all' ||
+    (filters.subCategory && filters.subCategory !== 'all') ||
+    (filters.productType && filters.productType !== 'all') ||
+    (filters.collection && filters.collection !== 'all');
+  const hasRefinedSearch =
+    Boolean(filters.text) ||
+    filters.color !== 'all' ||
+    filters.shipping ||
+    (filters.max_price > 0 && filters.price < filters.max_price);
+  const isBrowsingEmptySection = hasNavigationFilter && !hasRefinedSearch;
+
   // Active filter tags
   const activeFilters = [
     filters.category !== 'all' && { key: 'category', label: `CATEGORY: ${filters.category}` },
@@ -192,7 +207,7 @@ const ProductsPage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-chocolate/20 to-chocolate/80" />
         </div>
         <div className="relative z-10 text-center px-6">
-          <p className="text-[10px] font-bold tracking-[0.8em] text-gold mb-4 uppercase">Established 2004</p>
+          <p className="text-[10px] font-bold tracking-[0.8em] text-gold mb-4 uppercase">Established 2024</p>
           <h2 className="text-6xl lg:text-9xl font-editorial font-black text-champagne uppercase tracking-tighter mb-4 leading-none">
             {filters.category !== 'all' ? filters.category : filters.collection !== 'all' ? filters.collection : 'THE ARCHIVE'}
           </h2>
@@ -326,17 +341,20 @@ const ProductsPage = () => {
               <div className="flex items-center justify-center min-h-[40vh]">
                 <div className="text-center space-y-4">
                   <h3 className="text-3xl font-editorial font-bold text-bronze uppercase">
-                    No artifacts found
+                    {isBrowsingEmptySection ? 'New pieces arriving soon' : 'No artifacts found'}
                   </h3>
                   <p className="text-sm text-bronze/50 uppercase tracking-widest">
-                    Try adjusting your filters or search terms
+                    {isBrowsingEmptySection
+                      ? 'This collection is being curated — please check back shortly'
+                      : 'Try adjusting your filters or search terms'}
                   </p>
-                  <button
+                  <Link
+                    to="/products"
                     onClick={clearFilters}
-                    className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold hover:text-bronze transition-colors"
+                    className="inline-block text-[10px] font-bold uppercase tracking-[0.3em] text-gold hover:text-bronze transition-colors"
                   >
-                    Clear All Filters
-                  </button>
+                    {isBrowsingEmptySection ? 'Browse the full collection' : 'Clear All Filters'}
+                  </Link>
                 </div>
               </div>
             ) : grid_view ? (

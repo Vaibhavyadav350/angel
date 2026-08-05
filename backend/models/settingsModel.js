@@ -26,19 +26,6 @@ const settingsSchema = new mongoose.Schema(
             type: Number,
             default: 10, // % GST, included in displayed prices
         },
-        // --- Optional add-on services (AUD, GST-inclusive) ---
-        hemmingPrice: {
-            type: Number,
-            default: 800,
-        },
-        giftBoxPrice: {
-            type: Number,
-            default: 400,
-        },
-        petticoatPrice: {
-            type: Number,
-            default: 600,
-        },
         announcementText: {
             type: String,
             default: 'Complimentary shipping on all domestic orders.',

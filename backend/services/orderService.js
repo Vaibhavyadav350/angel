@@ -39,7 +39,6 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
                 couponCode: metaPairs.coupon || '',
                 shippingFee: Number(metaPairs.shipFee) || 0,
                 itemsPrice: Number(metaPairs.itemsP) || 0,
-                addonKeys: metaPairs.addons ? metaPairs.addons.split('.').filter(Boolean) : [],
             };
         }
 
@@ -126,14 +125,6 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
     const totalPrice = transaction.TotalAmount / 100; // eWAY stores in cents
     const taxPrice = Math.round((totalPrice / 11) * 100) / 100;
 
-    // Resolve any add-on services (priced from the live settings) for the record.
-    const Settings = require('../models/settingsModel');
-    const pricingService = require('./pricingService');
-    const settingsDoc = (await Settings.findOne()) || {};
-    const addOns = pricingService
-        .resolveAddons(meta.addonKeys || [], settingsDoc)
-        .map((a) => ({ name: a.name, price: a.price }));
-
     // Create the order
     const newOrder = await Order.create({
         shippingInfo: shippingAddress,
@@ -148,7 +139,6 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
         totalPrice,
         discountAmount: Number(discountAmount || 0),
         couponCode: couponCode || '',
-        addOns,
         paidAt: Date.now(),
         user: {
             name: userName,

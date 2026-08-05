@@ -54,11 +54,8 @@ const showcases = [
         title: "LEHENGAS",
         items: [
           { name: "Bridal", sub: "PALACE", img: "/assets/landing/catalog/subcat_bridallehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Bridal%20Lehengas" },
-          { name: "Bridesmaid", sub: "PASTEL", img: "/assets/landing/catalog/subcat_bridesmaidlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
-          { name: "Cocktail", sub: "GLAM", img: "/assets/landing/catalog/subcat_cocktaillehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
-          { name: "Engagement", sub: "ELEGANT", img: "/assets/landing/catalog/subcat_engagementlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
-          { name: "Mehendi", sub: "VIBRANT", img: "/assets/landing/catalog/subcat_mehendilehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS" },
-          { name: "Partywear", sub: "MODERN", img: "/assets/landing/catalog/subcat_partywearlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Partywear%20Lehengas" }
+          { name: "Partywear", sub: "MODERN", img: "/assets/landing/catalog/subcat_partywearlehenga.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Partywear%20Lehengas" },
+          { name: "Indo Western", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=LEHENGAS&productType=Indo%20Western" }
         ]
       },
       {
@@ -81,15 +78,6 @@ const showcases = [
           { name: "Pant Suit", sub: "MINIMAL", img: "/assets/landing/catalog/subcat_pantsuit.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=pant%20suits" },
           { name: "Punjabi", sub: "PATIALA", img: "/assets/landing/catalog/subcat_punjabi.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=punjabi%20suits" },
           { name: "Kurti", sub: "CASUAL", img: "/assets/landing/catalog/subcat_kurti.jpg", url: "/products?category=Women&subCategory=SALWAR+KAMEEZ&productType=kurti" }
-        ]
-      },
-      {
-        title: "INDO WESTERN",
-        items: [
-          { name: "Indo Western Suits", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Indo%20Western%20Suits" },
-          { name: "Fusion Wear", sub: "MODERN", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Fusion%20Wear" },
-          { name: "Cape Sets", sub: "ELEGANT", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Cape%20Sets" },
-          { name: "Coord Sets", sub: "CHIC", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Women&subCategory=INDO+WESTERN&productType=Coord%20Sets" }
         ]
       }
     ]

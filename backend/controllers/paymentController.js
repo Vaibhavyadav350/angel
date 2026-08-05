@@ -37,7 +37,6 @@ const paymentController = async (req, res) => {
     const pricing = await pricingService.computeAuthoritativeOrder(cart, {
       shippingMethod: req.body.shippingMethod,
       couponCode: req.body.couponCode,
-      addons: req.body.addons,
     });
 
     if (typeof total_amount === 'number' && Math.abs(total_amount - pricing.sellingTotal) > 0.01) {
@@ -61,7 +60,6 @@ const paymentController = async (req, res) => {
       `coupon=${pricing.couponCode || ''}`,
       `shipFee=${pricing.shipping}`,
       `itemsP=${pricing.sellingTotal}`,
-      `addons=${pricing.addons.map((a) => a.key).join('.')}`,
     ].join('|');
 
     // Split items across multiple Options entries — each ObjectId is 24 chars, entries ~33 chars each

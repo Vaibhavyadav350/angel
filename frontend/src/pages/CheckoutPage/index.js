@@ -4,7 +4,7 @@ import { useCartContext } from '../../context/cart_context';
 import { useUserContext } from '../../context/user_context';
 import { useOrderContext } from '../../context/order_context';
 import { formatPrice } from '../../utils/helpers';
-import { computeOrderSummary, shippingMethods, addonOptions } from '../../utils/pricing';
+import { computeOrderSummary, shippingMethods } from '../../utils/pricing';
 import { useSettingsContext } from '../../context/settings_context';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -31,7 +31,6 @@ const CheckoutPage = () => {
 
   const [selectedState, setSelectedState] = useState(shipping.address?.state || '');
   const [deliveryMethod, setDeliveryMethod] = useState('standard');
-  const [selectedAddons, setSelectedAddons] = useState([]);
 
   const { validateCoupon } = useAdminCouponStore();
   const [couponCode, setCouponCode] = useState('');
@@ -41,11 +40,8 @@ const CheckoutPage = () => {
   // Single itemised breakdown for the whole page (and what we charge).
   const coupon = discount.amount > 0 ? { amount: discount.amount, type: discount.type } : null;
   const methods = shippingMethods(settings);
-  const addons = addonOptions(settings);
-  const summary = computeOrderSummary(cart, { method: deliveryMethod, coupon, addons: selectedAddons, config: settings });
+  const summary = computeOrderSummary(cart, { method: deliveryMethod, coupon, config: settings });
 
-  const toggleAddon = (key) =>
-    setSelectedAddons((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   const [guestEmail, setGuestEmail] = useState('');
   const [guestEmailConfirm, setGuestEmailConfirm] = useState('');
@@ -104,7 +100,6 @@ const CheckoutPage = () => {
         shipping_fee: summary.delivery,
         total_amount: summary.sellingTotal,
         shippingMethod: deliveryMethod,
-        addons: selectedAddons,
         shipping: {
           name: finalName || 'Guest',
           phone_number,
@@ -366,23 +361,6 @@ const CheckoutPage = () => {
                   </div>
                 </div>
 
-                {/* Add-on services */}
-                {addons.length > 0 && (
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-bronze/40">Add-on Services</label>
-                    <div className="space-y-1.5">
-                      {addons.map((a) => (
-                        <label key={a.key} className="flex items-center justify-between gap-2 cursor-pointer bg-champagne/20 px-3 py-2 rounded border border-bronze/5">
-                          <span className="flex items-center gap-2">
-                            <input type="checkbox" checked={selectedAddons.includes(a.key)} onChange={() => toggleAddon(a.key)} className="accent-bronze" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">{a.label}</span>
-                          </span>
-                          <span className="text-[10px] font-bold text-bronze">{formatPrice(a.price)}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
                   <span>Item Total</span>
@@ -398,12 +376,6 @@ const CheckoutPage = () => {
                   <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-emerald-600">
                     <span>Coupon ({discount.code})</span>
                     <span>−{formatPrice(summary.coupon)}</span>
-                  </div>
-                )}
-                {summary.addonsTotal > 0 && (
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">
-                    <span>Services</span>
-                    <span>+{formatPrice(summary.addonsTotal)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-bronze/60">

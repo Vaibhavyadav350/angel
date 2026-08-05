@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaInstagram, FaPinterest, FaFacebookF, FaChevronDown } from 'react-icons/fa';
+import { FaInstagram, FaFacebookF, FaChevronDown } from 'react-icons/fa';
 import logo from '../../assets/logo.png';
 
 const footerLinks = {
@@ -13,7 +13,7 @@ const footerLinks = {
   ],
   "Shop Men & Kids": [
     { name: "Classic Sherwanis", url: "/products?category=Men&subCategory=SHERWANIS" },
-    { name: "Indo Western", url: "/products?category=Women&subCategory=INDO+WESTERN" },
+    { name: "Indo Western", url: "/products?category=Women&subCategory=LEHENGAS&productType=Indo+Western" },
     { name: "Girls Ethnic", url: "/products?category=Kids" },
     { name: "Boys Ethnic", url: "/products?category=Kids" },
     { name: "Men's Jackets", url: "/products?category=Men&subCategory=JACKET" }
@@ -55,9 +55,8 @@ const NewFooter = () => {
               Exquisite hand-spun garments tailored for the modern spirit.
             </p>
             <div className="flex gap-4">
-              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaInstagram size={18} className="text-white" /></Link>
-              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaPinterest size={18} className="text-white" /></Link>
-              <Link to="/" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"><FaFacebookF size={18} className="text-white" /></Link>
+              <a href="https://www.instagram.com/angiafs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all" aria-label="Instagram"><FaInstagram size={18} className="text-white" /></a>
+              <a href="https://www.facebook.com/p/Angel-Fashion-Studio-61552253573789/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all" aria-label="Facebook"><FaFacebookF size={18} className="text-white" /></a>
             </div>
           </div>
 
