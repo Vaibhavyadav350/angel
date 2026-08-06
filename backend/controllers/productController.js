@@ -157,6 +157,10 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       subCategory: item.subCategory || '',
       productType: item.productType || '',
       collections: item.collections || [],
+      // Needed by the cart to preview weight-banded delivery and to show make
+      // time. `costPrice` is deliberately NOT in this list — it is admin-only.
+      leadTimeDays: item.leadTimeDays || 0,
+      shippingWeightGrams: item.shippingWeightGrams || 0,
       stock,
       shipping,
       featured,

@@ -53,3 +53,44 @@ export const getOrderStatusColor = (status) => {
 };
 
 
+
+/**
+ * Shorten a label for a table cell, appending an ellipsis only when it was
+ * actually cut. Tolerates null/undefined — admin tables render records whose
+ * fields can legitimately be missing (e.g. an order item whose product was
+ * deleted), and a bare `value.substring()` there throws and blanks the page.
+ */
+export const truncate = (value, max = 25) => {
+  const text = String(value ?? '').trim();
+  if (!text) return '—';
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+};
+
+/**
+ * Build a CSV string with proper escaping.
+ *
+ * The Inventory export previously did `row.join(',')`, which silently corrupted
+ * the file for any product whose name contains a comma — and most of them do
+ * ("Wine Floral Embroidered Anarkali Suit Set, Size L"). Values containing a
+ * comma, quote or newline must be wrapped in quotes with inner quotes doubled.
+ */
+export const toCsv = (headers, rows) => {
+  const cell = (v) => {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [headers, ...rows].map((r) => r.map(cell).join(',')).join('\r\n');
+};
+
+/** Trigger a browser download for generated text, cleaning up the object URL. */
+export const downloadTextFile = (filename, text, mime = 'text/csv;charset=utf-8;') => {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};

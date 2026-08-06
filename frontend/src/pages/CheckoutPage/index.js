@@ -39,7 +39,7 @@ const CheckoutPage = () => {
 
   // Single itemised breakdown for the whole page (and what we charge).
   const coupon = discount.amount > 0 ? { amount: discount.amount, type: discount.type } : null;
-  const methods = shippingMethods(settings);
+  const methods = shippingMethods(settings, cart);
   const summary = computeOrderSummary(cart, { method: deliveryMethod, coupon, config: settings });
 
 
@@ -73,6 +73,14 @@ const CheckoutPage = () => {
     ev.preventDefault();
     setProcessing(true);
     setError(null);
+
+    // Server rejects an over-weight cart anyway; stop here so the customer gets a
+    // useful message instead of a payment-gateway error.
+    if (summary.requiresQuote) {
+      setProcessing(false);
+      toast.error('This order needs a shipping quote — please contact us.', { position: 'top-center' });
+      return;
+    }
 
     const finalName = shipping.name || currentUser?.displayName;
     const finalEmail = currentUser?.email || guestEmail;
@@ -265,13 +273,35 @@ const CheckoutPage = () => {
                 </div>
 
                 <div className="col-span-2 pt-12 border-t border-bronze/10">
+                  {summary.requiresQuote && (
+                    <div className="mb-6 p-5 border border-gold/40 bg-gold/5 rounded">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-bronze mb-2">
+                        This order is too large to post automatically
+                      </p>
+                      <p className="text-[11px] text-bronze/70 leading-relaxed">
+                        Orders of this size ship in multiple parcels, so we quote the freight by hand
+                        to make sure you are not overcharged. Please email{' '}
+                        <a href="mailto:support@angelfashionstudio.com" className="text-gold font-bold">
+                          support@angelfashionstudio.com
+                        </a>{' '}
+                        or call <span className="text-gold font-bold">+61 466 853 704</span> and we
+                        will send you a shipping quote straight away.
+                      </p>
+                    </div>
+                  )}
                   <button
                     type="submit"
-                    disabled={processing}
+                    disabled={processing || summary.requiresQuote}
                     className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
                   >
-                    <span>{processing ? 'Redirecting to Payment...' : 'Proceed to Secure Payment'}</span>
-                    {!processing && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
+                    <span>
+                      {summary.requiresQuote
+                        ? 'Shipping Quote Required'
+                        : processing
+                          ? 'Redirecting to Payment...'
+                          : 'Proceed to Secure Payment'}
+                    </span>
+                    {!processing && !summary.requiresQuote && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
                   </button>
                   {error && (
                     <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">

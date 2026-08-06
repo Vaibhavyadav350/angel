@@ -105,14 +105,6 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
           {category} {subCategory ? `// ${subCategory}` : ''}
         </p>
 
-        {/* Free Shipping Pill */}
-        {shipping && (
-          <div className="pt-1">
-            <span className="inline-block text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-gold border border-gold/30 px-2 py-0.5">
-              Free Shipping
-            </span>
-          </div>
-        )}
       </div>
     </motion.div>
   );

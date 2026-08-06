@@ -1,7 +1,31 @@
 import React, { useMemo } from 'react';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Route, Redirect, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../../stores';
 
+// Privilege required to view each admin path. Anything not listed only needs a
+// logged-in admin. Keeping this as data (rather than a chain of if-statements on
+// `rest.path`) means adding a guarded route is a one-line change.
+const REQUIRED_PRIVILEGE = {
+  '/admin/products': ['super', 'moderate'],
+  '/admin/admins': ['super'],
+};
+
+const Spinner = () => (
+  <div className='min-h-screen bg-champagne flex items-center justify-center font-body text-bronze'>
+    <div className='w-8 h-8 border-2 border-bronze/10 border-t-gold rounded-full animate-spin' />
+  </div>
+);
+
+/**
+ * Guarded admin route.
+ *
+ * This MUST render a real <Route>. It previously returned `children` directly,
+ * which meant no router match context was created — so `useParams()` returned an
+ * empty object and every admin detail page (`/admin/products/:id`,
+ * `/admin/orders/:id`, …) fetched with `id === undefined` and rendered its error
+ * state. <Switch> still matched these elements because it reads the `path` prop
+ * off any child, which is why the list pages worked and only detail pages broke.
+ */
 const AdminPrivateRoute = ({ children, ...rest }) => {
   const { currentAdmin, adminAuthLoading } = useAdminAuthStore();
   const location = useLocation();
@@ -11,44 +35,25 @@ const AdminPrivateRoute = ({ children, ...rest }) => {
     [location.pathname]
   );
 
-  if (adminAuthLoading) {
-    return (
-      <div className='min-h-screen bg-champagne flex items-center justify-center font-body text-bronze'>
-        <div className='w-8 h-8 border-2 border-bronze/10 border-t-gold rounded-full animate-spin' />
-      </div>
-    );
-  }
+  const guarded = () => {
+    if (adminAuthLoading) return <Spinner />;
 
-  // Admin login page - redirect if already logged in
-  if (rest.path === '/admin/login') {
-    return currentAdmin ? (
-      <Redirect to={location.state?.from || '/admin'} />
-    ) : (
-      children
-    );
-  }
+    // The login page itself: bounce away if already signed in.
+    if (rest.path === '/admin/login') {
+      return currentAdmin ? <Redirect to={location.state?.from || '/admin'} /> : children;
+    }
 
-  // Products page - only super and moderate
-  if (rest.path === '/admin/products') {
-    return currentAdmin &&
-      ['super', 'moderate'].includes(currentAdmin.privilege) ? (
-      children
-    ) : (
-      <Redirect to={location.state?.from || '/admin'} />
-    );
-  }
+    if (!currentAdmin) return <Redirect to={loginRedirect} />;
 
-  // Admins page - only super
-  if (rest.path === '/admin/admins') {
-    return currentAdmin && currentAdmin.privilege === 'super' ? (
-      children
-    ) : (
-      <Redirect to={location.state?.from || '/admin'} />
-    );
-  }
+    const required = REQUIRED_PRIVILEGE[rest.path];
+    if (required && !required.includes(currentAdmin.privilege)) {
+      return <Redirect to={location.state?.from || '/admin'} />;
+    }
 
-  // Other admin routes - require any admin
-  return currentAdmin ? children : <Redirect to={loginRedirect} />;
+    return children;
+  };
+
+  return <Route {...rest}>{guarded()}</Route>;
 };
 
 export default AdminPrivateRoute;

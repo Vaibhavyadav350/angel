@@ -8,7 +8,6 @@ import { DEFAULT_PRICING } from '../utils/pricing';
 // Settings page edits it. Falls back to sensible defaults until loaded.
 const defaultSettings = {
   ...DEFAULT_PRICING,
-  announcementText: '',
 };
 
 const SettingsContext = React.createContext();

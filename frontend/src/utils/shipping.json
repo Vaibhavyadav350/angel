@@ -1,0 +1,40 @@
+{
+  "_comment": "Shipping configuration shared by the storefront and the server. The backend requires this file directly, exactly as productModel.js requires taxonomy.json, so there is one source of truth. Prices here are the DEFAULTS — the store owner can override the bands in Admin > Settings without a developer.",
+
+  "defaultWeightGrams": 800,
+
+  "categoryWeights": {
+    "Jewelry": 150,
+    "Kids": 400,
+    "Men.KURTAS": 600,
+    "Women.SALWAR KAMEEZ": 700,
+    "Women.SAREES": 800,
+    "Men.JACKET": 900,
+    "Men.SHERWANIS": 1800,
+    "Women.LEHENGAS": 2000
+  },
+
+  "bands": [
+    { "maxGrams": 500, "standard": 5, "express": 15, "label": "Up to 0.5 kg" },
+    { "maxGrams": 2000, "standard": 8, "express": 18, "label": "Up to 2 kg" },
+    { "maxGrams": 5000, "standard": 14, "express": 28, "label": "Up to 5 kg" },
+    { "maxGrams": 10000, "standard": 22, "express": 40, "label": "Up to 10 kg" },
+    { "maxGrams": 22000, "standard": 35, "express": 60, "label": "Up to 22 kg" }
+  ],
+
+  "quoteAboveGrams": 22000,
+  "maxShippingCharge": 120,
+
+  "zones": {
+    "standard": { "label": "Metro & East Coast", "surcharge": 0 },
+    "remote": { "label": "WA / NT / TAS", "surcharge": 0 }
+  },
+
+  "_zoneNote": "Remote surcharge is 0 until the published policy line '$8 for any size of order anywhere in Australia' is reworded. Set zones.remote.surcharge to enable it.",
+
+  "postcodeRanges": [
+    { "from": 800, "to": 999, "zone": "remote", "state": "NT" },
+    { "from": 6000, "to": 6999, "zone": "remote", "state": "WA" },
+    { "from": 7000, "to": 7999, "zone": "remote", "state": "TAS" }
+  ]
+}

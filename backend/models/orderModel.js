@@ -107,6 +107,15 @@ const orderSchema = mongoose.Schema({
     required: true,
     default: 0,
   },
+  // How the shipping figure was arrived at, so the charge is auditable later.
+  shippingBreakdown: {
+    weightGrams: { type: Number, default: 0 },
+    band: { type: String, default: '' },
+    zone: { type: String, default: '' },
+    baseFee: { type: Number, default: 0 },
+    surcharge: { type: Number, default: 0 },
+    freeCredit: { type: Number, default: 0 },
+  },
   shippingPrice: {
     type: Number,
     required: true,

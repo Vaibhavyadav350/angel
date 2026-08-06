@@ -10,9 +10,6 @@ import NewsletterPage from './NewsletterPage';
 import CouponsPage from './CouponsPage';
 import CustomersPage from './CustomersPage';
 import ReturnsPage from './ReturnsPage';
-import BannersPage from './BannersPage';
-import CollectionsPage from './CollectionsPage';
-import CategoriesPage from './CategoriesPage';
 import InventoryPage from './InventoryPage';
 import SettingsPage from './SettingsPage';
 
@@ -29,9 +26,6 @@ export {
   CouponsPage,
   CustomersPage,
   ReturnsPage,
-  BannersPage,
-  CollectionsPage,
-  CategoriesPage,
   InventoryPage,
   SettingsPage,
 };

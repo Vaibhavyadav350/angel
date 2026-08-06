@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { formatPrice } from '../../utils/helpers';
-import { BiChevronDown } from 'react-icons/bi';
+import React, { useState } from 'react';
+import { formatPrice, truncate } from '../../utils/helpers';
 import { Link } from 'react-router-dom';
+import ActionMenu, { ActionMenuItem, ActionMenuDivider } from './ActionMenu';
 import { useAdminAuthStore, useAdminOrderStore } from '../../stores';
 import { toast } from 'react-toastify';
 
@@ -10,9 +9,6 @@ function OrdersTable({ orders, onRefresh }) {
   const { currentAdmin: currentUser } = useAdminAuthStore();
   const { fetchOrders, deleteOrder, updateOrderStatus, updateReturnStatus } = useAdminOrderStore();
   const [loading, setLoading] = useState(false);
-  const [menuOpenId, setMenuOpenId] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const buttonRefs = useRef({});
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -38,7 +34,6 @@ function OrdersTable({ orders, onRefresh }) {
     } else {
       toast.error(res.message, { position: 'top-center' });
     }
-    setMenuOpenId(null);
   };
 
   const handleReturnAction = async (id, status) => {
@@ -52,27 +47,8 @@ function OrdersTable({ orders, onRefresh }) {
     } else {
       toast.error(res.message, { position: 'top-center' });
     }
-    setMenuOpenId(null);
   };
 
-  const toggleMenu = (id) => {
-    if (menuOpenId === id) {
-      setMenuOpenId(null);
-    } else {
-      const button = buttonRefs.current[id];
-      if (!button) return; // ref not attached yet — avoid throwing and killing the handler
-      const rect = button.getBoundingClientRect();
-      // Menu is position:fixed (viewport-relative), so use rect coords directly.
-      // Adding scrollX/Y here pushed the menu off-screen once the page was scrolled.
-      const MENU_HEIGHT = 260; // approx dropdown height; flip up if it would overflow the viewport
-      const openUp = rect.bottom + MENU_HEIGHT > window.innerHeight;
-      setMenuPosition({
-        top: openUp ? Math.max(8, rect.top - MENU_HEIGHT) : rect.bottom,
-        left: rect.right - 144, // 144 is w-36 (dropdown width)
-      });
-      setMenuOpenId(id);
-    }
-  };
 
   const statusClasses = {
     processing: 'bg-amber-100 text-amber-700',
@@ -128,7 +104,7 @@ function OrdersTable({ orders, onRefresh }) {
                     <td className="px-5 py-4 text-sm font-medium text-bronze">{name}</td>
                     <td className="px-5 py-4">
                       <div className="flex flex-col gap-3">
-                        {orderItems.map((item, idx) => {
+                        {(orderItems || []).map((item, idx) => {
                           const { image, name: itemName, price } = item;
                           return (
                             <div key={idx} className="flex items-center gap-3">
@@ -138,7 +114,7 @@ function OrdersTable({ orders, onRefresh }) {
                                 className="w-10 h-10 object-cover rounded-md shadow-sm"
                               />
                               <div>
-                                <p className="text-[10px] font-black text-bronze uppercase tracking-tight">{itemName.substring(0, 21)}...</p>
+                                <p className="text-[10px] font-black text-bronze uppercase tracking-tight">{truncate(itemName, 21)}</p>
                                 <p className="text-[10px] text-gold font-bold">{formatPrice(price)}</p>
                               </div>
                             </div>
@@ -173,95 +149,69 @@ function OrdersTable({ orders, onRefresh }) {
                       </div>
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <div className="relative inline-block text-left">
-                        <button
-                          ref={(el) => (buttonRefs.current[id] = el)}
-                          onClick={() => toggleMenu(id)}
-                          className="flex items-center gap-1 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-bronze/60 hover:text-bronze hover:bg-bronze/5 rounded transition-colors"
-                        >
-                          Actions <BiChevronDown />
-                        </button>
-                        {menuOpenId === id && createPortal(
+                      <ActionMenu>
+                        {(close) => (
                           <>
-                            <div className="fixed inset-0 z-[60]" onClick={() => setMenuOpenId(null)} />
-                            <div
-                              className="fixed w-44 bg-white border border-bronze/10 rounded-lg shadow-xl z-[70] py-2 pointer-events-auto overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-                              style={{
-                                top: `${menuPosition.top}px`,
-                                left: `${menuPosition.left}px`
-                              }}
-                            >
-                              <Link to={`/admin/orders/${id}`} onClick={() => setMenuOpenId(null)}>
-                                <div className="px-5 py-2.5 text-[11px] font-bold uppercase tracking-widest text-bronze/70 hover:bg-champagne/20 cursor-pointer flex items-center justify-between">
-                                  <span>View Archival Record</span>
-                                  <span className="material-symbols-outlined text-sm">visibility</span>
-                                </div>
-                              </Link>
+                            <Link to={`/admin/orders/${id}`} onClick={close}>
+                              <ActionMenuItem icon="visibility">View Archival Record</ActionMenuItem>
+                            </Link>
 
-                              <div className="h-px bg-bronze/10 my-1"></div>
+                            <ActionMenuDivider />
 
-                              {/* State Machine Status Actions */}
-                              {order.returnStatus !== 'none' ? (
-                                // Return Flow Context Map
-                                <>
-                                  {order.returnStatus === 'requested' && (
-                                    <>
-                                      <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-50 cursor-pointer" onClick={() => handleReturnAction(id, 'approved')}>
-                                        Approve Return
-                                      </div>
-                                      <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:bg-red-50 cursor-pointer" onClick={() => handleReturnAction(id, 'rejected')}>
-                                        Reject Return
-                                      </div>
-                                    </>
-                                  )}
-                                  {order.returnStatus === 'approved' && (
-                                    <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50 cursor-pointer" onClick={() => handleReturnAction(id, 'processing')}>
-                                      Start Processing Return
-                                    </div>
-                                  )}
-                                  {order.returnStatus === 'processing' && (
-                                    <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50 cursor-pointer" onClick={() => handleReturnAction(id, 'completed')}>
-                                      Complete Return & Restock
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                // Order Flow Context Map
-                                <>
-                                  {orderStatus === 'processing' && (
-                                    <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-50 cursor-pointer" onClick={() => handleOrderAction(id, 'confirmed')}>
-                                      Confirm Order
-                                    </div>
-                                  )}
-                                  {orderStatus === 'confirmed' && (
-                                    <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50 cursor-pointer" onClick={() => handleOrderAction(id, 'shipped')}>
-                                      Mark Shipped
-                                    </div>
-                                  )}
-                                  {orderStatus === 'shipped' && (
-                                    <div className="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50 cursor-pointer" onClick={() => handleOrderAction(id, 'delivered')}>
-                                      Mark Delivered
-                                    </div>
-                                  )}
-                                </>
-                              )}
+                            {order.returnStatus !== 'none' ? (
+                              <>
+                                {order.returnStatus === 'requested' && (
+                                  <>
+                                    <ActionMenuItem tone="blue" onClick={() => { handleReturnAction(id, 'approved'); close(); }}>
+                                      Approve Return
+                                    </ActionMenuItem>
+                                    <ActionMenuItem tone="danger" onClick={() => { handleReturnAction(id, 'rejected'); close(); }}>
+                                      Reject Return
+                                    </ActionMenuItem>
+                                  </>
+                                )}
+                                {order.returnStatus === 'approved' && (
+                                  <ActionMenuItem tone="indigo" onClick={() => { handleReturnAction(id, 'processing'); close(); }}>
+                                    Start Processing Return
+                                  </ActionMenuItem>
+                                )}
+                                {order.returnStatus === 'processing' && (
+                                  <ActionMenuItem tone="emerald" onClick={() => { handleReturnAction(id, 'completed'); close(); }}>
+                                    Complete Return &amp; Restock
+                                  </ActionMenuItem>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {orderStatus === 'processing' && (
+                                  <ActionMenuItem tone="blue" onClick={() => { handleOrderAction(id, 'confirmed'); close(); }}>
+                                    Confirm Order
+                                  </ActionMenuItem>
+                                )}
+                                {orderStatus === 'confirmed' && (
+                                  <ActionMenuItem tone="indigo" onClick={() => { handleOrderAction(id, 'shipped'); close(); }}>
+                                    Mark Shipped
+                                  </ActionMenuItem>
+                                )}
+                                {orderStatus === 'shipped' && (
+                                  <ActionMenuItem tone="emerald" onClick={() => { handleOrderAction(id, 'delivered'); close(); }}>
+                                    Mark Delivered
+                                  </ActionMenuItem>
+                                )}
+                              </>
+                            )}
 
-                              <div className="h-px bg-bronze/10 my-1"></div>
-
-                              {currentUser.privilege !== 'low' && (
-                                <div
-                                  className="px-5 py-2.5 text-[11px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 cursor-pointer flex justify-between items-center"
-                                  onClick={() => { handleDelete(id); setMenuOpenId(null); }}
-                                >
+                            {currentUser.privilege !== 'low' && (
+                              <>
+                                <ActionMenuDivider />
+                                <ActionMenuItem tone="danger" icon="delete" onClick={() => { handleDelete(id); close(); }}>
                                   Delete Order
-                                  <span className="material-symbols-outlined text-sm">delete</span>
-                                </div>
-                              )}
-                            </div>
-                          </>,
-                          document.body
+                                </ActionMenuItem>
+                              </>
+                            )}
+                          </>
                         )}
-                      </div>
+                      </ActionMenu>
                     </td>
                   </tr>
                 );

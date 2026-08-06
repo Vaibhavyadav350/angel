@@ -7,7 +7,7 @@ import logo from '../../assets/logo.png';
 const LINKS_BY_PRIVILEGE = {
   super: LinkItems,
   moderate: LinkItems.filter((link) => link.name !== 'Admins' && link.name !== 'Customers'),
-  low: LinkItems.filter((link) => !['Admins', 'Products', 'Newsletter', 'Customers', 'Banners', 'Collections', 'Categories', 'Inventory', 'Settings'].includes(link.name)),
+  low: LinkItems.filter((link) => !['Admins', 'Products', 'Newsletter', 'Customers', 'Inventory', 'Settings'].includes(link.name)),
 };
 
 export default function SidebarContent({ onClose, className = '' }) {

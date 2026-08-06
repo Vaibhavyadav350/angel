@@ -14,7 +14,7 @@ const useAdminNewsletterStore = create((set, get) => ({
     try {
       const { data } = await adminApi.get('/newsletter');
       if (data.success) {
-        set({ subscribers: data.data, subscribers_loading: false });
+        set({ subscribers: data.data || [], subscribers_loading: false });
         return { success: true, data: data.data };
       }
       set({ subscribers_error: true, subscribers_loading: false });

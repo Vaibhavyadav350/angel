@@ -393,3 +393,93 @@ failure/timeout. The `pendingCheckout` model already exists to hang this off.
     first-order-only, category exclusion, FREE_SHIPPING type   (design before first campaign)
 14. Stock reservation during payment                           (matters most for 1-of-1 stock)
 ```
+
+
+---
+
+## Part 8 — Implementation status
+
+Everything below is built, builds clean under `CI=true`, and was tested against the live
+catalogue.
+
+### Shipping and pricing
+
+- `frontend/src/utils/shipping.json` — weights, bands, zones, postcode ranges. Required by the
+  backend directly, the same pattern `productModel.js` uses for `taxonomy.json`.
+- `backend/services/shippingService.js` — `weightOf`, `cartWeight`, `zoneForPostcode`,
+  `calculateShipping`. Authoritative.
+- `pricingService.computeAuthoritativeOrder` now calls it, takes the shipping address, throws a
+  quote-required error over the cutoff, and returns a `shippingBreakdown`.
+- `frontend/src/utils/pricing.js` mirrors the same maths for the cart preview.
+- Cart lines now carry `category`, `subCategory`, `shippingWeightGrams`, `leadTimeDays`.
+- Order documents store the shipping breakdown, so a charge can be explained later.
+- Checkout blocks with a contact message when a cart needs a manual quote.
+- Admin → Settings has an editable band table plus remote surcharge, quote cutoff and the
+  safety cap.
+
+Verified against real products:
+
+```
+1 pair earrings $28                 $5     (was $8)
+10 pairs earrings $50               $8     (per-item pricing would have charged $35)
+1 salwar suit $67                   $8
+1 lehenga $315                      FREE   (over threshold)
+3 salwar suits $202                 $6     ($14 band less the $8 credit)
+10 lehengas $2,600                  $27    (was $8)
+30 lehengas                         quote required
+1 lehenga EXPRESS                   $18
+```
+
+Free shipping credits the **headline standard rate** ($8), not the cheapest band. An ordinary
+order is therefore genuinely free as promised, and her exposure is capped at $8 per order.
+
+### Bugs fixed
+
+- Free-shipping threshold now tested after the coupon (server and client).
+- Stock validated per size/colour variant; resolves leniently for sizeless jewellery.
+- Cancel/return now restores the **variant**, not just the aggregate — restored stock was
+  previously wiped the next time the product was edited.
+- `discountPercent` default 20 → 0.
+- Add-ons removed end to end, including the live Settings document.
+
+### Admin panel
+
+- **`AdminPrivateRoute` never rendered a `<Route>`.** It returned `children` directly, so no
+  router match context existed, `useParams()` returned `{}`, and every admin detail page
+  fetched with `id === undefined`. This was the single cause of both reported errors — the
+  blank "Product ID:" and the order page's "Something went wrong" (`id.slice(-8)` on
+  undefined). Now renders a real `<Route>`, with the privilege rules moved into a lookup table.
+- **`components/admin/ActionMenu.js`** — one reusable, measured dropdown replacing the copy of
+  the positioning logic that each table carried. The old code guessed the menu size
+  (`MENU_HEIGHT = 260`, `left: rect.right - 144`) and the guesses did not match the real menu,
+  which is why it flipped upwards too eagerly and sat away from its row. The menu is now
+  measured after mount, clamped inside the viewport, and closes on scroll, resize and Escape.
+- `truncate()` helper in `utils/helpers.js`; a product or order item with a missing name no
+  longer throws and blanks the table. Also fixes the "…" that used to append to short names.
+- `SingleProductPage` refetches when the id changes (was `[]`, so it showed the previous
+  product).
+- `OrderItemsList` handles an empty item list.
+- Removed the "Free Shipping" product toggle and storefront facet — the flag defaulted true on
+  every product, so the facet never filtered anything and the badge promised something checkout
+  did not honour.
+
+### Customer-facing copy
+
+Announcement bar, trust signals and the home trust bar now all state the same rule as the
+policy and the checkout. The product page no longer quotes rupees, and delivery estimates
+include make time for made-to-order stock.
+
+### Client workbook
+
+`13. Shipping & Pricing` added — plain-language configuration rows (no jargon), showing every
+price, the free-delivery rule, how parcel size is decided, worked examples of what a customer
+actually pays, and where she changes each value. `12. Issues & Actions` updated with everything
+now fixed.
+
+### Not built
+
+Still open from Part 7, none of them blocking: admin-only `costPrice` and margin reporting,
+coupon guard rails (per-customer limit, exclude-markdown, first-order-only, `FREE_SHIPPING`
+type), stock reservation during payment, and the jewellery sizing cleanup (M / Free Size / One
+Size used interchangeably). The remote-zone surcharge is wired but left at $0 until the
+published "$8 anywhere in Australia" line is reworded.

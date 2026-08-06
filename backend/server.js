@@ -24,11 +24,8 @@ const analyticsRouter = require('./routes/analyticsRouter');
 const couponRouter = require('./routes/couponRouter');
 const userRouter = require('./routes/userRouter');
 const restockRouter = require('./routes/restockRouter');
-const bannerRouter = require('./routes/bannerRouter');
-const featuredCollectionRouter = require('./routes/featuredCollectionRouter');
 const testimonialRouter = require('./routes/testimonialRouter');
 const settingsRouter = require('./routes/settingsRouter');
-const categoryRouter = require('./routes/categoryRouter');
 
 // requiring middlewares
 const errorMiddleware = require('./middleware/Error');
@@ -139,6 +136,7 @@ const strictLimiter = rateLimit({
 // eWAY callback routes — registered before app.use(express.json) as these are redirect-based
 const ewayCallbackController = require('./controllers/webhookController');
 const PendingCheckout = require('./models/pendingCheckoutModel');
+const StockReservation = require('./models/stockReservationModel');
 
 app.get('/api/payment/callback', ewayCallbackController);
 
@@ -153,6 +151,8 @@ app.get('/api/payment/cancel', async (req, res) => {
       { accessCode: AccessCode, status: 'pending' },
       { status: 'failed' }
     ).catch(() => {});
+    // Put the held stock straight back rather than waiting for the 15-minute TTL.
+    StockReservation.deleteMany({ accessCode: AccessCode }).catch(() => {});
   }
   return res.redirect(`${FRONTEND_URL}/checkout?canceled=true`);
 });
@@ -189,11 +189,8 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/users', userRouter);
 app.use('/api/restock', restockRouter);
-app.use('/api/banners', bannerRouter);
-app.use('/api/featured-collections', featuredCollectionRouter);
 app.use('/api/testimonials', testimonialRouter);
 app.use('/api/settings', settingsRouter);
-app.use('/api/categories', categoryRouter);
 
 // using other middlewares
 app.use(errorMiddleware);

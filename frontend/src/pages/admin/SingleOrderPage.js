@@ -125,7 +125,7 @@ function SingleOrderPage() {
         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-bronze/40 mb-3">
           <span className="hover:text-gold cursor-pointer transition-colors" onClick={() => window.location.href = '/admin/orders'}>Orders</span>
           <span>/</span>
-          <span className="text-bronze">Archive #{id.slice(-8)}</span>
+          <span className="text-bronze">Archive #{String(id || '').slice(-8)}</span>
         </div>
         <h1 className="text-3xl font-editorial font-black text-bronze uppercase tracking-widest">Order Details</h1>
       </div>

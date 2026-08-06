@@ -11,7 +11,7 @@ const couponSchema = new mongoose.Schema({
     discountType: {
         type: String,
         required: true,
-        enum: ['PERCENTAGE', 'FIXED_AMOUNT'],
+        enum: ['PERCENTAGE', 'FIXED_AMOUNT', 'FREE_SHIPPING'],
         default: 'PERCENTAGE'
     },
     amount: {
@@ -34,6 +34,29 @@ const couponSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    // Guard rails. Without these a code could be stacked on already-discounted
+    // stock, and `usageLimit` alone is a GLOBAL cap — one person could burn all
+    // 100 uses themselves.
+    excludeDiscountedItems: {
+        type: Boolean,
+        default: true, // sale stock is already marked down; don't discount it twice
+    },
+    perCustomerLimit: {
+        type: Number,
+        default: 1, // 0 = unlimited
+    },
+    firstOrderOnly: {
+        type: Boolean,
+        default: false,
+    },
+    // Emails that have already redeemed this code, for the per-customer limit.
+    redeemedBy: [
+        {
+            _id: false,
+            email: { type: String },
+            count: { type: Number, default: 1 },
+        },
+    ],
     active: {
         type: Boolean,
         default: true

@@ -1,4 +1,5 @@
 const PendingCheckout = require('../models/pendingCheckoutModel');
+const StockReservation = require('../models/stockReservationModel');
 const pricingService = require('../services/pricingService');
 const rapid = require('eway-rapid');
 
@@ -37,6 +38,9 @@ const paymentController = async (req, res) => {
     const pricing = await pricingService.computeAuthoritativeOrder(cart, {
       shippingMethod: req.body.shippingMethod,
       couponCode: req.body.couponCode,
+      // Shipping is weight- and postcode-based, so the address is part of pricing.
+      shippingAddress: req.body.shipping?.address || {},
+      customerEmail: email,
     });
 
     if (typeof total_amount === 'number' && Math.abs(total_amount - pricing.sellingTotal) > 0.01) {
@@ -60,6 +64,9 @@ const paymentController = async (req, res) => {
       `coupon=${pricing.couponCode || ''}`,
       `shipFee=${pricing.shipping}`,
       `itemsP=${pricing.sellingTotal}`,
+      `shipG=${pricing.shippingBreakdown?.weightGrams || 0}`,
+      `shipZ=${pricing.shippingBreakdown?.zone || ''}`,
+      `shipC=${pricing.shippingBreakdown?.freeCredit || 0}`,
     ].join('|');
 
     // Split items across multiple Options entries — each ObjectId is 24 chars, entries ~33 chars each
@@ -160,6 +167,22 @@ const paymentController = async (req, res) => {
 
     // Persist AccessCode so the reconciliation job can recover orders
     // if the customer closes the browser before eWAY fires the redirect callback
+    // Hold each size/colour for 15 minutes so a second customer cannot buy the
+    // same piece while this one is on the payment page. The TTL index releases
+    // the hold automatically if they abandon checkout.
+    const RESERVATION_MINUTES = 15;
+    const expiresAt = new Date(Date.now() + RESERVATION_MINUTES * 60 * 1000);
+    await StockReservation.insertMany(
+      pricing.items.map((i) => ({
+        product: i.productId,
+        size: i.size,
+        color: i.color,
+        qty: i.qty,
+        accessCode,
+        expiresAt,
+      }))
+    ).catch((err) => console.warn(`[STOCK RESERVATION] Could not reserve: ${err.message}`));
+
     await PendingCheckout.create({ accessCode }).catch(err =>
       console.warn(`[EWAY RSP] Could not save PendingCheckout: ${err.message}`)
     );

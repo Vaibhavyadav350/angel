@@ -4,10 +4,15 @@
  * End-to-end website mapping: every page, every section, every link, every line of
  * copy, so the client can review and mark up what she wants changed.
  *
- * Run: node generate_client_excel.js
+ * Reads taxonomy.json and shipping.json from the frontend so the workbook can never
+ * drift from what the live site is configured to do.
+ *
+ * Run from anywhere:  node docs/generate_client_excel.js
  */
-const XLSX = require('xlsx');
-const taxonomy = require('./src/utils/taxonomy.json');
+const path = require('path');
+const XLSX = require(path.join(__dirname, '..', 'frontend', 'node_modules', 'xlsx'));
+const taxonomy = require('../frontend/src/utils/taxonomy.json');
+const shippingConfig = require('../frontend/src/utils/shipping.json');
 const wb = XLSX.utils.book_new();
 
 // Helper
@@ -82,8 +87,8 @@ addSheet('1. Home Page', [
   ['Shop by Category 9', 'The Sale', 'Limited Time · Best Value', '/assets/landing/cat-lehenga.jpg', '/products?collection=sale', 'YES — tag driven', ''],
   [],
   // Trust + Newsletter
-  ['Trust Bar', 'Item 1', 'Free Shipping on $150+', '', '', 'CONFLICTS WITH SHIPPING POLICY ($200)', ''],
-  ['', 'Item 2', '30-Day Easy Returns', '', '', 'CONFLICTS WITH RETURN POLICY (48 hours)', ''],
+  ['Trust Bar', 'Item 1', 'Free Regular Post over $200', '', '', '', ''],
+  ['', 'Item 2', '48-Hour Exchange Window', '', '', '', ''],
   ['', 'Item 3', 'Authentic Handcrafted', '', '', '', ''],
   ['', 'Item 4', 'WhatsApp Support', '', '', '', ''],
   ['Newsletter', 'Title', 'STAY CONNECTED', '', 'Collects email addresses', '', ''],
@@ -209,7 +214,6 @@ addSheet('7. Return & Exchange', [
   ['Store Credit', 'In case the customer returns the product and does not want to buy any other product, the refund will be provided in the form of store credit of the same value as the order. The customer can redeem the store credit anytime in the future through our website www.angelfashionstudio.org on the checkout page. Please note, the store credit refund will not include the shipping cost.', ''],
   ['Return & Exchange Shipping Costs', '• In case of a defective product delivered, the shipping cost is to be borne by Angel Fashion Studio for both sending the parcel back to us and the new item to be shipped in exchange.\n• Please contact Angel Fashion Studio to arrange the return. Any unreasonable return shipping cost will not be covered by Angel Fashion Studio.\n• In case of wrong size ordered or change of mind, the shipping cost is to be borne by the customer for both sending the parcel back to us and the new item to be shipped in exchange.\n• If the original order was placed for regular post, the new product will be sent through regular post only.\n• If the original order was placed for express post, the new product will be sent through express post only.\n• Customers can request to upgrade to express post for the exchanged products by paying the additional charges for express.\n• All parcels are required to be sent with tracking post only. Customers are required to share the tracking details with Angel Fashion Studio for the exchanged products.', ''],
   [],
-  ['ISSUE', 'The trust badge shown on EVERY page of the website says "30-Day Easy Returns", which contradicts the 48-hour window above. Client to confirm which is correct.', ''],
   ['ISSUE', 'This policy points customers to www.angelfashionstudio.org — client to confirm the correct domain.', ''],
 ], [30, 120, 30]);
 
@@ -225,10 +229,6 @@ addSheet('8. Shipping Policy', [
   ['Delays', 'Please note, that we use third-party services for shipping your products. All the current delay times from each delivery service provider apply to all the orders. We may provide you the estimated delivery time for your order based on past experience and general guidelines by the delivery service providers, but that should never be taken as the promised date of delivery. If your order does not reach on a specific day (e.g. your special day of the wedding, engagement, etc.), we hold no responsibility for the delay. If you are in urgency, please plan early and choose the express post. Angel Fashion Studio holds no responsibility for the delay of any order beyond the expected time frame but can help the customer to escalate the issue with the delivery services.', ''],
   ['Lost Orders During Shipping', 'In case the order does not reach even after a long wait, customers are suggested to escalate the issue with Angel Fashion Studio through the chat option on the website. We can check the progress on the delivery and in case the order is confirmed as lost during the shipping, orders are by default insured for up to $100. The insured amount will be transferred to the customer after Angel Fashion Studio receives the refund from the delivery service provider.', ''],
   [],
-  ['SYSTEM CHECK', 'Checkout charges $8 standard / $18 express, free standard over $200. This MATCHES the policy above.', ''],
-  ['ISSUE', 'The scrolling bar at the top of every page says "COMPLIMENTARY GLOBAL SHIPPING", the trust badge says "All orders shipped free of charge", and the home page says "Free Shipping on $150+". All three contradict this policy.', ''],
-  ['ISSUE', 'Every product card shows a "FREE SHIPPING" pill, because the Free Shipping switch in the admin product form defaults to ON. Checkout still charges $8.', ''],
-  ['ISSUE', 'Shipping is a flat fee regardless of order size or destination. A 10-item order to WA is charged the same $8 as a single pair of earrings to Melbourne.', ''],
 ], [35, 120, 30]);
 
 
@@ -291,19 +291,18 @@ addSheet('10. Navigation & Footer', [
 // ===================== SHEET 11: GLOBAL TEXT =====================
 addSheet('11. Global Text', [
   ['LOCATION', 'ELEMENT', 'CURRENT TEXT', 'CLIENT NOTES (FILL THIS)'],
-  ['Announcement Bar (top of every page)', 'Scrolling Message', 'COMPLIMENTARY GLOBAL SHIPPING ON HERITAGE ORDERS — EST. 2024 — MELBOURNE — BESPOKE CUSTOM STITCHING AVAILABLE ON ALL GARMENTS', ''],
+  ['Announcement Bar (top of every page)', 'Scrolling Message', 'FREE REGULAR POST AUSTRALIA-WIDE ON ORDERS OVER $200 — EST. 2024 — MELBOURNE — BESPOKE CUSTOM STITCHING AVAILABLE ON ALL GARMENTS', ''],
   [],
-  ['Trust Signals Bar', 'Signal 1', 'Free Shipping — All orders shipped free of charge', ''],
-  ['', 'Signal 2', 'Easy Returns — 30 days free exchange policy', ''],
+  ['Trust Signals Bar', 'Signal 1', 'Australia-Wide Post — Free Regular Post over $200', ''],
+  ['', 'Signal 2', 'Exchanges — Request within 48 hours of delivery', ''],
   ['', 'Signal 3', 'Heritage Craft — Handwoven by artisans since 2024', ''],
   [],
-  ['Trust Bar (Home)', 'Item 1', 'Free Shipping on $150+', ''],
-  ['', 'Item 2', '30-Day Easy Returns', ''],
+  ['Trust Bar (Home)', 'Item 1', 'Free Regular Post over $200', ''],
+  ['', 'Item 2', '48-Hour Exchange Window', ''],
   ['', 'Item 3', 'Authentic Handcrafted', ''],
   ['', 'Item 4', 'WhatsApp Support', ''],
   [],
-  ['Product Detail Page', 'Shipping & Returns tab', 'Complimentary domestic shipping on all orders. International shipping from ₹1,200. Delivery: 5–7 days standard, 1–2 days priority. 30-day free exchanges on unworn items. Custom-stitched orders are non-returnable.', ''],
-  ['', 'ISSUE', 'This text shows a price in INDIAN RUPEES (₹1,200) on an Australian store, promises free domestic shipping, and promises 30-day exchanges. All three are wrong.', ''],
+  ['Product Detail Page', 'Shipping & Returns tab', 'Regular Post $8 and Express Post $18 anywhere in Australia, with free Regular Post on orders over $200. Regular delivery is 3-10 business days depending on your state; Express is next day to two days if ordered before 2pm AEST. We do not accept change-of-mind returns - exchanges or store credit can be requested within 48 hours of delivery. Custom-stitched orders are non-returnable.', ''],
   [],
   ['Footer Brand Tagline', 'Text', 'Exquisite hand-spun garments tailored for the modern spirit.', ''],
   [],
@@ -314,35 +313,108 @@ addSheet('11. Global Text', [
 
 
 // ===================== SHEET 12: ISSUES & ACTION ITEMS =====================
-addSheet('12. Issues & Actions', [
-  ['#', 'ISSUE / OBSERVATION', 'SEVERITY', 'WHERE', 'CURRENT STATE', 'RECOMMENDED ACTION', 'CLIENT DECISION (FILL THIS)'],
-  ['1', 'The website states four different shipping rules: "complimentary global shipping" (top bar), "all orders shipped free of charge" (trust badge), "Free Shipping on $150+" (home page), and $8 / free over $200 (shipping policy + actual checkout).', 'CRITICAL', 'Announcement bar, Trust signals, Home trust bar, Shipping policy', 'Checkout correctly charges $8 / $18, free over $200. Every marketing line disagrees with it.', 'Confirm the single correct rule and we will make every line match the checkout.', ''],
-  ['2', 'Every product card displays a "FREE SHIPPING" pill because the Free Shipping switch in the admin product form defaults to ON, but checkout charges $8.', 'CRITICAL', 'All product cards + product listing filter', 'Misleading on every product', 'Remove the pill, or make it appear only when the order actually qualifies.', ''],
-  ['3', 'Return window contradiction: the badge on every page says "30-Day Easy Returns" but the return policy allows 48 hours.', 'HIGH', 'Trust signals vs Refund policy', 'Two different promises', 'Confirm the correct window; we will correct the badge.', ''],
-  ['4', 'Product detail page "Shipping & Returns" tab quotes international shipping "from ₹1,200" (Indian Rupees) and promises 30-day exchanges.', 'HIGH', 'Every product page', 'Wrong currency and wrong policy', 'Replace with the real Australian shipping and returns text.', ''],
-  ['5', 'Shipping is flat regardless of order size or destination. A 10-item bulk order to WA costs the same $8 as one pair of earrings to Melbourne.', 'HIGH', 'Checkout', 'Flat $8 / $18', 'Adopt a per-item shipping increment with a cap, plus a bulk-order quote gate. See the shipping proposal document.', ''],
-  ['6', 'Free shipping is calculated BEFORE the coupon is applied, so a $210 order with a $50 coupon pays $160 and still ships free.', 'HIGH', 'Checkout pricing', 'Threshold uses the pre-coupon subtotal', 'Apply the $200 test to the amount actually paid.', ''],
-  ['7', 'Stock is checked against the product total, not the specific size and colour ordered. A customer can order a size that has no stock.', 'HIGH', 'Checkout', 'Can oversell a size', 'Validate the exact size/colour variant before taking payment.', ''],
-  ['8', '25 of 58 products have no stock entered against any size or colour, so they display as sold out.', 'HIGH', 'Admin → Products', 'Cannot be purchased', 'Enter stock quantities per size/colour in the admin panel.', ''],
-  ['9', 'Almost every product is tagged into every collection (43 "new arrivals", 52 "best sellers", 55 "ready to ship" out of 58).', 'MEDIUM', 'Admin → Products → Collections', 'All sections show nearly the same products', 'Tag roughly 8-12 products per collection.', ''],
-  ['10', 'The four "Customer Diaries" reviews on the home page are invented names, quotes and stock photos.', 'MEDIUM', 'Home Page → Customer Diaries', 'Placeholder content presented as real reviews', 'Replace with genuine reviews, or hide the section until real ones exist.', ''],
-  ['11', 'Kids has no products, and Jewelry sub-categories Necklaces, Bracelets and Rings are empty, but all appear in the menu.', 'MEDIUM', 'Navbar, Footer, Home showcase', 'Now shows "New pieces arriving soon" instead of a blank page', 'Upload products, or tell us to remove the menu entries.', ''],
-  ['12', 'The About page describes an India-based business, but the store is in Truganina, Victoria.', 'MEDIUM', 'About Page → Our Story', 'Reads as a non-Australian business', 'Confirm how the story should be told.', ''],
-  ['13', 'The About page "Shop the Look" shows fixed prices ($1,280 and $645) not linked to any real product.', 'MEDIUM', 'About Page → Shop the Look', 'Decorative only', 'Link to real products or remove the prices.', ''],
-  ['14', 'The refund policy points customers to www.angelfashionstudio.org and the footer copyright says 2025.', 'LOW', 'Refund policy, Footer', 'Possibly wrong domain and year', 'Confirm the correct domain and year.', ''],
-  ['15', 'The circular icons on the home page are labelled by fabric (SILK, VELVET, NET...), but products are not classified by fabric.', 'LOW', 'Home Page → Circular Icons', 'Each now points at a real clothing type that has products', 'Confirm whether to rename the labels to match the catalogue.', ''],
+addSheet('12. Needs Your Decision', [
+  ['#', 'WHAT WE NEED FROM YOU', 'WHERE', 'WHY IT MATTERS', 'WHAT WE SUGGEST', 'YOUR DECISION (FILL THIS)'],
+
+  ['1', 'Enter stock quantities for the products that show as sold out.', 'Admin Panel > Products', '25 of your 58 products have no quantity entered against any size or colour, so customers can see them but cannot buy them.', 'Open each product and type the quantity for each size and colour.', ''],
+
+  ['2', 'Enter your cost price for each product.', 'Admin Panel > Products > Cost Price', 'There is now a private Cost Price box on every product. Once filled in, each product shows your profit and profit percentage, and warns you if a discount would sell below cost. Customers never see it.', 'Fill it in as you go, starting with your best sellers.', ''],
+
+  ['3', 'Reduce how many products are tagged into each section.', 'Admin Panel > Products > Collections', 'You have 43 products tagged New Arrivals, 52 as Best Sellers and 55 as Ready To Ship, out of 58. Every section shows almost the same products, so none of them feels special.', 'Pick roughly 8-12 products per section and untick the rest.', ''],
+
+  ['4', 'Replace or remove the four customer reviews on the home page.', 'Home Page > Customer Diaries', 'The names, quotes and photos are invented. Showing made-up reviews as real customers can breach Australian consumer law.', 'Send us real reviews and photos. Until then we recommend hiding the section.', ''],
+
+  ['5', 'Decide what happens to the empty parts of your menu.', 'Kids, and Jewellery > Necklaces, Bracelets, Rings', 'These have no products, so a shopper clicking them sees "New pieces arriving soon".', 'Either upload products there, or tell us to remove those menu entries.', ''],
+
+  ['6', 'Confirm how your story should read.', 'About Page > Our Story', 'It currently says the business was born in the heart of India and is a premier India-based archive, but your shop is in Truganina, Victoria.', 'Tell us how you would like it written and we will rewrite it.', ''],
+
+  ['7', 'Confirm the two prices in Shop the Look.', 'About Page > Shop the Look', 'It shows $1,280 and $645, which are not linked to any real product. A customer may expect to buy at those prices.', 'Either point them at real products or remove the prices.', ''],
+
+  ['8', 'Confirm your website address and the copyright year.', 'Refund Policy, Footer', 'The refund policy sends customers to www.angelfashionstudio.org and the footer says 2025.', 'Tell us the correct address and year.', ''],
+
+  ['9', 'Decide whether to rename the eight round photos on the home page.', 'Home Page > Round Photos', 'They are labelled by fabric (Silk, Velvet, Net, Organza), but your products are not sorted by fabric. Each one now points at a real clothing type that has products in it.', 'Either keep them, or let us rename them to match your categories (Anarkali, Sarees, Sherwani and so on).', ''],
+
+  ['10', 'Decide whether to charge extra for WA, NT and TAS.', 'Delivery settings', 'Posting to those states costs you more and takes 8-10 days. The setting is built and switched off. Turning it on would contradict your published line "$8 for any size of order anywhere in Australia".', 'If you want it on, we will reword the shipping policy to match.', ''],
+
+  ['11', 'Send us the content you want for the home page banners and category tiles.', 'Home Page', 'The three large banners and the category tiles are fixed images and wording chosen by us. The admin screens that appeared to control them have been removed, because nothing entered there ever reached the website.', 'Send the images and wording you want and we will put them live. If you would like to manage them yourself in future, we can build that properly.', ''],
+], [4, 78, 44, 100, 82, 32]);
+
+
+// ===================== SHEET 13: SHIPPING & PRICING SETTINGS =====================
+const kg = (g) => `${(g / 1000).toFixed(1).replace('.0', '')} kg`;
+
+const shippingRows = [
+  ['SETTING', 'CURRENT VALUE', 'WHAT IT MEANS', 'WHERE YOU CHANGE IT', 'YOUR NOTES (FILL THIS)'],
+
+  ['— DELIVERY PRICE BY PARCEL SIZE —', '', '', '', ''],
+];
+
+shippingConfig.bands.forEach((b) => {
+  shippingRows.push([
+    b.label,
+    `Regular $${b.standard}  ·  Express $${b.express}`,
+    `What a customer pays when everything they ordered fits within ${kg(b.maxGrams)}.`,
+    'Admin Panel → Settings → Delivery Price by Parcel Weight',
+    '',
+  ]);
+});
+
+shippingRows.push(
+  ['Orders bigger than ' + kg(shippingConfig.quoteAboveGrams), 'We quote by hand', 'The customer cannot check out. They are shown your email and phone number and asked for a delivery quote, so a wholesale-size order is never posted for a normal delivery fee.', 'Admin Panel → Settings', ''],
   [],
-  ['— ALREADY FIXED —', '', '', '', '', '', ''],
-  ['', 'Store address, phone and email updated across the whole site', '', '', '', '', ''],
-  ['', 'Indo Western moved under Lehengas and wired into the menu, footer, home page and filters', '', '', '', '', ''],
-  ['', 'One product saved with an outdated spelling was invisible on the site and un-editable in the admin panel — corrected in the database', '', '', '', '', ''],
-  ['', 'Circular home page icons no longer all point to the same unfiltered page', '', '', '', '', ''],
-  ['', 'Instagram and Facebook footer buttons now open the real pages', '', '', '', '', ''],
-  ['', 'Privacy policy email corrected, and legal jurisdiction set to Victoria', '', '', '', '', ''],
-  ['', 'All year references across the site set to 2024', '', '', '', '', ''],
-  ['', 'Empty sections now show "New pieces arriving soon" instead of a blank page', '', '', '', '', ''],
-], [4, 95, 10, 38, 50, 65, 30]);
+
+  ['— FREE DELIVERY —', '', '', '', ''],
+  ['Order value for free delivery', '$200', 'Once the customer is paying $200 or more (after any discount or coupon), you cover the standard $8 delivery. Ordinary orders become completely free. On a very large parcel you still cover $8 and the customer pays the rest, so free delivery can never cost you more than $8.', 'Admin Panel → Settings → Free Standard Over', ''],
+  ['Free delivery on Express', 'No', 'Express Post is never free. Customers who want it next day pay for it.', 'Admin Panel → Settings', ''],
+  [],
+
+  ['— HOW PARCEL SIZE IS DECIDED —', '', '', '', ''],
+  ['', '', 'You never type in a weight. The website works out the parcel size from what was ordered, using the typical weight of each kind of item below. If you ever need to correct one product, there is an optional weight box on the product itself.', '', ''],
+);
+
+Object.entries(shippingConfig.categoryWeights).forEach(([key, grams]) => {
+  shippingRows.push([
+    key.replace('.', ' → '),
+    `${grams} g each`,
+    `A ${key.split('.').pop()} item counts as ${grams} grams when working out the parcel size.`,
+    'Ask us to change this',
+    '',
+  ]);
+});
+
+shippingRows.push(
+  ['Anything else', `${shippingConfig.defaultWeightGrams} g each`, 'Used if an item does not match any of the above.', 'Ask us to change this', ''],
+  [],
+
+  ['— EXTRA CHARGES —', '', '', '', ''],
+  ['WA / NT / TAS surcharge', 'Off ($0)', 'Post to Western Australia, the Northern Territory and Tasmania costs you more and takes 8-10 days. You can add a small surcharge for those states. It is switched OFF right now, because your published policy promises "$8 for any size of order anywhere in Australia" — that line would need rewording first.', 'Admin Panel → Settings → WA / NT / TAS Surcharge', ''],
+  ['Maximum delivery charge', `$${shippingConfig.maxShippingCharge}`, 'A safety limit. No customer can ever be charged more than this for delivery, even if something goes wrong.', 'Admin Panel → Settings → Maximum Delivery Charge', ''],
+  [],
+
+  ['— PRICES AND TAX —', '', '', '', ''],
+  ['Currency', 'Australian Dollars', 'All prices on the website are in AUD.', 'Fixed', ''],
+  ['GST', '10%, already included', 'The price a customer sees is the price they pay. GST is inside that price, never added at the end.', 'Admin Panel → Settings → GST Rate', ''],
+  ['Product discount', 'Set per product', 'You can mark down any single product by a percentage. New products now start at 0% — previously they were being marked down 20% automatically unless you changed it.', 'Admin Panel → Products → edit a product', ''],
+  ['Coupon codes', 'None created yet', 'Coupons come off the order before delivery is worked out, so a coupon that takes an order below $200 also removes the free delivery.', 'Admin Panel → Promotions', ''],
+  [],
+
+  ['— WHAT A CUSTOMER WILL ACTUALLY PAY —', '', '', '', ''],
+  ['One pair of earrings ($28)', '$5 delivery', 'Small, light order.', '', ''],
+  ['Ten pairs of earrings ($50)', '$8 delivery', 'Still light enough to go in one satchel.', '', ''],
+  ['One suit ($67)', '$8 delivery', 'Standard single-garment order.', '', ''],
+  ['One lehenga ($260)', 'FREE delivery', 'Over $200, so you cover it.', '', ''],
+  ['Three suits ($202)', '$6 delivery', 'Over $200, so $8 comes off the $14 parcel price.', '', ''],
+  ['Ten lehengas ($2,600)', '$27 delivery', 'A 20 kg parcel. You still cover $8 of it.', '', ''],
+  ['Thirty lehengas', 'Quote by hand', 'Too big to post automatically — the customer contacts you.', '', ''],
+  [],
+
+  ['— DELIVERY TIME SHOWN TO CUSTOMERS —', '', '', '', ''],
+  ['Made-to-order items', 'Shown before delivery time', 'Almost all of your products are made to order. The checkout now says "Made in X days, then 3-10 business days" instead of promising next-day delivery on something that has not been sewn yet.', 'Admin Panel → Products → Lead Time', ''],
+);
+
+addSheet('13. Shipping & Pricing', shippingRows, [42, 30, 105, 48, 30]);
 
 
-XLSX.writeFile(wb, 'Angel_Fashion_Studio_Client_Review.xlsx');
-console.log('Written: Angel_Fashion_Studio_Client_Review.xlsx (12 sheets)');
+const outFile = path.join(__dirname, 'Angel_Fashion_Studio_Client_Review.xlsx');
+XLSX.writeFile(wb, outFile);
+console.log(`Written: ${outFile} (13 sheets)`);

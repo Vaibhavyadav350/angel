@@ -16,7 +16,7 @@ const useAdminCouponStore = create((set, get) => ({
     set({ coupons_loading: true });
     try {
       const { data } = await adminApi.get('/coupon');
-      set({ coupons: data.data, coupons_loading: false });
+      set({ coupons: data.data || [], coupons_loading: false });
       return { success: true, data: data.data };
     } catch (error) {
       set({ coupons_loading: false });

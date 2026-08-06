@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
 import { useSettingsContext } from '../../context/settings_context';
 import { toast } from 'react-toastify';
+import shippingConfig from '../../utils/shipping.json';
 
 const SettingsPage = () => {
   const { settings, loading, updateSettings } = useSettingsContext();
@@ -15,15 +16,51 @@ const SettingsPage = () => {
 
   const setField = (name, value) => setForm((f) => ({ ...f, [name]: value }));
 
+  // Weight bands. Falls back to the shipped defaults until she saves her own.
+  const bands =
+    Array.isArray(form.shippingBands) && form.shippingBands.length > 0
+      ? form.shippingBands
+      : shippingConfig.bands;
+
+  const setBand = (index, key, value) =>
+    setForm((f) => {
+      const current =
+        Array.isArray(f.shippingBands) && f.shippingBands.length > 0
+          ? f.shippingBands
+          : shippingConfig.bands;
+      const next = current.map((b, i) => (i === index ? { ...b, [key]: value } : b));
+      return { ...f, shippingBands: next };
+    });
+
+  // `|| 0` is wrong for any setting where 0 is a meaningful (and dangerous) value.
+  // quoteAboveGrams = 0 means "every order is too heavy to ship", which would have
+  // blocked the whole checkout the first time this page was saved.
+  const num = (value, fallback) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const res = await updateSettings({
-      standardShippingPrice: Number(form.standardShippingPrice) || 0,
-      expressShippingPrice: Number(form.expressShippingPrice) || 0,
+      standardShippingPrice: num(form.standardShippingPrice, 8),
+      expressShippingPrice: num(form.expressShippingPrice, 18),
       expressEnabled: !!form.expressEnabled,
-      freeShippingThreshold: Number(form.freeShippingThreshold) || 0,
-      gstRate: Number(form.gstRate) || 0,
-      announcementText: form.announcementText || '',
+      // 0 is legitimate here — it switches free shipping off.
+      freeShippingThreshold: Math.max(0, Number(form.freeShippingThreshold) || 0),
+      shippingBands: bands
+        .map((b) => ({
+          maxGrams: num(b.maxGrams, 0),
+          standard: Math.max(0, Number(b.standard) || 0),
+          express: Math.max(0, Number(b.express) || 0),
+          label: b.label || '',
+        }))
+        .filter((b) => b.maxGrams > 0),
+      // 0 is legitimate — it switches the surcharge off.
+      remoteSurcharge: Math.max(0, Number(form.remoteSurcharge) || 0),
+      quoteAboveGrams: num(form.quoteAboveGrams, shippingConfig.quoteAboveGrams),
+      maxShippingCharge: num(form.maxShippingCharge, shippingConfig.maxShippingCharge),
+      gstRate: num(form.gstRate, 10),
     });
     setSaving(false);
     if (res.success) toast.success('Store settings saved', { position: 'top-center' });
@@ -94,16 +131,69 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          {/* Announcement */}
+          {/* Delivery pricing by parcel weight */}
           <div className={card}>
-            <h4 className={heading}>Announcement Bar</h4>
-            <textarea
-              className={`${inputClass} min-h-[90px] resize-y`}
-              value={form.announcementText ?? ''}
-              onChange={(e) => setField('announcementText', e.target.value)}
-              placeholder="e.g. Complimentary shipping on all domestic orders."
-            />
+            <h4 className={heading}>Delivery Price by Parcel Weight (AUD · incl. GST)</h4>
+            <p className="text-[10px] text-bronze/50 mb-4 leading-relaxed">
+              The weight of each order is worked out automatically from what the customer bought,
+              so you never enter a weight yourself. A single garment or a handful of jewellery
+              pieces falls into the smallest bands. Only genuinely bulky orders move up.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-[9px] font-black uppercase tracking-widest text-bronze/50">
+                    <th className="pb-2">Parcel Size</th>
+                    <th className="pb-2">Regular Post</th>
+                    <th className="pb-2">Express Post</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bands.map((b, i) => (
+                    <tr key={i} className="border-t border-bronze/5">
+                      <td className="py-2 pr-4 text-bronze/70 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                        {b.label || `Up to ${(Number(b.maxGrams) / 1000).toFixed(1)} kg`}
+                      </td>
+                      <td className="py-2 pr-3">
+                        <div className="relative w-28">
+                          <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
+                          <input className={`${inputClass} pl-8`} type="number" min="0"
+                            value={b.standard ?? ''} onChange={(e) => setBand(i, 'standard', e.target.value)} />
+                        </div>
+                      </td>
+                      <td className="py-2">
+                        <div className="relative w-28">
+                          <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
+                          <input className={`${inputClass} pl-8`} type="number" min="0"
+                            value={b.express ?? ''} onChange={(e) => setBand(i, 'express', e.target.value)} />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-6 pt-5 border-t border-bronze/10">
+              {moneyField('remoteSurcharge', 'WA / NT / TAS Surcharge', 'Added to Regular Post for those states. 0 = off.')}
+              {moneyField('maxShippingCharge', 'Maximum Delivery Charge', 'Safety cap — no order can ever be charged more than this.')}
+              <div>
+                <label className={labelClass}>Ask For A Quote Above</label>
+                <div className="relative">
+                  <input
+                    className={inputClass}
+                    type="number"
+                    min="1"
+                    step="0.5"
+                    value={(Number(form.quoteAboveGrams ?? shippingConfig.quoteAboveGrams) / 1000) || ''}
+                    onChange={(e) => setField('quoteAboveGrams', Math.round(Number(e.target.value) * 1000))}
+                  />
+                  <span className="absolute right-3 top-2.5 text-bronze/40 text-sm">kg</span>
+                </div>
+                <p className="text-[9px] text-bronze/40 mt-1">Orders heavier than this cannot check out — the customer is asked to contact you for a delivery quote.</p>
+              </div>
+            </div>
           </div>
+
         </div>
       )}
     </SidebarWithHeader>

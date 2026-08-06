@@ -57,6 +57,12 @@ const cart_reducer = (state, action) => {
         shipping: product.shipping || false,
         expressDelivery: expressDelivery || false,
         max: maxStock,
+        // Kept so the cart/checkout can preview weight-banded shipping. The server
+        // recomputes it from the product documents regardless — this is display only.
+        category: product.category || '',
+        subCategory: product.subCategory || '',
+        shippingWeightGrams: product.shippingWeightGrams || 0,
+        leadTimeDays: product.leadTimeDays || 0,
       };
       return { ...state, cart: [...state.cart, newItem] };
     }

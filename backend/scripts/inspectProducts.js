@@ -5,15 +5,12 @@ const connectToDb = require('../config/db');
 
 const Product = require('../models/productModel');
 const Order = require('../models/orderModel');
-const Category = require('../models/categoryModel');
 const UserProfile = require('../models/userProfileModel');
 const Newsletter = require('../models/newsletterModel');
 const Testimonial = require('../models/testimonialModel');
 const Restock = require('../models/restockModel');
 const PendingCheckout = require('../models/pendingCheckoutModel');
 const Coupon = require('../models/couponModel');
-const Banner = require('../models/bannerModel');
-const FeaturedCollection = require('../models/featuredCollectionModel');
 const Settings = require('../models/settingsModel');
 
 const taxonomy = require('../../frontend/src/utils/taxonomy.json');
@@ -42,15 +39,12 @@ async function main() {
   const counts = {
     products: await Product.countDocuments(),
     orders: await Order.countDocuments(),
-    categories: await Category.countDocuments(),
     userProfiles: await UserProfile.countDocuments(),
     newsletters: await Newsletter.countDocuments(),
     testimonials: await Testimonial.countDocuments(),
     restocks: await Restock.countDocuments(),
     pendingCheckouts: await PendingCheckout.countDocuments(),
     coupons: await Coupon.countDocuments(),
-    banners: await Banner.countDocuments(),
-    featuredCollections: await FeaturedCollection.countDocuments(),
     settings: await Settings.countDocuments(),
   };
   console.table(counts);

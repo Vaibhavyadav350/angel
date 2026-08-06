@@ -21,7 +21,7 @@ const useAdminUserStore = create((set, get) => ({
     set({ adminsLoading: true, adminsError: false });
     try {
       const { data } = await adminApi.get('/admin/users/');
-      set({ admins: data.data, adminsLoading: false });
+      set({ admins: data.data || [], adminsLoading: false });
       return { success: true, data: data.data };
     } catch (error) {
       set({ adminsError: true, adminsLoading: false });

@@ -1,6 +1,8 @@
 const Product = require('../models/productModel');
 const Settings = require('../models/settingsModel');
 const Coupon = require('../models/couponModel');
+const shippingService = require('./shippingService');
+const StockReservation = require('../models/stockReservationModel');
 
 const round2 = (n) => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 
@@ -22,19 +24,18 @@ const httpError = (message, statusCode) => {
  * Settings, and the coupon is re-validated against the DB. This is what we charge.
  *
  * @param {Array} cart  client cart entries: { productId|id, amount|quantity, color, size }
- * @param {{ shippingMethod?: string, couponCode?: string }} opts
+ * @param {{ shippingMethod?: string, couponCode?: string, shippingAddress?: object }} opts
  */
-exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standard', couponCode = '' } = {}) => {
+exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standard', couponCode = '', shippingAddress = {}, customerEmail = '' } = {}) => {
   const settings = (await Settings.findOne()) || {};
-  const standardFee = Number(settings.standardShippingPrice ?? 8);
-  const expressFee = Number(settings.expressShippingPrice ?? 18);
   const expressEnabled = settings.expressEnabled ?? true;
-  const freeThreshold = Number(settings.freeShippingThreshold ?? 200);
   const gstRate = Number(settings.gstRate ?? 10);
 
   // Authoritative line items + subtotal from product documents.
   const items = [];
+  const lines = []; // product documents, for the weight-based shipping calculation
   let sellingTotal = 0;
+  let fullPriceTotal = 0; // subtotal excluding products already marked down
   for (const entry of cart) {
     const productId = entry.productId || entry.id;
     if (!productId) continue;
@@ -68,9 +69,19 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
           400
         );
       }
-      if (Number(variant.stock || 0) < qty) {
+      // Anything another customer is currently paying for is not available.
+      const heldDocs = await StockReservation.find({
+        product: product._id,
+        size: variant.size,
+        color: variant.color,
+        expiresAt: { $gt: new Date() },
+      });
+      const held = heldDocs.reduce((sum, r) => sum + Number(r.qty || 0), 0);
+      const available = Math.max(0, Number(variant.stock || 0) - held);
+
+      if (available < qty) {
         throw httpError(
-          `Stock Error: Only ${Number(variant.stock || 0)} left for ${product.name} in ${variant.size} / ${variant.color}.`,
+          `Stock Error: Only ${available} left for ${product.name} in ${variant.size} / ${variant.color}.`,
           400
         );
       }
@@ -85,6 +96,8 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
 
     const selling = sellingPriceOf(product);
     sellingTotal += selling * qty;
+    // Coupons that exclude sale stock apply only to this portion.
+    if (!(Number(product.discountPercent) > 0)) fullPriceTotal += selling * qty;
     items.push({
       productId: String(productId),
       qty,
@@ -94,23 +107,44 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
       color,
       size,
     });
+    lines.push({ product, qty });
   }
   sellingTotal = round2(sellingTotal);
+  fullPriceTotal = round2(fullPriceTotal);
 
   // Coupon re-validated server-side (same rules as the public validate endpoint).
   let couponDiscount = 0;
   let validCouponCode = '';
+  let couponFreeShipping = false;
   if (couponCode) {
     const coupon = await Coupon.findOne({ code: String(couponCode).toUpperCase(), active: true });
+
+    // `usageLimit` is a global cap; on its own one person could burn every use.
+    const email = String(customerEmail || '').trim().toLowerCase();
+    const priorUses = email
+      ? (coupon?.redeemedBy || []).find((r) => String(r.email).toLowerCase() === email)?.count || 0
+      : 0;
+    const perCustomerLimit = Number(coupon?.perCustomerLimit ?? 0);
+
     const valid =
       coupon &&
       new Date() <= coupon.expiryDate &&
       coupon.usedCount < coupon.usageLimit &&
-      sellingTotal >= coupon.minPurchase;
+      sellingTotal >= coupon.minPurchase &&
+      (perCustomerLimit <= 0 || priorUses < perCustomerLimit);
+
     if (valid) {
-      const raw = coupon.discountType === 'PERCENTAGE' ? (sellingTotal * coupon.amount) / 100 : coupon.amount;
-      couponDiscount = round2(Math.min(Math.max(raw, 0), sellingTotal));
-      validCouponCode = coupon.code;
+      // Sale stock is already marked down — don't discount it a second time
+      // unless this coupon is explicitly allowed to.
+      const base = coupon.excludeDiscountedItems ? fullPriceTotal : sellingTotal;
+      if (coupon.discountType === 'FREE_SHIPPING') {
+        couponFreeShipping = true;
+        validCouponCode = coupon.code;
+      } else if (base > 0) {
+        const raw = coupon.discountType === 'PERCENTAGE' ? (base * coupon.amount) / 100 : coupon.amount;
+        couponDiscount = round2(Math.min(Math.max(raw, 0), base));
+        validCouponCode = coupon.code;
+      }
     }
   }
 
@@ -119,14 +153,45 @@ exports.computeAuthoritativeOrder = async (cart = [], { shippingMethod = 'standa
   // subtotal — otherwise a $210 cart with a $50 coupon paid $160 and still shipped free.
   const goodsPayable = round2(Math.max(0, sellingTotal - couponDiscount));
 
-  // Shipping from settings (Express only if enabled; free standard over threshold).
+  // Shipping is weight-banded and computed from the product documents, never from
+  // anything the browser sent. Express is only offered when enabled in Settings.
   const method = shippingMethod === 'express' && expressEnabled ? 'express' : 'standard';
-  let shipping = method === 'express' ? expressFee : standardFee;
-  if (method === 'standard' && freeThreshold > 0 && goodsPayable >= freeThreshold) shipping = 0;
-  if (items.length === 0) shipping = 0;
+  const delivery = shippingService.calculateShipping(lines, shippingAddress, settings, {
+    method,
+    goodsPayable,
+  });
 
+  if (delivery.requiresQuote) {
+    throw httpError(
+      'This order is too large to ship automatically. Please contact us for a shipping quote.',
+      400
+    );
+  }
+
+  // A FREE_SHIPPING coupon waives the standard fee entirely.
+  const shipping = couponFreeShipping && delivery.method === 'standard' ? 0 : delivery.fee;
   const total = round2(goodsPayable + shipping);
   const gstAmount = round2(total - total / (1 + gstRate / 100));
 
-  return { items, sellingTotal, goodsPayable, shipping, method, couponDiscount, couponCode: validCouponCode, total, gstAmount, gstRate };
+  return {
+    items,
+    sellingTotal,
+    goodsPayable,
+    shipping,
+    method: delivery.method,
+    // Stored on the order so the owner can answer "why was I charged this?".
+    shippingBreakdown: {
+      weightGrams: delivery.weightGrams,
+      band: delivery.band,
+      zone: delivery.zone,
+      baseFee: delivery.baseFee,
+      surcharge: delivery.surcharge,
+      freeCredit: delivery.freeCredit,
+    },
+    couponDiscount,
+    couponCode: validCouponCode,
+    total,
+    gstAmount,
+    gstRate,
+  };
 };

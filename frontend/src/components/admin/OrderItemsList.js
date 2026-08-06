@@ -2,9 +2,19 @@ import React from 'react';
 import { formatPrice } from '../../utils/helpers';
 
 function OrderItemsList({ orderItems }) {
+  const items = Array.isArray(orderItems) ? orderItems : [];
+
+  if (items.length === 0) {
+    return (
+      <p className="text-[11px] font-bold uppercase tracking-widest text-bronze/40 py-6">
+        No items recorded on this order
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {orderItems.map((item, index) => {
+      {items.map((item, index) => {
         const { name, price, quantity, image, color, size } = item;
         return (
           <div key={index} className="flex gap-6 group">

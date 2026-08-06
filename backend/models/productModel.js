@@ -28,6 +28,13 @@ const productSchema = mongoose.Schema({
     required: [true, 'Please enter product price'],
     max: [99999999, 'Price cannot exceed 99,999,999'],
   },
+  // What the piece cost to buy/make, GST-inclusive. ADMIN ONLY — never sent to the
+  // storefront. Without it there is no way to tell whether a markdown plus free
+  // delivery still makes money on an order.
+  costPrice: {
+    type: Number,
+    default: 0,
+  },
   discountPercent: {
     type: Number,
     // Must default to 0. A non-zero default silently marks down every product added
@@ -151,6 +158,12 @@ const productSchema = mongoose.Schema({
   badgeText: {
     type: String,
     default: '',
+  },
+  // Optional per-product shipped weight. Blank/0 means "use the category default"
+  // from shipping.json, which is the normal case — the owner enters nothing.
+  shippingWeightGrams: {
+    type: Number,
+    default: 0,
   },
   leadTimeDays: {
     type: Number,

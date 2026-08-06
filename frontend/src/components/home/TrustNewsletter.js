@@ -2,8 +2,8 @@ import React from 'react';
 import { FiTruck, FiRotateCcw, FiShield, FiPhoneCall } from 'react-icons/fi';
 
 const trustItems = [
-  { icon: <FiTruck size={24} />, text: "Free Shipping on $150+" },
-  { icon: <FiRotateCcw size={24} />, text: "30-Day Easy Returns" },
+  { icon: <FiTruck size={24} />, text: "Free Regular Post over $200" },
+  { icon: <FiRotateCcw size={24} />, text: "48-Hour Exchange Window" },
   { icon: <FiShield size={24} />, text: "Authentic Handcrafted" },
   { icon: <FiPhoneCall size={24} />, text: "WhatsApp Support" }
 ];

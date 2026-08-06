@@ -5,6 +5,14 @@ export const collections = taxonomy.collections;
 export const colorOptions = taxonomy.colors || [];
 export const sizeOptions = taxonomy.sizes || [];
 
+// Categories where a size makes no sense (jewellery). These were stored as
+// "M" / "Free Size" / "One Size" interchangeably because the product form
+// demanded a size for everything; they are now a single "One Size".
+export const SIZELESS_CATEGORIES = taxonomy.sizeless_categories || [];
+export const SIZELESS_VALUE = 'One Size';
+export const isSizelessCategory = (category) =>
+  SIZELESS_CATEGORIES.some((c) => String(c).toLowerCase() === String(category || '').toLowerCase());
+
 const allSubCategories = Object.values(taxonomy.categories).flatMap((subCats) =>
   Object.keys(subCats)
 );

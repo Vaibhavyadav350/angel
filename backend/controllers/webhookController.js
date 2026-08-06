@@ -1,6 +1,7 @@
 const rapid = require('eway-rapid');
 const { createOrderFromTransaction } = require('../services/orderService');
 const PendingCheckout = require('../models/pendingCheckoutModel');
+const StockReservation = require('../models/stockReservationModel');
 
 const client = rapid.createClient(
   process.env.EWAY_API_KEY,
@@ -52,6 +53,9 @@ const ewayCallbackController = async (req, res) => {
         setTimeout(() => processingCallbacks.delete(transactionId), 10 * 60 * 1000);
 
         await createOrderFromTransaction(transaction);
+
+        // Real stock has now been decremented, so the hold is no longer needed.
+        StockReservation.deleteMany({ accessCode }).catch(() => {});
 
         // Mark as completed so reconciliation job skips it
         PendingCheckout.findOneAndUpdate(

@@ -43,9 +43,6 @@ import {
   CouponsPage as AdminCoupons,
   CustomersPage as AdminCustomers,
   ReturnsPage as AdminReturns,
-  BannersPage as AdminBanners,
-  CollectionsPage as AdminCollections,
-  CategoriesPage as AdminCategories,
   InventoryPage as AdminInventory,
   SettingsPage as AdminSettings,
 } from './pages/admin';
@@ -95,15 +92,6 @@ const AdminRoutes = () => {
       </AdminPrivateRoute>
       <AdminPrivateRoute exact path='/admin/customers'>
         <AdminCustomers />
-      </AdminPrivateRoute>
-      <AdminPrivateRoute exact path='/admin/banners'>
-        <AdminBanners />
-      </AdminPrivateRoute>
-      <AdminPrivateRoute exact path='/admin/collections'>
-        <AdminCollections />
-      </AdminPrivateRoute>
-      <AdminPrivateRoute exact path='/admin/categories'>
-        <AdminCategories />
       </AdminPrivateRoute>
       <AdminPrivateRoute exact path='/admin/inventory'>
         <AdminInventory />

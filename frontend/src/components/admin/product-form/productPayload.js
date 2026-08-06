@@ -46,9 +46,13 @@ export function buildProductPayload(form, imageList) {
     productType: form.productType || '',
     collections: form.collections || [],
     company: form.company,
-    shipping: !!form.shipping,
     featured: !!form.featured,
+    // Was missing entirely, so ticking "Trending" in the admin form was silently
+    // discarded on save — the value never reached the database.
+    isTrending: !!form.isTrending,
     discountPercent: Number(form.discountPercent) || 0,
+    costPrice: Number(form.costPrice) || 0,
+    shippingWeightGrams: Number(form.shippingWeightGrams) || 0,
     images: imageList,
     badgeText: form.badgeText || '',
     leadTimeDays: form.leadTimeDays || 0,

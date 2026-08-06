@@ -1,3 +1,5 @@
+import shippingConfig from './shipping.json';
+
 // ---------------------------------------------------------------------------
 // Single source of truth for money math across the whole storefront.
 //
@@ -29,13 +31,65 @@ export const DEFAULT_PRICING = {
 
 const round2 = (n) => Math.round((Number(n) + Number.EPSILON) * 100) / 100;
 
-// Delivery options for the checkout selector, with fees from store settings.
-export const shippingMethods = (config = {}) => {
-  const std = config.standardShippingPrice ?? DEFAULT_PRICING.standardShippingPrice;
-  const exp = config.expressShippingPrice ?? DEFAULT_PRICING.expressShippingPrice;
-  const methods = { standard: { key: 'standard', label: 'Regular Post', fee: std, eta: '3–10 business days' } };
+// ---------------------------------------------------------------------------
+// Weight-banded shipping. Mirrors backend/services/shippingService.js, which is
+// what actually charges — this exists so the cart shows the same number.
+// ---------------------------------------------------------------------------
+
+// Shipped weight of one cart line, in grams. Derived from the category so the
+// owner never enters a weight; an explicit per-product value wins when present.
+export const lineWeightGrams = (item = {}) => {
+  const override = Number(item.shippingWeightGrams || 0);
+  if (override > 0) return override;
+  const { categoryWeights, defaultWeightGrams } = shippingConfig;
+  return Number(
+    categoryWeights[`${item.category}.${item.subCategory}`] ??
+      categoryWeights[item.category] ??
+      defaultWeightGrams
+  );
+};
+
+export const cartWeightGrams = (cart = []) =>
+  cart.reduce((sum, i) => sum + lineWeightGrams(i) * Number(i.amount || 0), 0);
+
+const bandsFrom = (config = {}) => {
+  const custom = config.shippingBands;
+  const usable =
+    Array.isArray(custom) && custom.length > 0 && custom.every((b) => Number(b?.maxGrams) > 0);
+  return (usable ? custom : shippingConfig.bands)
+    .map((b) => ({ ...b, maxGrams: Number(b.maxGrams) }))
+    .sort((a, b) => a.maxGrams - b.maxGrams);
+};
+
+/** The band a cart falls into, or null when it is too heavy to price automatically. */
+export const bandForWeight = (grams, config = {}) => {
+  const quoteAbove = Number(config.quoteAboveGrams ?? shippingConfig.quoteAboveGrams);
+  if (grams > quoteAbove) return null;
+  const bands = bandsFrom(config);
+  return bands.find((b) => grams <= b.maxGrams) || bands[bands.length - 1];
+};
+
+/** Longest make-time in the cart — the delivery estimate must start after this. */
+export const cartLeadTimeDays = (cart = []) =>
+  cart.reduce((max, i) => Math.max(max, Number(i.leadTimeDays || 0)), 0);
+
+// Delivery options for the checkout selector, priced for the cart in hand.
+export const shippingMethods = (config = {}, cart = []) => {
+  const grams = cartWeightGrams(cart);
+  const band = bandForWeight(grams, config);
+  const lead = cartLeadTimeDays(cart);
+  // Made-to-order stock must be reflected, or Express promises next-day delivery
+  // on a garment that has not been sewn yet.
+  const withLead = (transit) => (lead > 0 ? `Made in ${lead} days, then ${transit}` : transit);
+
+  const std = band ? Number(band.standard) : config.standardShippingPrice ?? DEFAULT_PRICING.standardShippingPrice;
+  const exp = band ? Number(band.express) : config.expressShippingPrice ?? DEFAULT_PRICING.expressShippingPrice;
+
+  const methods = {
+    standard: { key: 'standard', label: 'Regular Post', fee: std, eta: withLead('3–10 business days') },
+  };
   if (config.expressEnabled ?? DEFAULT_PRICING.expressEnabled) {
-    methods.express = { key: 'express', label: 'Express Post', fee: exp, eta: 'Next day – 2 days' };
+    methods.express = { key: 'express', label: 'Express Post', fee: exp, eta: withLead('Next day – 2 days') };
   }
   return methods;
 };
@@ -50,8 +104,8 @@ export const unitSellingPrice = (product) => {
   return round2(price * (1 - discount / 100));
 };
 
-export const shippingFee = (method, config = {}) => {
-  const methods = shippingMethods(config);
+export const shippingFee = (method, config = {}, cart = []) => {
+  const methods = shippingMethods(config, cart);
   return (methods[method] || methods.standard).fee;
 };
 
@@ -96,12 +150,23 @@ export const computeOrderSummary = (cart = [], { method = 'standard', coupon = n
   // Must stay identical to computeAuthoritativeOrder() on the server, which is what charges.
   const goodsPayable = round2(Math.max(0, sellingTotal - couponValue));
 
-  let delivery = cart.length > 0 ? shippingFee(method, config) : 0;
-  // Free standard shipping over the configured threshold (0 = disabled).
+  const weightGrams = cartWeightGrams(cart);
+  const band = bandForWeight(weightGrams, config);
+  const requiresQuote = cart.length > 0 && band === null;
+
+  let delivery = cart.length > 0 ? shippingFee(method, config, cart) : 0;
+
+  // Free standard shipping credits the headline standard rate once the payable
+  // amount reaches the threshold, so an ordinary order is genuinely free and a
+  // bulky one pays only the excess.
   const threshold = config.freeShippingThreshold ?? DEFAULT_PRICING.freeShippingThreshold;
+  let freeCredit = 0;
   if (method !== 'express' && threshold > 0 && goodsPayable >= threshold) {
-    delivery = 0;
+    const headlineRate = config.standardShippingPrice ?? DEFAULT_PRICING.standardShippingPrice;
+    freeCredit = Math.min(delivery, headlineRate);
+    delivery = round2(delivery - freeCredit);
   }
+  if (requiresQuote) delivery = 0;
 
   const toPay = round2(goodsPayable + delivery);
   return {
@@ -111,6 +176,11 @@ export const computeOrderSummary = (cart = [], { method = 'standard', coupon = n
     goodsPayable,
     coupon: couponValue,
     delivery,
+    freeCredit,
+    weightGrams,
+    band: band ? band.label : null,
+    requiresQuote,
+    leadTimeDays: cartLeadTimeDays(cart),
     toPay,
     gst: gstIncludedIn(toPay, config.gstRate ?? DEFAULT_PRICING.gstRate),
   };

@@ -5,7 +5,7 @@ import { categoryData } from '../../utils/categoryData';
 
 const Filters = () => {
   const {
-    filters: { text, collection, category, subCategory, productType, color, min_price, max_price, price, shipping },
+    filters: { text, collection, category, subCategory, productType, color, min_price, max_price, price },
     updateFilters,
     clearFilters,
     all_products,
@@ -209,22 +209,6 @@ const Filters = () => {
         />
       </div>
 
-      {/* Free Shipping */}
-      <div className="pt-4 border-t border-bronze/10">
-        <label className="flex justify-between items-center cursor-pointer group">
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-bronze/60 group-hover:text-gold transition-colors">
-            Free Shipping
-          </span>
-          <input
-            type="checkbox"
-            name="shipping"
-            id="shipping"
-            checked={shipping}
-            onChange={updateFilters}
-            className="w-4 h-4 rounded-none border-bronze/20 text-gold focus:ring-gold accent-gold"
-          />
-        </label>
-      </div>
 
       {/* Clear Filters */}
       <button

@@ -4,6 +4,7 @@ import { categoryData, COLLECTION_OPTIONS } from '../../../utils/categoryData';
 import { formatPrice } from '../../../utils/helpers';
 import { unitSellingPrice } from '../../../utils/pricing';
 import SizePicker from './SizePicker';
+import { isSizelessCategory, SIZELESS_VALUE } from '../../../utils/categoryData';
 import ColorPicker from './ColorPicker';
 import { useVariantMatrix } from './useVariantMatrix';
 
@@ -32,10 +33,11 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
     colors = [],
     sizes = [],
     variants = [],
-    shipping = false,
     featured = false,
     isTrending = false,
     discountPercent = 0,
+    costPrice = 0,
+    shippingWeightGrams = 0,
     badgeText = '',
     leadTimeDays = '',
     composition = '',
@@ -88,6 +90,39 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           </div>
         </div>
 
+        {/* Cost is admin-only and never reaches the storefront. Without it there is
+            no way to see whether a markdown still leaves a profit. */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Cost Price (private)</label>
+            <div className="relative">
+              <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
+              <input className={`${inputClass} pl-8`} type="number" min="0" placeholder="0.00" value={costPrice} onChange={(e) => onField('costPrice', Number(e.target.value))} />
+            </div>
+            <p className="text-[9px] text-bronze/40 mt-1">Only you see this. Never shown to customers.</p>
+          </div>
+          <div>
+            <label className={labelClass}>Profit per Sale</label>
+            {(() => {
+              const selling = unitSellingPrice({ price, discountPercent });
+              const cost = Number(costPrice) || 0;
+              const profit = selling - cost;
+              const margin = selling > 0 ? (profit / selling) * 100 : 0;
+              const tone = !cost ? 'text-bronze/30' : profit < 0 ? 'text-red-500' : 'text-emerald-600';
+              return (
+                <>
+                  <div className={`${inputClass} bg-white/50 flex items-center font-bold ${tone}`}>
+                    {cost > 0 ? `${formatPrice(profit)}  (${margin.toFixed(0)}%)` : 'Enter a cost price'}
+                  </div>
+                  {cost > 0 && profit < 0 && (
+                    <p className="text-[9px] text-red-500 mt-1 font-bold">This sells for less than it cost you.</p>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        </div>
+
         <div>
           <label className={labelClass}>Brand / Designer</label>
           <input className={inputClass} placeholder="Angel Fashion Studio" value={company} onChange={(e) => onField('company', e.target.value)} />
@@ -105,10 +140,6 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
 
         <div className="flex gap-6 p-4 bg-bronze/5 rounded-lg border border-bronze/10">
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={shipping} onChange={(e) => onField('shipping', e.target.checked)} className="accent-bronze" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Free Shipping</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={featured} onChange={(e) => onField('featured', e.target.checked)} className="accent-bronze" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Featured</span>
           </label>
@@ -122,6 +153,11 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           <div>
             <label className={labelClass}>Lead Time (Days)</label>
             <input className={inputClass} type="number" placeholder="0 = Ready to Ship" value={leadTimeDays} onChange={(e) => onField('leadTimeDays', Number(e.target.value))} />
+          </div>
+          <div>
+            <label className={labelClass}>Shipping Weight (g)</label>
+            <input className={inputClass} type="number" min="0" placeholder="0 = use category default" value={shippingWeightGrams} onChange={(e) => onField('shippingWeightGrams', Number(e.target.value))} />
+            <p className="text-[9px] text-bronze/40 mt-1">Leave blank unless this piece is unusually heavy or light.</p>
           </div>
           <div>
             <label className={labelClass}>Badge Text</label>
@@ -154,7 +190,9 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
             onField('subCategory', '');
             onField('productType', '');
             onField('colors', []);
-            onField('sizes', []);
+            // Sizeless categories still need one size recorded, otherwise the
+            // product saves with an empty sizes array and shows no size anywhere.
+            onField('sizes', isSizelessCategory(e.target.value) ? [SIZELESS_VALUE] : []);
             onField('variants', []);
           }}>
             <option value="">Select Category</option>
@@ -214,13 +252,13 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
         <div className="border-b border-bronze/10 pb-2 mb-4">
           <h4 className={sectionHeading}>4. Variant Options</h4>
           <p className="text-[9px] text-bronze/50 italic mt-1">
-            {category === 'Jewelry'
+            {isSizelessCategory(category)
               ? 'Jewelry items default to a single stock value. Select colors below to track stock by color.'
               : 'Pick the sizes and colours available for this product.'}
           </p>
         </div>
 
-        {category === 'Jewelry' ? (
+        {isSizelessCategory(category) ? (
           <div className="bg-champagne/10 p-5 rounded border border-bronze/10">
             <label className={labelClass}>Available Colors</label>
             <ColorPicker value={colors} onChange={(next) => onField('colors', next)} />

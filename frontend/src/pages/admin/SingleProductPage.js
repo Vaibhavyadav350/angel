@@ -18,9 +18,11 @@ function SingleProductPage() {
   } = useAdminProductStore();
 
   useEffect(() => {
-    fetchSingleProduct(id);
+    if (id) fetchSingleProduct(id);
+    // Must depend on `id`: with an empty array, navigating straight from one
+    // product to another kept showing the previously loaded product.
     // eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (

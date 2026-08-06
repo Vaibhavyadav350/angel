@@ -17,7 +17,7 @@ const useAdminCustomerStore = create((set) => ({
     try {
       const { data } = await adminApi.get('/users/admin/all');
       if (data.success) {
-        set({ customers: data.data, loading: false });
+        set({ customers: data.data || [], loading: false });
         return { success: true, data: data.data };
       }
       set({ error: data.message, loading: false });

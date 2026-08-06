@@ -19,6 +19,8 @@ const initialNewProduct = {
   shipping: true,
   featured: false,
   discountPercent: 0,
+  costPrice: 0,
+  shippingWeightGrams: 0,
   badgeText: '',
   leadTimeDays: '',
   composition: '',

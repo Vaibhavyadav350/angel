@@ -39,6 +39,9 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
                 couponCode: metaPairs.coupon || '',
                 shippingFee: Number(metaPairs.shipFee) || 0,
                 itemsPrice: Number(metaPairs.itemsP) || 0,
+                shippingWeightGrams: Number(metaPairs.shipG) || 0,
+                shippingZone: metaPairs.shipZ || '',
+                shippingFreeCredit: Number(metaPairs.shipC) || 0,
             };
         }
 
@@ -136,6 +139,13 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
         itemsPrice: Number(itemsPrice),
         taxPrice,
         shippingPrice: Number(shippingFee),
+        shippingBreakdown: {
+            weightGrams: Number(meta.shippingWeightGrams) || 0,
+            zone: meta.shippingZone || '',
+            baseFee: Number(shippingFee) + (Number(meta.shippingFreeCredit) || 0),
+            surcharge: 0,
+            freeCredit: Number(meta.shippingFreeCredit) || 0,
+        },
         totalPrice,
         discountAmount: Number(discountAmount || 0),
         couponCode: couponCode || '',
@@ -183,7 +193,22 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
     // Update coupon usage
     if (couponCode) {
         const Coupon = require('../models/couponModel');
-        await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } });
+        // Record the redeeming customer too — `usedCount` alone is a global cap,
+        // so without this one person could use a code up to its whole limit.
+        const buyerEmail = String(userEmail || '').trim().toLowerCase();
+        const couponDoc = await Coupon.findOne({ code: couponCode });
+        if (couponDoc) {
+            couponDoc.usedCount = (couponDoc.usedCount || 0) + 1;
+            if (buyerEmail) {
+                const existing = (couponDoc.redeemedBy || []).find(
+                    (r) => String(r.email).toLowerCase() === buyerEmail
+                );
+                if (existing) existing.count = (existing.count || 0) + 1;
+                else couponDoc.redeemedBy.push({ email: buyerEmail, count: 1 });
+                couponDoc.markModified('redeemedBy');
+            }
+            await couponDoc.save({ validateBeforeSave: false });
+        }
     }
 
     // Send Confirmation Email (non-blocking — fire and forget)

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
 import { useAdminInventoryStore, useAdminProductStore } from '../../stores';
 import { Link } from 'react-router-dom';
+import { toCsv, downloadTextFile } from '../../utils/helpers';
 
 const InventoryPage = () => {
     const { inventory, lowStockCount, outOfStockCount, computeInventory } = useAdminInventoryStore();
@@ -22,8 +23,10 @@ const InventoryPage = () => {
     }, [products]);
 
     const filteredRows = inventory.filter(row => {
-        const matchesSearch = row.productName.toLowerCase().includes(search.toLowerCase()) ||
-            row.sku.toLowerCase().includes(search.toLowerCase());
+        const needle = search.toLowerCase();
+        const matchesSearch =
+            String(row.productName || '').toLowerCase().includes(needle) ||
+            String(row.sku || '').toLowerCase().includes(needle);
         if (filterStatus === 'low') return matchesSearch && row.isLowStock && !row.isOutOfStock;
         if (filterStatus === 'out') return matchesSearch && row.isOutOfStock;
         return matchesSearch;
@@ -35,10 +38,9 @@ const InventoryPage = () => {
             r.productName, r.category, r.size, r.color, r.sku, r.stock,
             r.isOutOfStock ? 'Out of Stock' : r.isLowStock ? 'Low Stock' : 'In Stock'
         ]);
-        const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'angel_inventory.csv'; a.click();
+        // Values must be escaped — most product names contain a comma, which
+        // silently split them across columns in the exported file.
+        downloadTextFile('angel_inventory.csv', toCsv(headers, rows));
     };
 
     const stockBadge = (row) => {

@@ -76,38 +76,134 @@
     "plus sizes"
   ],
   "colors": [
-    { "name": "Red", "hex": "#C62828" },
-    { "name": "Maroon", "hex": "#6A1B29" },
-    { "name": "Magenta", "hex": "#AD1457" },
-    { "name": "Pink", "hex": "#E91E63" },
-    { "name": "Peach", "hex": "#FFAB91" },
-    { "name": "Orange", "hex": "#E65100" },
-    { "name": "Gold", "hex": "#C6993E" },
-    { "name": "Yellow", "hex": "#F9A825" },
-    { "name": "Cream", "hex": "#FFFDD0" },
-    { "name": "Beige", "hex": "#D4C5A9" },
-    { "name": "Off-White", "hex": "#FAF0E6" },
-    { "name": "White", "hex": "#FFFFFF" },
-    { "name": "Olive", "hex": "#6B8E23" },
-    { "name": "Green", "hex": "#2E7D32" },
-    { "name": "Emerald Green", "hex": "#046307" },
-    { "name": "Teal", "hex": "#00695C" },
-    { "name": "Turquoise", "hex": "#00BCD4" },
-    { "name": "Sky Blue", "hex": "#4FC3F7" },
-    { "name": "Blue", "hex": "#1565C0" },
-    { "name": "Navy Blue", "hex": "#1A237E" },
-    { "name": "Purple", "hex": "#6A1B9A" },
-    { "name": "Lavender", "hex": "#CE93D8" },
-    { "name": "Mauve", "hex": "#7B4F7B" },
-    { "name": "Brown", "hex": "#5D4037" },
-    { "name": "Tan", "hex": "#D2B48C" },
-    { "name": "Rust", "hex": "#BF360C" },
-    { "name": "Copper", "hex": "#B87333" },
-    { "name": "Silver", "hex": "#C0C0C0" },
-    { "name": "Grey", "hex": "#757575" },
-    { "name": "Black", "hex": "#212121" },
-    { "name": "Multicolour", "hex": null },
-    { "name": "Standard", "hex": null }
+    {
+      "name": "Red",
+      "hex": "#C62828"
+    },
+    {
+      "name": "Maroon",
+      "hex": "#6A1B29"
+    },
+    {
+      "name": "Magenta",
+      "hex": "#AD1457"
+    },
+    {
+      "name": "Pink",
+      "hex": "#E91E63"
+    },
+    {
+      "name": "Peach",
+      "hex": "#FFAB91"
+    },
+    {
+      "name": "Orange",
+      "hex": "#E65100"
+    },
+    {
+      "name": "Gold",
+      "hex": "#C6993E"
+    },
+    {
+      "name": "Yellow",
+      "hex": "#F9A825"
+    },
+    {
+      "name": "Cream",
+      "hex": "#FFFDD0"
+    },
+    {
+      "name": "Beige",
+      "hex": "#D4C5A9"
+    },
+    {
+      "name": "Off-White",
+      "hex": "#FAF0E6"
+    },
+    {
+      "name": "White",
+      "hex": "#FFFFFF"
+    },
+    {
+      "name": "Olive",
+      "hex": "#6B8E23"
+    },
+    {
+      "name": "Green",
+      "hex": "#2E7D32"
+    },
+    {
+      "name": "Emerald Green",
+      "hex": "#046307"
+    },
+    {
+      "name": "Teal",
+      "hex": "#00695C"
+    },
+    {
+      "name": "Turquoise",
+      "hex": "#00BCD4"
+    },
+    {
+      "name": "Sky Blue",
+      "hex": "#4FC3F7"
+    },
+    {
+      "name": "Blue",
+      "hex": "#1565C0"
+    },
+    {
+      "name": "Navy Blue",
+      "hex": "#1A237E"
+    },
+    {
+      "name": "Purple",
+      "hex": "#6A1B9A"
+    },
+    {
+      "name": "Lavender",
+      "hex": "#CE93D8"
+    },
+    {
+      "name": "Mauve",
+      "hex": "#7B4F7B"
+    },
+    {
+      "name": "Brown",
+      "hex": "#5D4037"
+    },
+    {
+      "name": "Tan",
+      "hex": "#D2B48C"
+    },
+    {
+      "name": "Rust",
+      "hex": "#BF360C"
+    },
+    {
+      "name": "Copper",
+      "hex": "#B87333"
+    },
+    {
+      "name": "Silver",
+      "hex": "#C0C0C0"
+    },
+    {
+      "name": "Grey",
+      "hex": "#757575"
+    },
+    {
+      "name": "Black",
+      "hex": "#212121"
+    },
+    {
+      "name": "Multicolour",
+      "hex": null
+    },
+    {
+      "name": "Standard",
+      "hex": null
+    }
   ],
   "sizes": [
     "XS",
@@ -121,6 +217,9 @@
     "Free Size",
     "One Size",
     "Standard"
+  ],
+  "sizeless_categories": [
+    "Jewelry"
   ],
   "landing_page_mappings": {
     "hero_bridal_edit": "?category=Women&subCategory=LEHENGAS",

@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { BiChevronDown } from 'react-icons/bi';
-import { formatPrice } from '../../utils/helpers';
+import React, { useState } from 'react';
+import { formatPrice, truncate } from '../../utils/helpers';
+import ActionMenu, { ActionMenuItem, ActionMenuDivider } from './ActionMenu';
 import { useAdminProductStore, useAdminAuthStore } from '../../stores';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,11 +10,8 @@ function ProductsTable({ products }) {
   const { currentAdmin: currentUser } = useAdminAuthStore();
   const { fetchProducts, deleteProduct } = useAdminProductStore();
   const [loading, setLoading] = useState(false);
-  const [menuOpenId, setMenuOpenId] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
-  const buttonRefs = useRef({});
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -29,29 +25,10 @@ function ProductsTable({ products }) {
     }
   };
 
-  const toggleMenu = (id) => {
-    if (menuOpenId === id) {
-      setMenuOpenId(null);
-    } else {
-      const button = buttonRefs.current[id];
-      if (!button) return; // ref not attached yet — avoid throwing and killing the handler
-      const rect = button.getBoundingClientRect();
-      // Menu is position:fixed (viewport-relative), so use rect coords directly.
-      // Adding scrollX/Y here pushed the menu off-screen once the page was scrolled.
-      const MENU_HEIGHT = 180; // approx dropdown height; flip up if it would overflow the viewport
-      const openUp = rect.bottom + MENU_HEIGHT > window.innerHeight;
-      setMenuPosition({
-        top: openUp ? Math.max(8, rect.top - MENU_HEIGHT) : rect.bottom,
-        left: rect.right - 160, // 160 is w-40 (dropdown width)
-      });
-      setMenuOpenId(id);
-    }
-  };
 
   const openEditModal = (id) => {
     setEditingProductId(id);
     setIsEditModalOpen(true);
-    setMenuOpenId(null);
   };
 
   if (!products || products.length === 0) {
@@ -98,7 +75,7 @@ function ProductsTable({ products }) {
                           className="w-14 h-14 object-cover rounded-lg shadow-sm border border-bronze/5"
                         />
                         <div>
-                          <p className="text-[11px] font-black text-bronze uppercase tracking-widest">{name.substring(0, 25)}{name.length > 25 ? '...' : ''}</p>
+                          <p className="text-[11px] font-black text-bronze uppercase tracking-widest">{truncate(name, 25)}</p>
                           <p className="text-[10px] text-gold font-bold mt-1 tracking-wider">{formatPrice(price)}</p>
                         </div>
                       </div>
@@ -127,48 +104,26 @@ function ProductsTable({ products }) {
                       </div>
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <div className="relative inline-block text-left">
-                        <button
-                          ref={(el) => (buttonRefs.current[id] = el)}
-                          onClick={() => toggleMenu(id)}
-                          className="flex items-center gap-1 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-bronze/60 hover:text-bronze hover:bg-bronze/5 rounded transition-colors"
-                        >
-                          Actions <BiChevronDown />
-                        </button>
-                        {menuOpenId === id && createPortal(
+                      <ActionMenu width={168}>
+                        {(close) => (
                           <>
-                            <div className="fixed inset-0 z-[60]" onClick={() => setMenuOpenId(null)} />
-                            <div
-                              className="fixed w-40 bg-white border border-bronze/10 rounded-lg shadow-xl z-[70] py-1 pointer-events-auto"
-                              style={{
-                                top: `${menuPosition.top}px`,
-                                left: `${menuPosition.left}px`
-                              }}
-                            >
-                              <Link to={`/admin/products/${id}`} onClick={() => setMenuOpenId(null)}>
-                                <div className="px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-bronze/70 hover:bg-bronze/5 cursor-pointer">
-                                  View Archive
-                                </div>
-                              </Link>
-                              <div
-                                className="px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-bronze/70 hover:bg-bronze/5 cursor-pointer"
-                                onClick={() => openEditModal(id)}
-                              >
-                                Edit Heritage
-                              </div>
-                              {currentUser.privilege !== 'low' && (
-                                <div
-                                  className="px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 cursor-pointer"
-                                  onClick={() => { handleDelete(id); setMenuOpenId(null); }}
-                                >
+                            <Link to={`/admin/products/${id}`} onClick={close}>
+                              <ActionMenuItem icon="visibility">View Archive</ActionMenuItem>
+                            </Link>
+                            <ActionMenuItem icon="edit" onClick={() => { openEditModal(id); close(); }}>
+                              Edit Heritage
+                            </ActionMenuItem>
+                            {currentUser.privilege !== 'low' && (
+                              <>
+                                <ActionMenuDivider />
+                                <ActionMenuItem tone="danger" icon="delete" onClick={() => { handleDelete(id); close(); }}>
                                   Delete
-                                </div>
-                              )}
-                            </div>
-                          </>,
-                          document.body
+                                </ActionMenuItem>
+                              </>
+                            )}
+                          </>
                         )}
-                      </div>
+                      </ActionMenu>
                     </td>
                   </tr>
                 );

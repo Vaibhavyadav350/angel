@@ -25,7 +25,7 @@ const buildAccordionSections = (name, description, careInstructions) => [
   { id: 'craft', title: 'THE CRAFT', content: `Every piece of "${name}" is a testament to the enduring legacy of Indian craftsmanship. Hand-woven by master artisans in Varanasi and embellished in our Mumbai atelier, every silhouette tells a story of heritage reimagined. ${description}` },
   { id: 'fabric', title: 'FABRIC & MATERIALITY', content: careInstructions ? careInstructions : 'Pure hand-woven silk with 22K gold zari thread embroidery. Fabric weight: ~120gsm. Fully lined in pure silk. Dry clean only. Country of Origin: India.' },
   { id: 'size', title: 'SIZE & STITCHING GUIDE', content: 'Standard sizes: XS (Bust 32"), S (34"), M (36"), L (38"), XL (40"), 2XL (42"), 3XL (44"). Custom stitching adds 15–21 days to delivery.' },
-  { id: 'shipping', title: 'SHIPPING & RETURNS', content: 'Complimentary domestic shipping on all orders. International shipping from ₹1,200. Delivery: 5–7 days standard, 1–2 days priority. 30-day free exchanges on unworn items. Custom-stitched orders are non-returnable.' },
+  { id: 'shipping', title: 'SHIPPING & RETURNS', content: 'Regular Post $8 and Express Post $18 anywhere in Australia, with free Regular Post on orders over $200. Regular delivery is 3–10 business days depending on your state; Express is next day to two days if ordered before 2pm AEST. We do not accept change-of-mind returns — exchanges or store credit can be requested within 48 hours of delivery. Custom-stitched orders are non-returnable.' },
 ];
 
 const SingleProductPage = () => {

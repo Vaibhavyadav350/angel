@@ -15,20 +15,22 @@ import { useEffect } from 'react';
  * @param {(name: string, value: any) => void} onField  field setter
  * @returns {{ setVariantField: Function, totalStock: number }}
  */
+import { isSizelessCategory, SIZELESS_VALUE } from '../../../utils/categoryData';
+
 export function useVariantMatrix(colors, sizes, variants, category, onField) {
   const colorKey = colors.join('|');
   const sizeKey = sizes.join('|');
   const categoryKey = category || 'none';
 
   useEffect(() => {
-    const isJewelry = category === 'Jewelry';
+    const isJewelry = isSizelessCategory(category);
 
     // Empty matrix: give Jewelry a default single-size row, clear everything else.
     if (colors.length === 0 && sizes.length === 0) {
       if (isJewelry) {
-        const hasDefault = variants.length === 1 && variants[0].size === 'One Size' && variants[0].color === 'Standard';
+        const hasDefault = variants.length === 1 && variants[0].size === SIZELESS_VALUE && variants[0].color === 'Standard';
         if (!hasDefault) {
-          onField('variants', [{ size: 'One Size', color: 'Standard', stock: 0, sku: '' }]);
+          onField('variants', [{ size: SIZELESS_VALUE, color: 'Standard', stock: 0, sku: '' }]);
         }
       } else if (variants.length > 0) {
         onField('variants', []);
@@ -36,7 +38,7 @@ export function useVariantMatrix(colors, sizes, variants, category, onField) {
       return;
     }
 
-    const sizeList = sizes.length > 0 ? sizes : ['One Size'];
+    const sizeList = sizes.length > 0 ? sizes : [SIZELESS_VALUE];
     const colorList = colors.length > 0 ? colors : ['Standard'];
 
     const next = [];
