@@ -178,13 +178,13 @@ const CustomerRoutes = () => (
         <Checkout />
       </>
     </Route>
-    <Route exact path='/orders'>
+    <PrivateRoute exact path='/orders'>
       <>
         <NewNavbar />
         <OrdersPage />
         <NewFooter />
       </>
-    </Route>
+    </PrivateRoute>
     <PrivateRoute exact path='/orders/:id'>
       <>
         <NewNavbar />

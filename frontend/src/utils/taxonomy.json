@@ -221,18 +221,20 @@
   "sizeless_categories": [
     "Jewelry"
   ],
+  "fabrics": [
+    "A-Line",
+    "Fishtail",
+    "Banarasi",
+    "Silk",
+    "Velvet",
+    "Georgette",
+    "Net",
+    "Organza"
+  ],
   "landing_page_mappings": {
     "hero_bridal_edit": "?category=Women&subCategory=LEHENGAS",
     "hero_royal_drapes": "?category=Women&subCategory=SAREES",
     "hero_mens_heritage": "?category=Men",
-    "circular_aline": "?category=Women&subCategory=LEHENGAS",
-    "circular_fishtail": "?category=Women&subCategory=LEHENGAS&productType=Partywear%20Lehengas",
-    "circular_banarasi": "?category=Women&subCategory=SAREES&productType=WEDDING%20SAREES",
-    "circular_silk": "?category=Women&subCategory=SAREES",
-    "circular_velvet": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=palazzo%20suits",
-    "circular_georgette": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=Anarkali%20suits",
-    "circular_net": "?category=Women&subCategory=SALWAR%20KAMEEZ&productType=sharara%20suits",
-    "circular_organza": "?category=Women&subCategory=SAREES&productType=casual%20wear",
     "directory_bridal_lehengas": "?category=Women&subCategory=LEHENGAS",
     "directory_pure_silk_sarees": "?category=Women&subCategory=SAREES",
     "directory_sherwanis": "?category=Men&subCategory=SHERWANIS",
@@ -246,6 +248,14 @@
     "bridal_edit_main": "?category=Women&subCategory=LEHENGAS",
     "salwar_lookbook": "?category=Women&subCategory=SALWAR%20KAMEEZ",
     "lehenga_bento": "?category=Women&subCategory=LEHENGAS",
-    "saree_archival": "?category=Women&subCategory=SAREES"
+    "saree_archival": "?category=Women&subCategory=SAREES",
+    "circular_aline": "?fabric=A-Line",
+    "circular_fishtail": "?fabric=Fishtail",
+    "circular_banarasi": "?fabric=Banarasi",
+    "circular_silk": "?fabric=Silk",
+    "circular_velvet": "?fabric=Velvet",
+    "circular_georgette": "?fabric=Georgette",
+    "circular_net": "?fabric=Net",
+    "circular_organza": "?fabric=Organza"
   }
 }

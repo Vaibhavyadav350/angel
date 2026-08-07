@@ -31,8 +31,8 @@ const ContactPage = () => {
                             </div>
                             <div>
                                 <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold mb-4">Email</h3>
-                                <a href="mailto:support@angelfashionstudio.com" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
-                                    support@angelfashionstudio.com
+                                <a href="mailto:support@angelfashionstudio.org" className="text-base font-medium text-bronze/70 hover:text-gold transition-colors">
+                                    support@angelfashionstudio.org
                                 </a>
                             </div>
                             <div>

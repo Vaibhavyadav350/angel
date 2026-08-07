@@ -421,3 +421,31 @@ html.high-contrast .bg-champagne,
 html.high-contrast .bg-sand {
   background-color: #ffffff !important;
 }
+/* ---------------------------------------------------------------------------
+   Reduced motion.
+
+   Nothing in the codebase honoured `prefers-reduced-motion`, so a visitor with
+   vestibular sensitivity received the full set of slides, transitions and
+   parallax. This disables decorative motion globally while leaving opacity
+   changes intact, so nothing becomes invisible or unusable.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Consistent vertical rhythm for home page sections. Padding previously varied
+   per section, which is what made the page feel uneven while scrolling. */
+.section-rhythm { padding-top: 4rem; padding-bottom: 4rem; }
+@media (min-width: 640px) {
+  .section-rhythm { padding-top: 6rem; padding-bottom: 6rem; }
+}
+@media (min-width: 1024px) {
+  .section-rhythm { padding-top: 8rem; padding-bottom: 8rem; }
+}

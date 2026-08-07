@@ -4,7 +4,9 @@ import { categoryData, COLLECTION_OPTIONS } from '../../../utils/categoryData';
 import { formatPrice } from '../../../utils/helpers';
 import { unitSellingPrice } from '../../../utils/pricing';
 import SizePicker from './SizePicker';
-import { isSizelessCategory, SIZELESS_VALUE } from '../../../utils/categoryData';
+import { isSizelessCategory, SIZELESS_VALUE, fabricOptions } from '../../../utils/categoryData';
+import { lineWeightGrams } from '../../../utils/pricing';
+import NumberField from '../ui/NumberField';
 import ColorPicker from './ColorPicker';
 import { useVariantMatrix } from './useVariantMatrix';
 
@@ -33,18 +35,20 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
     colors = [],
     sizes = [],
     variants = [],
-    featured = false,
-    isTrending = false,
     discountPercent = 0,
     costPrice = 0,
     shippingWeightGrams = 0,
-    badgeText = '',
     leadTimeDays = '',
+    fabric = '',
     composition = '',
     careInstructions = '',
   } = form;
 
   const { setVariantField, totalStock } = useVariantMatrix(colors, sizes, variants, category, onField);
+
+  // What this product will weigh if the optional override is left blank, so the
+  // placeholder can show the real number instead of a meaningless "0".
+  const categoryWeight = lineWeightGrams({ category, subCategory });
 
   const onDrop = useCallback((acceptedFiles) => onAddFiles(acceptedFiles), [onAddFiles]);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -59,7 +63,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-      {/* Left column: core data & logistics */}
+      {/* Left column: core data */}
       <div className="space-y-8">
         <div className="border-b border-bronze/10 pb-2 mb-4">
           <h4 className={sectionHeading}>1. Core Information</h4>
@@ -72,17 +76,14 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
 
         <div>
           <label className={labelClass}>Recommended Price (AUD · incl. GST)</label>
-          <div className="relative">
-            <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
-            <input className={`${inputClass} pl-8`} type="number" placeholder="0.00" value={price} onChange={(e) => onField('price', Number(e.target.value))} />
-          </div>
+          <NumberField prefix="$" placeholder="0.00" min={0} value={price} onChange={(v) => onField('price', v)} />
           <p className="text-[9px] text-bronze/40 mt-1">The RRP, GST included. Apply a markdown below; coupon codes stack on top at checkout.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Discount (%)</label>
-            <input className={inputClass} type="number" min="0" max="100" placeholder="0" value={discountPercent} onChange={(e) => onField('discountPercent', Number(e.target.value))} />
+            <NumberField suffix="%" placeholder="0" min={0} max={100} value={discountPercent} onChange={(v) => onField('discountPercent', v)} />
           </div>
           <div>
             <label className={labelClass}>Selling Price</label>
@@ -94,12 +95,9 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
             no way to see whether a markdown still leaves a profit. */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Cost Price (private)</label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
-              <input className={`${inputClass} pl-8`} type="number" min="0" placeholder="0.00" value={costPrice} onChange={(e) => onField('costPrice', Number(e.target.value))} />
-            </div>
-            <p className="text-[9px] text-bronze/40 mt-1">Only you see this. Never shown to customers.</p>
+            <label className={labelClass}>Cost Price <span className="text-bronze/30 normal-case tracking-normal">(optional, private)</span></label>
+            <NumberField prefix="$" placeholder="Leave blank if unknown" min={0} value={costPrice} onChange={(v) => onField('costPrice', v)} />
+            <p className="text-[9px] text-bronze/40 mt-1">Only you see this — never shown to customers, and never required to save.</p>
           </div>
           <div>
             <label className={labelClass}>Profit per Sale</label>
@@ -112,7 +110,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
               return (
                 <>
                   <div className={`${inputClass} bg-white/50 flex items-center font-bold ${tone}`}>
-                    {cost > 0 ? `${formatPrice(profit)}  (${margin.toFixed(0)}%)` : 'Enter a cost price'}
+                    {cost > 0 ? `${formatPrice(profit)}  (${margin.toFixed(0)}% margin)` : 'Add a cost price to see this'}
                   </div>
                   {cost > 0 && profit < 0 && (
                     <p className="text-[9px] text-red-500 mt-1 font-bold">This sells for less than it cost you.</p>
@@ -133,54 +131,13 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           <textarea className={`${inputClass} min-h-[120px] resize-y`} placeholder="Describe the materials, craftsmanship, and story..." value={description} onChange={(e) => onField('description', e.target.value)} />
         </div>
 
-        {/* Section 2: Logistics & Marketing */}
-        <div className="border-b border-bronze/10 pb-2 mb-4 mt-8">
-          <h4 className={sectionHeading}>2. Logistics & Marketing</h4>
-        </div>
-
-        <div className="flex gap-6 p-4 bg-bronze/5 rounded-lg border border-bronze/10">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={featured} onChange={(e) => onField('featured', e.target.checked)} className="accent-bronze" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Featured</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={isTrending} onChange={(e) => onField('isTrending', e.target.checked)} className="accent-bronze" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/70">Trending</span>
-          </label>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Lead Time (Days)</label>
-            <input className={inputClass} type="number" placeholder="0 = Ready to Ship" value={leadTimeDays} onChange={(e) => onField('leadTimeDays', Number(e.target.value))} />
-          </div>
-          <div>
-            <label className={labelClass}>Shipping Weight (g)</label>
-            <input className={inputClass} type="number" min="0" placeholder="0 = use category default" value={shippingWeightGrams} onChange={(e) => onField('shippingWeightGrams', Number(e.target.value))} />
-            <p className="text-[9px] text-bronze/40 mt-1">Leave blank unless this piece is unusually heavy or light.</p>
-          </div>
-          <div>
-            <label className={labelClass}>Badge Text</label>
-            <input className={inputClass} placeholder="e.g. Bestseller, New Arrival" value={badgeText} onChange={(e) => onField('badgeText', e.target.value)} />
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>Fabric Composition</label>
-          <input className={inputClass} value={composition} onChange={(e) => onField('composition', e.target.value)} placeholder="100% Pure Silk, Velvet + Zari border..." />
-        </div>
-
-        <div>
-          <label className={labelClass}>Care Instructions</label>
-          <textarea className={`${inputClass} min-h-[80px] resize-y`} value={careInstructions} onChange={(e) => onField('careInstructions', e.target.value)} placeholder="Dry Clean Only. Store in muslin bag..." />
-        </div>
       </div>
 
       {/* Right column: taxonomy & media */}
       <div className="space-y-8">
         {/* Section 3: Taxonomy & Routing */}
         <div className="border-b border-bronze/10 pb-2 mb-4">
-          <h4 className={sectionHeading}>3. Taxonomy & Routing</h4>
+          <h4 className={sectionHeading}>2. Taxonomy & Routing</h4>
         </div>
 
         <div>
@@ -250,7 +207,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
 
         {/* Section 4: Variant Options */}
         <div className="border-b border-bronze/10 pb-2 mb-4">
-          <h4 className={sectionHeading}>4. Variant Options</h4>
+          <h4 className={sectionHeading}>3. Variant Options</h4>
           <p className="text-[9px] text-bronze/50 italic mt-1">
             {isSizelessCategory(category)
               ? 'Jewelry items default to a single stock value. Select colors below to track stock by color.'
@@ -279,6 +236,80 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
       </div>
 
       {/* Full-width: variant matrix & media */}
+
+      {/* Section 2 spans the full width: it is a row of short fields, and leaving
+          it stacked under Core Information made the left column roughly twice the
+          height of the right one. */}
+      <div className="lg:col-span-2 space-y-6">
+        <div className="border-b border-bronze/10 pb-2">
+          <h4 className={sectionHeading}>4. Logistics &amp; Marketing</h4>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className={labelClass}>Lead Time (Days)</label>
+            <NumberField placeholder="0 = ready to ship" min={0} value={leadTimeDays} onChange={(v) => onField('leadTimeDays', v)} />
+            <p className="text-[9px] text-bronze/40 mt-1">How long you need to make it. Shown to the customer at checkout.</p>
+          </div>
+
+          <div>
+            <label className={labelClass}>Shipping Weight <span className="text-bronze/30 normal-case tracking-normal">(optional)</span></label>
+            <NumberField
+              suffix="g"
+              min={0}
+              placeholder={categoryWeight ? `${categoryWeight} (default)` : 'Uses category default'}
+              value={shippingWeightGrams}
+              onChange={(v) => onField('shippingWeightGrams', v)}
+            />
+            <p className="text-[9px] text-bronze/40 mt-1">
+              {category
+                ? `Left blank, ${category}${subCategory ? ` \u203a ${subCategory}` : ''} is counted as ${categoryWeight} g.`
+                : 'Pick a category and the usual weight is used automatically.'}
+            </p>
+          </div>
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className={labelClass}>Cloth / Silhouette <span className="text-bronze/30 normal-case tracking-normal">(optional)</span></label>
+            <div className="flex flex-wrap gap-2">
+              {fabricOptions.map((f) => {
+                const active = fabric === f;
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    // Click again to clear — one value or none, never two.
+                    onClick={() => onField('fabric', active ? '' : f)}
+                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border rounded-full transition-colors ${
+                      active
+                        ? 'border-bronze bg-bronze text-white'
+                        : 'border-bronze/20 text-bronze/60 hover:border-gold hover:text-gold'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[9px] text-bronze/40 mt-2">
+              Pick one, or none. This is what the circles on the home page filter by.
+            </p>
+          </div>
+
+          <div>
+            <label className={labelClass}>Fabric Composition</label>
+            <input className={inputClass} value={composition} onChange={(e) => onField('composition', e.target.value)} placeholder="100% Pure Silk, Velvet + Zari border..." />
+          </div>
+
+          <div>
+            <label className={labelClass}>Care Instructions</label>
+            <input className={inputClass} value={careInstructions} onChange={(e) => onField('careInstructions', e.target.value)} placeholder="Dry Clean Only. Store in muslin bag..." />
+          </div>
+        </div>
+      </div>
+
       <div className="lg:col-span-2 space-y-6">
         <div className="border-b border-bronze/10 pb-2 mb-4">
           <h4 className={sectionHeading}>5. Variant Matrix & Inventory</h4>
@@ -320,12 +351,12 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
                         />
                       </td>
                       <td className="p-2">
-                        <input
-                          type="number"
-                          className="w-full border border-bronze/20 rounded px-2 py-1 outline-none focus:border-gold text-bronze text-center font-bold"
+                        <NumberField
+                          className="text-center font-bold"
                           value={v.stock}
-                          min="0"
-                          onChange={(e) => setVariantField(index, 'stock', Number(e.target.value))}
+                          min={0}
+                          placeholder="0"
+                          onChange={(val) => setVariantField(index, 'stock', val)}
                         />
                       </td>
                     </tr>

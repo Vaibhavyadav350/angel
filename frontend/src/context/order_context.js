@@ -38,36 +38,50 @@ const OrderContext = React.createContext();
 export const OrderProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { currentUser } = useUserContext();
+
+  // Every order request carries the customer's Firebase ID token. The server
+  // derives identity from the verified token, so nothing here can assert who
+  // the caller is — posting an email is no longer enough to read an account.
+  const authHeaders = React.useCallback(async () => {
+    if (!currentUser) return null;
+    const token = await currentUser.getIdToken();
+    return { headers: { Authorization: `Bearer ${token}` } };
+  }, [currentUser]);
+
   const fetchOrders = React.useCallback(async (url = get_order_url) => {
     if (!currentUser?.email) return;
     dispatch({ type: GET_ORDERS_BEGIN });
     try {
-      const response = await axios.post(url, {
-        email: currentUser.email,
-      });
-      const orders = response.data;
-      dispatch({ type: GET_ORDERS_SUCCESS, payload: orders.data });
+      const config = await authHeaders();
+      if (!config) return dispatch({ type: GET_ORDERS_ERROR });
+      // Body kept empty on purpose — the server reads the email from the token.
+      const response = await axios.post(url, {}, config);
+      dispatch({ type: GET_ORDERS_SUCCESS, payload: response.data.data });
     } catch (error) {
       dispatch({ type: GET_ORDERS_ERROR });
     }
-  }, [currentUser]);
+  }, [currentUser, authHeaders]);
 
   const fetchSingleOrder = React.useCallback(async (id) => {
     dispatch({ type: GET_SINGLE_ORDER_BEGIN });
     try {
-      const response = await axios.get(`${domain}/api/orders/${id}`);
+      const config = await authHeaders();
+      if (!config) return dispatch({ type: GET_SINGLE_ORDER_ERROR });
+      const response = await axios.get(`${domain}/api/orders/${id}`, config);
       dispatch({ type: GET_SINGLE_ORDER_SUCCESS, payload: response.data.data });
     } catch (error) {
       dispatch({ type: GET_SINGLE_ORDER_ERROR });
     }
-  }, []);
+  }, [authHeaders]);
 
   // Order creation is handled exclusively by the eWAY callback (webhookController.js).
   // No client-side order creation — prevents duplicate orders.
 
   const requestReturn = React.useCallback(async (orderId, reason) => {
     try {
-      const response = await axios.put(`${domain}/api/orders/${orderId}/return`, { reason });
+      const config = await authHeaders();
+      if (!config) return { success: false };
+      const response = await axios.put(`${domain}/api/orders/${orderId}/return`, { reason }, config);
       if (response.data.success) {
         toast.success(response.data.message);
         fetchOrders();
@@ -77,7 +91,7 @@ export const OrderProvider = ({ children }) => {
       toast.error(error.response?.data?.message || 'Failed to request return');
       return { success: false };
     }
-  }, [fetchOrders]);
+  }, [fetchOrders, authHeaders]);
 
   const updateShipping = React.useCallback((e) => {
     const name = e.target.name;

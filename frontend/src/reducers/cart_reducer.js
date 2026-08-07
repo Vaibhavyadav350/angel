@@ -33,7 +33,7 @@ const cart_reducer = (state, action) => {
       });
       return { ...state, cart: tempCart };
     } else {
-      const defaultImage = { url: 'https://via.placeholder.com/500x500?text=No+Image' };
+      const defaultImage = { url: 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><rect width="500" height="500" fill="#F0E6D6"/><text x="250" y="258" text-anchor="middle" font-family="serif" font-size="26" fill="#B9A488">No Image</text></svg>') };
       const productImage = product.images && product.images.length > 0
         ? product.images[0]
         : defaultImage;

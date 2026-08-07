@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SidebarWithHeader } from '../../components/admin';
-import { DataTable, ConfirmDialog } from '../../components/admin/ui';
+import { DataTable, ConfirmDialog, NumberField } from '../../components/admin/ui';
 import { useAdminCouponStore } from '../../stores';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
@@ -197,15 +197,7 @@ const CouponsPage = () => {
                   <label className={labelClass}>
                     {form.discountType === 'PERCENTAGE' ? 'Percent (%)' : form.discountType === 'FIXED_AMOUNT' ? 'Amount ($)' : 'Not needed'}
                   </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={form.amount}
-                    onChange={(e) => setField('amount', e.target.value)}
-                    className={inputClass}
-                    disabled={form.discountType === 'FREE_SHIPPING'}
-                    required={form.discountType !== 'FREE_SHIPPING'}
-                  />
+                  <NumberField min={0} placeholder="0" value={form.amount} onChange={(v) => setField('amount', v)} disabled={form.discountType === 'FREE_SHIPPING'} />
                 </div>
               </div>
 
@@ -216,18 +208,18 @@ const CouponsPage = () => {
                 </div>
                 <div>
                   <label className={labelClass}>Minimum Spend ($)</label>
-                  <input type="number" min="0" value={form.minPurchase} onChange={(e) => setField('minPurchase', e.target.value)} className={inputClass} />
+                  <NumberField prefix="$" min={0} placeholder="0" blankWhenZero={false} value={form.minPurchase} onChange={(v) => setField('minPurchase', v)} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Total Uses Allowed</label>
-                  <input type="number" min="1" value={form.usageLimit} onChange={(e) => setField('usageLimit', e.target.value)} className={inputClass} />
+                  <NumberField min={1} placeholder="100" blankWhenZero={false} value={form.usageLimit} onChange={(v) => setField('usageLimit', v)} />
                 </div>
                 <div>
                   <label className={labelClass}>Uses Per Customer</label>
-                  <input type="number" min="0" value={form.perCustomerLimit} onChange={(e) => setField('perCustomerLimit', e.target.value)} className={inputClass} />
+                  <NumberField min={0} placeholder="1" blankWhenZero={false} value={form.perCustomerLimit} onChange={(v) => setField('perCustomerLimit', v)} />
                   <p className="text-[9px] text-bronze/40 mt-1">0 means unlimited</p>
                 </div>
               </div>

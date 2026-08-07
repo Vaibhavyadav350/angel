@@ -8,11 +8,14 @@ import { useLocation } from 'react-router-dom';
  * would land at the bottom of the page instead of the top.
  */
 const ScrollToTop = () => {
-    const { pathname, search } = useLocation();
+    const { pathname } = useLocation();
 
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }, [pathname, search]);
+        // Deliberately keyed on `pathname` only. Including `search` meant every
+        // filter change on /products — which rewrites the query string — threw the
+        // shopper back to the top of the page mid-browse.
+    }, [pathname]);
 
     return null;
 };

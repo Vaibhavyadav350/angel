@@ -65,7 +65,7 @@ const HeroSection = () => {
       <div
         className={`absolute inset-0 transition-opacity duration-500 ${animating ? 'opacity-0' : 'opacity-100'}`}
       >
-        <img
+        <img decoding="async"
           src={slide.image}
           alt={slide.title}
           className="w-full h-full object-cover object-center"

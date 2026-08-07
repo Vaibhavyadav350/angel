@@ -45,16 +45,12 @@ export function buildProductPayload(form, imageList) {
     subCategory: form.subCategory,
     productType: form.productType || '',
     collections: form.collections || [],
-    company: form.company,
-    featured: !!form.featured,
-    // Was missing entirely, so ticking "Trending" in the admin form was silently
-    // discarded on save — the value never reached the database.
-    isTrending: !!form.isTrending,
+    company: form.company || 'Angel Fashion Studio',
+    fabric: form.fabric || '',
     discountPercent: Number(form.discountPercent) || 0,
     costPrice: Number(form.costPrice) || 0,
     shippingWeightGrams: Number(form.shippingWeightGrams) || 0,
     images: imageList,
-    badgeText: form.badgeText || '',
     leadTimeDays: form.leadTimeDays || 0,
     composition: form.composition || '',
     careInstructions: form.careInstructions || '',

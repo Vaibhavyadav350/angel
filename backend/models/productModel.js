@@ -13,6 +13,8 @@ Object.values(taxonomy.categories).forEach(subCatObj => {
 const validCollections = taxonomy.collections;
 const validColors = (taxonomy.colors || []).map((c) => c.name);
 const validSizes = taxonomy.sizes || [];
+// '' is allowed: fabric is optional, so an empty value must pass validation.
+const validFabrics = ['', ...(taxonomy.fabrics || [])];
 
 const productSchema = mongoose.Schema({
   name: {
@@ -77,6 +79,7 @@ const productSchema = mongoose.Schema({
   ],
   company: {
     type: String,
+    default: 'Angel Fashion Studio',
     required: [true, 'Please enter product company'],
   },
   category: {
@@ -147,16 +150,11 @@ const productSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  featured: {
-    type: Boolean,
-    default: false,
-  },
-  isTrending: {
-    type: Boolean,
-    default: false,
-  },
-  badgeText: {
+  // Cloth or silhouette. Optional, single value — a garment is not "silk and
+  // velvet and net". This is what the home page circles filter by.
+  fabric: {
     type: String,
+    enum: validFabrics,
     default: '',
   },
   // Optional per-product shipped weight. Blank/0 means "use the category default"

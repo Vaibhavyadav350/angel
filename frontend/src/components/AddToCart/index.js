@@ -4,6 +4,7 @@ import { FaCheck, FaTimes, FaRuler } from 'react-icons/fa';
 import { useCartContext } from '../../context/cart_context';
 import AmountButtons from '../AmountButtons/';
 import { toast } from 'react-toastify';
+import { colorSwatch } from '../../utils/categoryData';
 
 const AddToCart = ({ product }) => {
   const { addToCart } = useCartContext();
@@ -136,7 +137,7 @@ const AddToCart = ({ product }) => {
                       ${mainColor === color ? 'border-gold shadow-lg scale-110' : 'border-transparent'}
                       ${!isAvailable ? 'opacity-20 cursor-not-allowed bg-diagonal-stripes' : 'hover:scale-110 hover:shadow-md cursor-pointer'}
                     `}
-                  style={{ background: color, backgroundSize: '10px 10px' }}
+                  style={{ background: colorSwatch(color), backgroundSize: '10px 10px' }}
                   onClick={() => setMainColor(color)}
                   title={!isAvailable ? 'Out of Stock in selected Size' : ''}
                 >

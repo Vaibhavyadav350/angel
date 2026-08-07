@@ -5,19 +5,23 @@ import { useUserContext } from '../../context/user_context';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { productBadge, BADGE_TONE_CLASSES } from '../../utils/productBadge';
 
-const badgeOptions = [
-  { label: 'NEW ARRIVAL', condition: (p) => p.featured },
-  { label: 'ARCHIVE PIECE', condition: () => true },
-];
-
-// Do not surface bespoke / custom-stitch copy on product cards per business rule.
-const isBespokeBadge = (text) =>
-  /\b(bespoke|custom\s*stitch|stitch|stitching)\b/i.test(text || '');
-
-const Product = ({ image, name, price, id, category, subCategory, shipping, featured, discountPercent, badgeText }) => {
+/**
+ * Product card.
+ *
+ * The image carries exactly one mark — the collection badge. It previously held
+ * three floating elements (badge, a discount chip, and the wishlist heart), with
+ * the discount pinned to `right-14` purely to dodge the heart. On a fashion site
+ * the garment is the product, so anything that can live below the photograph
+ * does.
+ *
+ * The saving moved to the price row, which is where the shopper is already
+ * looking when they weigh it up, and reads as money rather than as a sticker.
+ */
+const Product = ({ image, name, price, id, category, subCategory, collections, discountPercent, stock, activeCollection }) => {
   const { wishlist, toggleWishlistItem, currentUser } = useUserContext();
-  const isWishlisted = wishlist.some(item => (item._id || item) === id);
+  const isWishlisted = wishlist.some((item) => (item._id || item) === id);
 
   const handleWishlist = async (e) => {
     e.preventDefault();
@@ -30,81 +34,97 @@ const Product = ({ image, name, price, id, category, subCategory, shipping, feat
     if (!res.success) toast.error(res.message);
   };
 
-  // Pick badge. Ignore admin badgeText if it mentions bespoke/custom stitching.
-  let badgeLabel = isBespokeBadge(badgeText) ? null : badgeText;
-  if (!badgeLabel) {
-    const badge = badgeOptions.find(b => b.condition({ shipping, featured })) || badgeOptions[1];
-    badgeLabel = badge.label;
-  }
+  // Derived from the Curated Collections the owner ticks, highest priority first.
+  // No badge at all when the product is in no collection — better than inventing
+  // an "ARCHIVE PIECE" label for everything, which is what used to happen.
+  const badge = productBadge({ collections }, { activeCollection });
+
+  const discount = Number(discountPercent) || 0;
+  const sellingPrice = price * (1 - discount / 100);
+
+  // 43% of the catalogue currently has no stock. Those cards used to look
+  // identical to buyable ones, so the shopper only found out after clicking.
+  const soldOut = !(Number(stock) > 0);
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
       className="group relative"
     >
-      {/* Image Container */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-white mb-8">
-        <Link to={`/products/${id}`}>
+      {/* Image — one mark only, nothing else over the garment */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-white">
+        <Link to={`/products/${id}`} aria-label={name}>
           <img
             src={image?.replace(/^http:\/\//i, 'https://')}
             alt={name}
-            className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+            loading="lazy"
+            className={`w-full h-full object-cover transition-transform duration-[1800ms] ease-out group-hover:scale-[1.06] ${
+              soldOut ? 'opacity-55 saturate-[0.65]' : ''
+            }`}
           />
+          <div className="absolute inset-0 bg-chocolate/0 group-hover:bg-chocolate/5 transition-colors duration-500" />
+
+          {soldOut && (
+            <span className="absolute inset-x-0 bottom-0 bg-chocolate/80 text-champagne text-center py-1.5 sm:py-2 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.35em]">
+              Sold Out
+            </span>
+          )}
         </Link>
 
-        {/* Subtle hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
-
-        {/* Badge — top left (Hidden on mobile) */}
-        <div className="absolute top-4 left-4 z-10 hidden md:block">
-          <span className="px-3 py-1.5 bg-gold text-chocolate text-[8px] font-black uppercase tracking-widest shadow-sm">
-            {badgeLabel}
+        {/* Sold out outranks the collection badge — availability is the more
+            useful thing to know at a glance. */}
+        {badge && (
+          <span
+            className={`absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 px-2 py-1 sm:px-3 sm:py-1.5 text-[7px] sm:text-[8px] font-black uppercase tracking-[0.15em] sm:tracking-[0.18em] ${BADGE_TONE_CLASSES[badge.tone]}`}
+          >
+            {badge.label}
           </span>
-        </div>
-
-        {/* Discount badge — top right */}
-        {discountPercent > 0 && (
-          <div className="absolute top-4 right-14 z-10">
-            <span className="px-2 py-1 bg-chocolate text-champagne text-[8px] font-black uppercase tracking-widest">
-              -{discountPercent}%
-            </span>
-          </div>
         )}
-
-        {/* Wishlist Heart — top right (Hidden on mobile) */}
-        <button
-          onClick={handleWishlist}
-          className="absolute top-4 right-4 z-10 p-3 bg-white/80 backdrop-blur-sm rounded-full text-bronze hover:bg-white hover:scale-110 transition-all duration-300 shadow-sm hidden md:block"
-          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        >
-          {isWishlisted ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-        </button>
-
       </div>
 
-      {/* Product Info */}
-      <div className="flex flex-col gap-1.5 mt-4">
-        <h3 className="text-lg md:text-2xl font-editorial font-bold text-bronze truncate group-hover:text-gold transition-colors duration-300">
-          {name}
-        </h3>
-        
-        <div className="flex items-center gap-3">
-          <p className="text-base md:text-xl font-editorial text-bronze whitespace-nowrap">
-            {formatPrice(price * (1 - (discountPercent || 0) / 100))}
-          </p>
-          {discountPercent > 0 && (
-            <p className="text-[10px] md:text-[12px] text-bronze/40 line-through">{formatPrice(price)}</p>
-          )}
-        </div>
-
-        <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/40 mt-1">
-          {category} {subCategory ? `// ${subCategory}` : ''}
+      {/* Details */}
+      <div className="mt-3.5 sm:mt-5 flex flex-col gap-1.5 sm:gap-2">
+        <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/35">
+          {category}
+          {subCategory ? ` // ${subCategory}` : ''}
         </p>
 
+        <Link to={`/products/${id}`}>
+          {/* Two lines rather than `truncate`, which cut names mid-word
+              ("Sunshine Yellow Prin…"). min-h keeps the grid rows aligned. */}
+          <h3 className={`text-base md:text-xl font-editorial font-bold leading-snug line-clamp-2 min-h-[2.6rem] md:min-h-[3.2rem] transition-colors duration-300 ${
+            soldOut ? 'text-bronze/45' : 'text-bronze group-hover:text-gold'
+          }`}>
+            {name}
+          </h3>
+        </Link>
+
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 min-w-0">
+            <span className={`text-base md:text-xl font-editorial font-bold whitespace-nowrap ${soldOut ? 'text-bronze/45' : 'text-bronze'}`}>
+              {formatPrice(sellingPrice)}
+            </span>
+            {discount > 0 && (
+              <>
+                <span className="text-[11px] text-bronze/35 line-through whitespace-nowrap">{formatPrice(price)}</span>
+                <span className="px-1.5 py-0.5 bg-gold/15 text-gold text-[9px] font-black tracking-wider whitespace-nowrap">
+                  −{discount}%
+                </span>
+              </>
+            )}
+          </div>
+
+          <button
+            onClick={handleWishlist}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            className="shrink-0 p-1 sm:p-1.5 -mr-1 sm:-mr-1.5 mt-0.5 text-bronze/30 hover:text-gold transition-colors duration-300"
+          >
+            {isWishlisted ? <FaHeart className="text-[15px] text-gold" /> : <FaRegHeart className="text-[15px]" />}
+          </button>
+        </div>
       </div>
     </motion.div>
   );

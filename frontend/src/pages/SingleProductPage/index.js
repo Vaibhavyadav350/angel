@@ -17,6 +17,7 @@ import { useUserContext } from '../../context/user_context';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { OptimizedImage } from '../../components/archive/shared';
+import { productBadge, BADGE_TONE_CLASSES } from '../../utils/productBadge';
 
 
 
@@ -66,10 +67,14 @@ const SingleProductPage = () => {
     category = '',
     subCategory = '',
     careInstructions = '',
-    badgeText = '',
+    collections = [],
     leadTimeDays = 0,
     composition = '',
   } = product || {};
+
+  // Same collection-driven badge the product cards use, so the label a shopper
+  // saw on the grid is the label they see here.
+  const detailBadge = productBadge({ collections });
 
   useEffect(() => {
     if (name && id) {
@@ -193,9 +198,9 @@ const SingleProductPage = () => {
               {/* Name & Title */}
               <div className="space-y-4">
                 <div className="space-y-1">
-                  {badgeText && (
-                    <span className="inline-block px-2 py-1 bg-gold/20 text-gold text-[8px] lg:text-[9px] font-black uppercase tracking-widest rounded-sm mb-2">
-                      {badgeText}
+                  {detailBadge && (
+                    <span className={`inline-block px-2.5 py-1 text-[8px] lg:text-[9px] font-black uppercase tracking-widest rounded-sm mb-2 ${BADGE_TONE_CLASSES[detailBadge.tone]}`}>
+                      {detailBadge.label}
                     </span>
                   )}
                   {company && (
@@ -275,7 +280,7 @@ const SingleProductPage = () => {
                 </div>
                 <div>
                   <span className="block text-bronze/40 mb-1">SKU</span>
-                  <span className="truncate">{sku.substring(0, 8)}...</span>
+                  <span className="truncate">{String(sku || '').substring(0, 8)}…</span>
                 </div>
                 <div>
                   <span className="block text-bronze/40 mb-1">Category</span>
@@ -354,7 +359,7 @@ const SingleProductPage = () => {
                 </p>
               )}
               <div className="space-y-8">
-                {reviews.map((review, index) => (
+                {(reviews || []).map((review, index) => (
                   <UserReview key={index} {...review} />
                 ))}
               </div>

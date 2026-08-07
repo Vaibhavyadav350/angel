@@ -33,7 +33,7 @@ export const FILTER_OPTIONS = [
 
 export const SOCIAL_LINKS = {
   instagram: 'https://instagram.com',
-  email: 'mailto:support@angelfashionstudio.com',
+  email: 'mailto:support@angelfashionstudio.org',
   phone: 'tel:+61466853704',
 };
 
@@ -47,7 +47,7 @@ export const COMPANY_INFO = {
     country: 'Australia',
   },
   contact: '+61 466 853 704',
-  email: 'support@angelfashionstudio.com',
+  email: 'support@angelfashionstudio.org',
 };
 
 export const contactDetails = {
@@ -58,7 +58,7 @@ export const contactDetails = {
     country: 'Australia',
   },
   phone: '+61 466 853 704',
-  email: 'support@angelfashionstudio.com',
+  email: 'support@angelfashionstudio.org',
 };
 
 export const FOOTER_LINKS = {

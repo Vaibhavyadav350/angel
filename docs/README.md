@@ -24,6 +24,7 @@ A MERN e-commerce platform for **Angel Fashion Studio**, an Australian fashion s
 | [operations-runbook.md](operations-runbook.md) | Day-to-day ops (logs, restart, deploy), and a catalogue of known issues + fixes |
 | [eway-rapid-reference.md](eway-rapid-reference.md) | eWAY Rapid integration vendor reference (detailed) |
 | [shipping_pricing_proposal.md](shipping_pricing_proposal.md) | Engineering record: the shipping/pricing audit, the weight-band model, every edge case, and what was implemented |
+| [database_query_review.md](database_query_review.md) | MongoDB query-layer review — indexes, atomicity, N+1s, and a prioritised fix list |
 
 ## Client-facing deliverables
 

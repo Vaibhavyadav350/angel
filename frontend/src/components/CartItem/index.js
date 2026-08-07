@@ -2,6 +2,7 @@ import React from 'react';
 import { formatPrice } from '../../utils/helpers';
 import AmountButtons from '../AmountButtons/';
 import { useCartContext } from '../../context/cart_context';
+import { colorSwatch } from '../../utils/categoryData';
 
 const CartItem = ({ id, image, name, color, price, amount, size, mrp, discountPercent }) => {
   const { removeItem, toggleAmount } = useCartContext();
@@ -25,7 +26,7 @@ const CartItem = ({ id, image, name, color, price, amount, size, mrp, discountPe
               Color
               <span
                 className="inline-block w-3 h-3 rounded-full border border-bronze/20"
-                style={{ background: color }}
+                style={{ background: colorSwatch(color) }}
               />
             </span>
           )}

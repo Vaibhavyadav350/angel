@@ -1,7 +1,44 @@
 import React from 'react';
 import { useFilterContext } from '../../context/filter_context';
 import { getUniqueValues, formatPrice } from '../../utils/helpers';
-import { categoryData } from '../../utils/categoryData';
+import { categoryData, colorSwatch, isPaleColor } from '../../utils/categoryData';
+
+/**
+ * Refinement sidebar — the one place on the listing page where the shopper
+ * changes what they are looking at.
+ *
+ * Styled to the same language as the product detail page: gold hairline rules,
+ * wide-tracked micro-labels, and a single accent colour. The previous version
+ * mixed bordered pill buttons, boxed selects and underlined links, which read as
+ * a utility panel bolted onto a luxury page.
+ */
+
+const Section = ({ title, children }) => (
+  <div className="pt-7 border-t border-bronze/10 first:pt-0 first:border-t-0">
+    <h4 className="text-[9px] font-bold uppercase tracking-[0.45em] text-gold mb-5">{title}</h4>
+    {children}
+  </div>
+);
+
+/** One row in a drill-down list. `depth` indents sub-levels. */
+const FilterLink = ({ active, depth = 0, children, ...props }) => (
+  <button
+    type="button"
+    {...props}
+    className={`w-full text-left text-[11px] font-medium tracking-[0.12em] uppercase py-1.5 transition-colors duration-200 ${
+      active ? 'text-gold' : 'text-bronze/55 hover:text-bronze'
+    }`}
+    style={{ paddingLeft: depth * 12 }}
+  >
+    <span className={`inline-flex items-center gap-2 ${active ? 'font-bold' : ''}`}>
+      <span
+        className={`h-px transition-all duration-300 ${active ? 'w-4 bg-gold' : 'w-0 bg-transparent'}`}
+        aria-hidden="true"
+      />
+      {children}
+    </span>
+  </button>
+);
 
 const Filters = () => {
   const {
@@ -15,208 +52,155 @@ const Filters = () => {
   const colors = getUniqueValues(all_products, 'colors');
   const collections = getUniqueValues(all_products, 'collections');
 
-  const labelBase = 'text-[10px] font-bold uppercase tracking-[0.4em] text-gold block mb-4';
-  const underlineInput = 'w-full bg-transparent border-0 border-b border-bronze/20 py-3 px-0 text-[10px] font-bold tracking-widest text-bronze placeholder:text-bronze/30 uppercase focus:outline-none focus:border-gold transition-colors appearance-none';
+  const subCategories = category !== 'all' && categoryData[category] ? Object.keys(categoryData[category]) : [];
+  const productTypes =
+    category !== 'all' && subCategory !== 'all' ? categoryData[category]?.[subCategory] || [] : [];
 
   return (
-    <aside className="w-full lg:w-64 shrink-0 space-y-10">
+    <aside className="w-full lg:w-60 shrink-0 space-y-7">
       {/* Search */}
-      <div>
-        <label className={labelBase} htmlFor="text">Search</label>
-        <div className="relative">
-          <input
-            type="text"
-            name="text"
-            id="text"
-            placeholder="SEARCH ARCHIVE"
-            className={underlineInput}
-            value={text}
-            onChange={updateFilters}
-          />
-          <span className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-bronze/30 text-xl">
-            search
-          </span>
-        </div>
+      <div className="relative">
+        <input
+          type="text"
+          name="text"
+          id="text"
+          placeholder="Search the archive"
+          className="w-full bg-transparent border-0 border-b border-bronze/20 py-2.5 pr-7 pl-0 text-[11px] font-medium tracking-[0.12em] text-bronze placeholder:text-bronze/30 focus:outline-none focus:border-gold transition-colors"
+          value={text}
+          onChange={updateFilters}
+        />
+        <span className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-bronze/25 text-lg pointer-events-none">
+          search
+        </span>
       </div>
 
-      {/* Categories */}
-      <div>
-        <h4 className={labelBase}>Category</h4>
-        <div className="flex flex-col gap-3">
-          {categories.map((item, index) => (
-            <button
-              key={index}
-              type="button"
-              name="category"
-              value={item}
-              onClick={updateFilters}
-              className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors ${category === item
-                ? 'text-gold border-b border-gold pb-0.5'
-                : 'text-bronze/60 hover:text-gold'
-                }`}
-            >
-              {item === 'all' ? 'All' : item}
-            </button>
+      {/* Category drill-down. Sub-category and type reveal as you go deeper, so
+          the panel never shows more than the shopper needs at that moment. */}
+      <Section title="Category">
+        <div className="flex flex-col">
+          {categories.map((item) => (
+            <React.Fragment key={item}>
+              <FilterLink name="category" value={item} onClick={updateFilters} active={category === item}>
+                {item === 'all' ? 'All Categories' : item}
+              </FilterLink>
+
+              {category === item && subCategories.length > 0 && (
+                <div className="flex flex-col mb-1">
+                  {subCategories.map((sub) => (
+                    <React.Fragment key={sub}>
+                      <FilterLink name="subCategory" value={sub} onClick={updateFilters} active={subCategory === sub} depth={1}>
+                        {sub}
+                      </FilterLink>
+
+                      {subCategory === sub && productTypes.length > 0 && (
+                        <div className="flex flex-col">
+                          {productTypes.map((type) => (
+                            <FilterLink
+                              key={type}
+                              name="productType"
+                              value={type}
+                              onClick={updateFilters}
+                              active={productType === type}
+                              depth={2}
+                            >
+                              {type}
+                            </FilterLink>
+                          ))}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              )}
+            </React.Fragment>
           ))}
         </div>
-      </div>
-
-      {/* Sub Categories (Dynamic from categoryData) */}
-      {category !== 'all' && categoryData[category] && (
-        <div>
-          <h4 className={labelBase}>Sub-Category</h4>
-          <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              name="subCategory"
-              value="all"
-              onClick={updateFilters}
-              className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-4 ${subCategory === 'all'
-                ? 'text-gold border-l-2 border-gold pl-2'
-                : 'text-bronze/60 hover:text-gold border-l-2 border-transparent pl-2'
-                }`}
-            >
-              All
-            </button>
-            {Object.keys(categoryData[category]).map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                name="subCategory"
-                value={item}
-                onClick={updateFilters}
-                className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-4 ${subCategory === item
-                  ? 'text-gold border-l-2 border-gold pl-2'
-                  : 'text-bronze/60 hover:text-gold border-l-2 border-transparent pl-2'
-                  }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Product Types (Dynamic from categoryData) */}
-      {category !== 'all' && subCategory !== 'all' && categoryData[category]?.[subCategory] && (
-        <div>
-          <h4 className={labelBase}>Type</h4>
-          <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              name="productType"
-              value="all"
-              onClick={updateFilters}
-              className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-8 ${productType === 'all'
-                ? 'text-gold border-l-2 border-gold pl-2'
-                : 'text-bronze/60 hover:text-gold border-l-2 border-transparent pl-2'
-                }`}
-            >
-              All
-            </button>
-            {categoryData[category][subCategory].map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                name="productType"
-                value={item}
-                onClick={updateFilters}
-                className={`text-left text-[11px] font-bold uppercase tracking-widest transition-colors pl-8 ${productType === item
-                  ? 'text-gold border-l-2 border-gold pl-2'
-                  : 'text-bronze/60 hover:text-gold border-l-2 border-transparent pl-2'
-                  }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      </Section>
 
       {/* Collections */}
-      <div>
-        <label className={labelBase} htmlFor="collection">Collection</label>
-        <select
-          name="collection"
-          id="collection"
-          value={collection}
-          onChange={updateFilters}
-          className={`${underlineInput} cursor-pointer`}
-        >
-          <option value="all">All</option>
-          {collections.filter(c => c !== 'all').map((item, index) => (
-            <option key={index} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-      </div>
+      {collections.length > 1 && (
+        <Section title="Collection">
+          <div className="flex flex-col">
+            <FilterLink name="collection" value="all" onClick={updateFilters} active={collection === 'all'}>
+              All
+            </FilterLink>
+            {collections
+              .filter((c) => c !== 'all')
+              .map((item) => (
+                <FilterLink key={item} name="collection" value={item} onClick={updateFilters} active={collection === item}>
+                  {item}
+                </FilterLink>
+              ))}
+          </div>
+        </Section>
+      )}
 
-      {/* Colors */}
-      <div>
-        <h4 className={labelBase}>Palette</h4>
-        <div className="flex flex-wrap gap-3">
-          {colors.map((item, index) => {
-            if (item === 'all') {
-              return (
-                <button
-                  key={index}
-                  name="color"
-                  data-color="all"
-                  onClick={updateFilters}
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-colors px-3 py-1 border ${color === 'all'
-                    ? 'border-gold text-gold'
-                    : 'border-bronze/20 text-bronze/50 hover:border-gold hover:text-gold'
-                    }`}
-                >
-                  All
-                </button>
-              );
-            }
-            return (
+      {/* Palette */}
+      <Section title="Palette">
+        <button
+          type="button"
+          name="color"
+          data-color="all"
+          onClick={updateFilters}
+          className={`mb-3 text-[10px] font-medium uppercase tracking-[0.15em] transition-colors ${
+            color === 'all' ? 'text-gold font-bold' : 'text-bronze/45 hover:text-bronze'
+          }`}
+        >
+          All colours
+        </button>
+        <div className="flex flex-wrap gap-2.5">
+          {colors
+            .filter((c) => c !== 'all')
+            .map((item) => (
               <button
-                key={index}
+                key={item}
+                type="button"
                 name="color"
                 data-color={item}
-                style={{ background: item }}
                 onClick={updateFilters}
-                aria-label={`Filter by color ${item}`}
-                className={`w-6 h-6 rounded-full border transition-all ring-offset-2 ring-offset-champagne ${color === item
-                  ? 'ring-2 ring-gold border-gold'
-                  : 'border-white/20 ring-transparent hover:ring-1 hover:ring-gold'
-                  }`}
+                title={item}
+                aria-label={`Filter by colour ${item}`}
+                style={{ background: colorSwatch(item) }}
+                className={`w-7 h-7 rounded-full border transition-all ring-offset-2 ring-offset-champagne ${
+                  color === item
+                    ? 'ring-2 ring-gold border-gold'
+                    : `ring-transparent hover:ring-1 hover:ring-gold ${
+                        isPaleColor(item) ? 'border-bronze/30' : 'border-transparent'
+                      }`
+                }`}
               />
-            );
-          })}
+            ))}
         </div>
-      </div>
+      </Section>
 
       {/* Price */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h4 className={labelBase.replace('mb-4', '')}>Price</h4>
-          <span className="text-[10px] font-bold text-bronze/60">{formatPrice(price)}</span>
+      <Section title="Price">
+        <div className="flex items-baseline justify-between mb-3">
+          <span className="text-[10px] font-medium tracking-[0.15em] text-bronze/40 uppercase">Up to</span>
+          <span className="text-sm font-editorial font-bold text-bronze">{formatPrice(price)}</span>
         </div>
         <input
           type="range"
           name="price"
-          id="price"
+          onChange={updateFilters}
           min={min_price}
           max={max_price}
           value={price}
-          onChange={updateFilters}
-          className="w-full h-0.5 bg-bronze/10 accent-gold cursor-pointer"
+          aria-label="Maximum price"
+          className="w-full h-px bg-bronze/20 accent-gold cursor-pointer"
         />
-      </div>
+        <div className="flex justify-between mt-2 text-[9px] font-medium tracking-[0.15em] text-bronze/30">
+          <span>{formatPrice(min_price)}</span>
+          <span>{formatPrice(max_price)}</span>
+        </div>
+      </Section>
 
-
-      {/* Clear Filters */}
       <button
         type="button"
         onClick={clearFilters}
-        className="w-full py-3 text-[10px] font-bold uppercase tracking-[0.4em] text-bronze/40 border border-bronze/10 hover:border-bronze/30 hover:text-bronze transition-all"
+        className="w-full mt-2 py-3 text-[9px] font-bold uppercase tracking-[0.35em] text-bronze/50 border border-bronze/15 hover:border-gold hover:text-gold transition-colors"
       >
-        Clear Filters
+        Reset
       </button>
     </aside>
   );

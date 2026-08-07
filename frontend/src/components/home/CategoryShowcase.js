@@ -1,45 +1,22 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import SectionHeading from './SectionHeading';
 import taxonomy from '../../utils/taxonomy.json';
 
-const AutoCarousel = ({ children }) => {
-  const scrollRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    let animationFrameId;
-    let scrollDirection = 1;
-    const speed = 0.7;
-
-    const scroll = () => {
-      const container = scrollRef.current;
-      if (container && !isHovered && window.innerWidth >= 1024) {
-        if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 1) {
-          scrollDirection = -1;
-        } else if (container.scrollLeft <= 0) {
-          scrollDirection = 1;
-        }
-        container.scrollLeft += speed * scrollDirection;
-      }
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-
-    animationFrameId = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered]);
-
-  return (
-    <div 
-      ref={scrollRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="grid grid-cols-2 gap-4 md:gap-6 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-8 no-scrollbar"
-    >
-      {children}
-    </div>
-  );
-};
+/**
+ * Static grid. Replaces an AutoCarousel that ran an infinite requestAnimationFrame
+ * loop, ping-ponging scrollLeft at 0.7px/frame — sliding right, hitting the end,
+ * then reversing. That reversal is what made it read as a broken slider rather
+ * than a design decision, and the loop ran every frame whether or not the
+ * section was on screen.
+ *
+ * A rail was considered instead, but the data rules it out: 14 of the 15 groups
+ * hold three items or fewer, so its arrows would be permanently disabled.
+ * Everything now fits on screen with nothing moving.
+ */
+const ItemGrid = ({ children }) => (
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">{children}</div>
+);
 
 const showcases = [
   {
@@ -47,8 +24,10 @@ const showcases = [
     category: "Women",
     title: "The Women's Archive",
     subtitle: "A legacy of elegance, from bridal masterpieces to contemporary silhouettes.",
-    bgColor: "bg-[#F5EFE4]",
-    bgText: "ARCHIVE",
+    bgColor: "bg-[#F7EFE3]",
+    // Soft arch: bridal, architectural, feminine.
+    shape: "rounded-2xl",
+    accent: "#E8B4BC",
     sections: [
       {
         title: "LEHENGAS",
@@ -88,7 +67,9 @@ const showcases = [
     title: "The Men's Heritage",
     subtitle: "Timeless tailoring and royal silhouettes for the modern groom.",
     bgColor: "bg-white",
-    bgText: "LEGACY",
+    // Square with a rule beneath: tailored, structured, menswear.
+    shape: "rounded-2xl",
+    accent: "#E3D3BE",
     sections: [
       {
         title: "SHERWANIS & JACKETS",
@@ -114,8 +95,10 @@ const showcases = [
     category: "Kids",
     title: "The Young Heirs",
     subtitle: "Miniature masterpieces crafted with the same archival precision.",
-    bgColor: "bg-[#F5EFE4]",
-    bgText: "ESTATE",
+    bgColor: "bg-[#F3EFE8]",
+    // Fully rounded: softer, lighter, for the children's room.
+    shape: "rounded-2xl",
+    accent: "#EFD9BE",
     sections: [
       {
         title: "KIDSWEAR",
@@ -131,8 +114,11 @@ const showcases = [
     category: "Jewelry",
     title: "Archival Adornments",
     subtitle: "Exquisite hand-crafted jewelry to complete the heritage look.",
-    bgColor: "bg-white",
-    bgText: "LUXURY",
+    bgColor: "bg-[#2E2119]",
+    // Jewellery reads best against dark, the way it is displayed in a case.
+    shape: "rounded-full",
+    aspect: "aspect-square",
+    accent: "#C5A059",
     sections: [
       {
         title: "JEWELRY SERIES",
@@ -175,98 +161,91 @@ const CategoryShowcase = () => {
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 40s linear infinite;
-        }
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
       `}</style>
       
-      {showcases.map((section, sIdx) => (
-        <section key={sIdx} className={`${section.bgColor} py-16 md:py-24 relative overflow-hidden border-b border-[#D4C5B5]/20`}>
-          
-          <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full flex justify-center whitespace-nowrap opacity-[0.02] select-none pointer-events-none z-0">
-            <h2 className="text-[25vw] font-editorial font-black leading-none uppercase tracking-[0.05em]">
-              {section.bgText}
-            </h2>
-          </div>
+      {showcases.map((section, sIdx) => {
+        const onDark = section.id === 'jewelry';
+        return (
+        <section key={sIdx} className={`${section.bgColor} section-rhythm relative border-b border-[#D4C5B5]/20`}>
 
           <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
             
-            <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end gap-8 mb-16">
-              <div className="text-center lg:text-left w-full lg:w-auto flex flex-col items-center lg:items-start">
-                <SectionHeading title={section.title} subtitle={`Series 0${sIdx + 1}`} className="text-center lg:text-left flex flex-col items-center lg:items-start" />
-                <p className="text-sm font-medium text-[#7A5C41]/80 leading-relaxed border-l-2 border-[#C5A059]/40 pl-6 mt-6 max-w-lg hidden md:block">
-                  {section.subtitle}
-                </p>
-              </div>
-              <div className="h-px flex-1 bg-[#D4C5B5]/30 mx-12 hidden lg:block" />
-              <p className="text-[10px] font-bold text-[#C5A059] tracking-[0.4em] uppercase whitespace-nowrap">{section.category} COLLECTION</p>
+            <div className="max-w-2xl mb-12 md:mb-16">
+              <SectionHeading title={section.title} subtitle={`${section.category} Collection`} onDark={onDark} />
+              <p className={`text-sm font-medium leading-relaxed mt-5 hidden md:block ${onDark ? 'text-[#F7EFE3]/60' : 'text-[#7A5C41]/75'}`}>
+                {section.subtitle}
+              </p>
             </div>
 
             {section.sections.map((sub, subIdx) => (
-                <div key={subIdx} className="mb-20 last:mb-0">
-                  <div className="flex items-center gap-4 mb-10 px-0">
-                    <div className="h-px w-10 bg-[#C5A059]" />
-                    <h3 className="text-[10px] font-bold text-[#3D2B1F] tracking-[0.4em] uppercase">{sub.title}</h3>
+                <div key={subIdx} className="mb-14 sm:mb-20 last:mb-0">
+                  <div className="flex items-center justify-between gap-4 mb-8">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="h-px w-10 bg-[#C5A059] shrink-0" />
+                      <h3 className={`text-[10px] font-bold tracking-[0.4em] uppercase truncate ${onDark ? 'text-[#F7EFE3]' : 'text-[#3D2B1F]'}`}>{sub.title}</h3>
+                    </div>
+                    <Link
+                      to={getViewMoreUrl(section.category, sub.title)}
+                      className={`group shrink-0 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase hover:text-[#C5A059] transition-colors flex items-center gap-2 ${onDark ? 'text-[#F7EFE3]/50' : 'text-[#7A5C41]/60'}`}
+                    >
+                      View all
+                      <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                    </Link>
                   </div>
                   
                   <div className="w-full">
-                    <AutoCarousel>
+                    <ItemGrid>
                       {sub.items.map((item, iIdx) => (
                         <Link 
                           key={iIdx} 
                           to={item.url}
-                          className="group flex flex-col lg:flex-none lg:w-[320px]"
+                          className="group flex flex-col"
                         >
-                          <div className={`relative aspect-[3/4] overflow-hidden rounded-2xl mb-4 bg-[#F9F6F2] transition-all duration-700 shadow-md group-hover:shadow-xl
-                            ${section.id === 'men' ? 'rounded-none border-b-0' : ''}
-                            ${section.id === 'kids' ? 'rounded-t-[4rem] rounded-b-xl' : ''}
-                            ${section.id === 'jewelry' ? 'bg-[#3D2B1F]' : ''}
-                          `}>
-                            <img 
-                              src={item.img} 
+                          <div className={`relative ${section.aspect || 'aspect-[3/4]'} overflow-hidden bg-[#F9F6F2] ring-1 ring-black/5 transition-shadow duration-700 group-hover:shadow-[0_24px_60px_-24px_rgba(61,43,31,0.5)] ${section.shape}`}>
+                            <img
+                              loading="lazy"
+                              decoding="async"
+                              src={item.img}
                               alt={item.name}
-                              className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+                              className="w-full h-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.06]"
                             />
-                            {/* Hover overlay with minimal "Explore" */}
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                              <span className="text-white text-[10px] tracking-[0.3em] uppercase border border-white/40 px-6 py-2 rounded-full backdrop-blur-sm">
-                                Explore
-                              </span>
-                            </div>
                           </div>
-                          
-                          <div className="text-center lg:text-left mt-2 px-2">
-                            <p className="text-[10px] text-[#C5A059] tracking-[0.2em] font-bold mb-1 uppercase">{item.sub}</p>
-                            <h4 className="font-serif text-lg text-[#3D2B1F] tracking-wide" style={{ fontFamily: "'Cormorant Garamond', serif" }}>{item.name}</h4>
+
+                          {/* Caption below the card, never over it. Overlaying meant
+                              laying a dark gradient across the lower half of every
+                              photograph to keep the text legible, which muddied the
+                              garment. The jewellery row read better than the rest for
+                              exactly this reason — its caption already sat underneath. */}
+                          <div className="mt-4 text-center">
+                            <p
+                              className={`text-[8px] sm:text-[9px] tracking-[0.3em] font-bold mb-1 uppercase ${
+                                onDark ? 'text-[#C5A059]' : 'text-[#B08D57]'
+                              }`}
+                            >
+                              {item.sub}
+                            </p>
+                            <h4
+                              className={`font-editorial text-base sm:text-lg font-bold leading-tight transition-colors ${
+                                onDark ? 'text-[#F7EFE3] group-hover:text-[#C5A059]' : 'text-[#3D2B1F] group-hover:text-[#B08D57]'
+                              }`}
+                            >
+                              {item.name}
+                            </h4>
+                            <span
+                              className="block h-[2px] w-0 group-hover:w-10 mx-auto mt-2.5 transition-all duration-500"
+                              style={{ background: onDark ? '#C5A059' : '#B08D57' }}
+                            />
                           </div>
                         </Link>
                       ))}
-
-                      {/* View More Card (Desktop only to maintain mobile grid symmetry) */}
-                      <Link
-                        to={getViewMoreUrl(section.category, sub.title)}
-                        className="hidden lg:flex flex-none w-[320px] snap-start items-center justify-center bg-[#F5EFE4] rounded-2xl group border-2 border-dashed border-[#D4C5B5] hover:border-[#C5A059] transition-colors"
-                      >
-                        <div className="text-center">
-                          <span className="text-4xl text-[#C5A059] block mb-2 group-hover:translate-x-2 transition-transform">→</span>
-                          <p className="text-[11px] font-bold tracking-widest text-[#3D2B1F] uppercase">View Complete Collection</p>
-                        </div>
-                      </Link>
-                    </AutoCarousel>
+                    </ItemGrid>
                   </div>
                 </div>
               ))}
           </div>
         </section>
-      ))}
+        );
+      })}
     </>
   );
 };

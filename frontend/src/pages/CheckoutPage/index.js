@@ -281,8 +281,8 @@ const CheckoutPage = () => {
                       <p className="text-[11px] text-bronze/70 leading-relaxed">
                         Orders of this size ship in multiple parcels, so we quote the freight by hand
                         to make sure you are not overcharged. Please email{' '}
-                        <a href="mailto:support@angelfashionstudio.com" className="text-gold font-bold">
-                          support@angelfashionstudio.com
+                        <a href="mailto:support@angelfashionstudio.org" className="text-gold font-bold">
+                          support@angelfashionstudio.org
                         </a>{' '}
                         or call <span className="text-gold font-bold">+61 466 853 704</span> and we
                         will send you a shipping quote straight away.

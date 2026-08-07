@@ -97,6 +97,7 @@ const filter_reducer = (state, action) => {
     newFilters.category = category || 'all';
     newFilters.subCategory = subCategory || 'all';
     newFilters.productType = productType || 'all';
+    newFilters.fabric = action.payload.fabric || 'all';
     newFilters.collection = collection || 'all';
     return { ...state, filters: newFilters };
   }
@@ -128,6 +129,12 @@ const filter_reducer = (state, action) => {
     if (state.filters.productType && state.filters.productType.toLowerCase() !== 'all') {
       tempProducts = tempProducts.filter((product) => {
         return product.productType && product.productType.toLowerCase() === state.filters.productType.toLowerCase();
+      });
+    }
+    //fabric — cloth / silhouette, set per product in the admin
+    if (state.filters.fabric && state.filters.fabric.toLowerCase() !== 'all') {
+      tempProducts = tempProducts.filter((product) => {
+        return product.fabric && product.fabric.toLowerCase() === state.filters.fabric.toLowerCase();
       });
     }
     //company
@@ -173,6 +180,7 @@ const filter_reducer = (state, action) => {
         category: 'all',
         subCategory: 'all',
         productType: 'all',
+        fabric: 'all',
         color: 'all',
         price: state.filters.max_price,
         shipping: false,

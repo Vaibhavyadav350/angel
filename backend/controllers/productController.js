@@ -136,9 +136,6 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       category,
       stock,
       shipping,
-      featured,
-      isTrending,
-      badgeText,
       discountPercent,
       rating,
       numberOfReviews,
@@ -159,13 +156,11 @@ exports.getAllProducts = catchAsyncError(async (req, res) => {
       collections: item.collections || [],
       // Needed by the cart to preview weight-banded delivery and to show make
       // time. `costPrice` is deliberately NOT in this list — it is admin-only.
+      fabric: item.fabric || '',
       leadTimeDays: item.leadTimeDays || 0,
       shippingWeightGrams: item.shippingWeightGrams || 0,
       stock,
       shipping,
-      featured,
-      isTrending: isTrending || false,
-      badgeText: badgeText || '',
       discountPercent: discountPercent || 0,
       rating: rating || 0,
       numberOfReviews: numberOfReviews || 0,
@@ -295,41 +290,6 @@ exports.deleteReview = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// get trending products
-exports.getTrendingProducts = catchAsyncError(async (req, res, next) => {
-  const limit = req.query.limit ? parseInt(req.query.limit) : 5;
-  let products = await Product.find({ isTrending: true }).limit(limit);
-  if (products.length < limit) {
-    const fallback = await Product.find({ isTrending: false }).sort({ rating: -1, numberOfReviews: -1 }).limit(limit - products.length);
-    products = [...products, ...fallback];
-  }
-
-  const data = products.map((item) => {
-    return {
-      id: item._id,
-      name: item.name,
-      price: item.price,
-      image: item.images && item.images.length > 0 ? item.images[0].url : '',
-      colors: item.colors,
-      company: item.company,
-      description: item.description,
-      category: item.category,
-      subCategory: item.subCategory || '',
-      productType: item.productType || '',
-      collections: item.collections || [],
-      stock: item.stock,
-      shipping: item.shipping,
-      featured: item.featured,
-    };
-  });
-
-  res.status(200).json({
-    success: true,
-    data,
-  });
-});
-
-// get new arrivals
 exports.getNewArrivals = catchAsyncError(async (req, res, next) => {
   const limit = req.query.limit ? parseInt(req.query.limit) : 5;
   const products = await Product.find().sort({ createdAt: -1 }).limit(limit);
@@ -349,7 +309,7 @@ exports.getNewArrivals = catchAsyncError(async (req, res, next) => {
       collections: item.collections || [],
       stock: item.stock,
       shipping: item.shipping,
-      featured: item.featured,
+      fabric: item.fabric || '',
     };
   });
 
@@ -371,8 +331,9 @@ exports.exportProductsExcel = catchAsyncError(async (req, res, next) => {
     Collection: p.company,
     Price: p.price,
     Stock: p.stock,
-    Description: p.description.substring(0, 100) + '...',
-    Featured: p.featured ? 'Yes' : 'No'
+    Description: (p.description || '').substring(0, 100) + '...',
+    Fabric: p.fabric || '',
+    'Cost Price': p.costPrice || 0
   }));
 
   const workbook = XLSX.utils.book_new();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiSearch, FiShoppingBag, FiHeart, FiUser, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiSearch, FiShoppingBag, FiHeart, FiUser, FiMenu, FiX, FiChevronDown, FiPackage } from 'react-icons/fi';
 import { useCartContext } from '../../context/cart_context';
 import { useUserContext } from '../../context/user_context';
 import { default_profile_image } from '../../utils/constants';
@@ -180,6 +180,14 @@ const NewNavbar = () => {
               <FiHeart size={20} />
             </Link>
 
+            {/* Orders — only meaningful once signed in, and previously reachable
+                only by typing the URL. */}
+            {currentUser && (
+              <Link to="/orders" id="navbar-orders-btn" className={`hidden sm:block transition-colors ${iconColor}`} aria-label="My orders" title="My orders">
+                <FiPackage size={20} />
+              </Link>
+            )}
+
             {/* Cart */}
             <Link to="/cart" id="navbar-cart-btn" className={`relative transition-colors ${iconColor}`} aria-label="Cart">
               <FiShoppingBag size={20} />
@@ -330,17 +338,29 @@ const NewNavbar = () => {
             {/* Drawer Footer */}
             <div className="border-t border-[#F0E8DF] px-6 py-4 space-y-3">
               {currentUser ? (
-                <Link to="/profile" className="flex items-center gap-3 text-[#3D2B1F]">
-                  <img
-                    src={currentUser.photoURL || default_profile_image}
-                    alt="profile"
-                    className="w-9 h-9 rounded-full object-cover border-2 border-[#C5A059]"
-                  />
-                  <div>
-                    <div className="text-[12px] font-semibold">My Profile</div>
-                    <div className="text-[10px] text-[#7A5C41]">Orders & Wishlist</div>
+                <>
+                  <Link to="/profile" className="flex items-center gap-3 text-[#3D2B1F]">
+                    <img
+                      src={currentUser.photoURL || default_profile_image}
+                      alt="profile"
+                      className="w-9 h-9 rounded-full object-cover border-2 border-[#C5A059]"
+                    />
+                    <div>
+                      <div className="text-[12px] font-semibold">My Profile</div>
+                      <div className="text-[10px] text-[#7A5C41]">Account details</div>
+                    </div>
+                  </Link>
+                  {/* Orders and Wishlist were only named in the profile subtitle,
+                      never linked, so on a phone there was no way to reach them. */}
+                  <div className="flex gap-2 pt-1">
+                    <Link to="/orders" className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-[#F0E8DF] text-[#3D2B1F] text-[11px] font-semibold tracking-widest uppercase rounded-full">
+                      <FiPackage size={14} /> Orders
+                    </Link>
+                    <Link to="/wishlist" className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-[#F0E8DF] text-[#3D2B1F] text-[11px] font-semibold tracking-widest uppercase rounded-full">
+                      <FiHeart size={14} /> Saved
+                    </Link>
                   </div>
-                </Link>
+                </>
               ) : (
                 <div className="flex gap-3">
                   <Link to="/login" className="flex-1 text-center py-2.5 border border-[#3D2B1F] text-[#3D2B1F] text-[12px] font-semibold tracking-widest uppercase rounded-full hover:bg-[#3D2B1F] hover:text-white transition-colors">

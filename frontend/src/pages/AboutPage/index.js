@@ -1,6 +1,89 @@
+import { useForm, ValidationError } from '@formspree/react';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { socialLinks } from '../../utils/constants';
+
+const ContactForm = () => {
+  const [state, handleSubmit] = useForm(process.env.REACT_APP_FORMSPREE);
+
+  const field =
+    'w-full bg-transparent border-b border-bronze/20 py-3 px-0 text-sm text-bronze placeholder:text-bronze/35 focus:outline-none focus:border-gold transition-colors';
+
+  if (state.succeeded) {
+    return (
+      <div className="text-center py-12 border border-gold/30 bg-white/40">
+        <div className="h-px w-12 bg-gold mx-auto mb-5" />
+        <p className="font-editorial text-xl text-bronze mb-2">Thank you — your message is on its way.</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-bronze/50">
+          We usually reply within one business day
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div>
+          <label htmlFor="contact-name" className="block text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 mb-2">
+            Your Name
+          </label>
+          <input id="contact-name" name="name" type="text" required className={field} placeholder="Jane Smith" />
+        </div>
+        <div>
+          <label htmlFor="contact-email" className="block text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 mb-2">
+            Email
+          </label>
+          <input id="contact-email" name="email" type="email" required className={field} placeholder="jane@example.com" />
+          <ValidationError prefix="Email" field="email" errors={state.errors} className="block text-[10px] text-red-500 mt-2 tracking-wide" />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="contact-phone" className="block text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 mb-2">
+          Phone <span className="normal-case tracking-normal text-bronze/30">(optional)</span>
+        </label>
+        <input id="contact-phone" name="phone" type="tel" className={field} placeholder="+61 400 000 000" />
+      </div>
+
+      <div>
+        <label htmlFor="contact-message" className="block text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/50 mb-2">
+          Message
+        </label>
+        <textarea
+          id="contact-message"
+          name="message"
+          required
+          rows={4}
+          className={`${field} resize-y`}
+          placeholder="Tell us about the occasion, the piece you have in mind, or anything you would like to ask."
+        />
+        <ValidationError prefix="Message" field="message" errors={state.errors} className="block text-[10px] text-red-500 mt-2 tracking-wide" />
+      </div>
+
+      {state.errors && (
+        <div className="border border-red-300 bg-red-50 px-5 py-4 text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-red-600">
+            Your message could not be sent
+          </p>
+          <p className="text-[11px] text-red-500/80 mt-1.5 leading-relaxed">
+            Please try again, or email us directly at support@angelfashionstudio.org
+          </p>
+        </div>
+      )}
+
+      <div className="text-center pt-2">
+        <button
+          type="submit"
+          disabled={state.submitting}
+          className="px-12 py-4 bg-bronze text-champagne text-[10px] font-bold uppercase tracking-[0.35em] hover:bg-chocolate transition-colors disabled:opacity-50"
+        >
+          {state.submitting ? 'Sending…' : 'Send Message'}
+        </button>
+      </div>
+    </form>
+  );
+};
 
 const AboutPage = () => {
   useEffect(() => {
@@ -9,54 +92,6 @@ const AboutPage = () => {
 
   return (
     <main>
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img alt="Intricate detail of artisan's hands working with gold zari thread on luxury fabric"
-            className="w-full h-full object-cover brightness-90"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK8YCY5t4bRLuufKriuDzblLKXumCgL1QGKP9AMobdunnlvat3jWDiKFFOA4ptHsOsP1PyKiX_59Yrp8PPFEVH1eKKpybKxYx1x3a4AwtOM6jOeFNE1jFlJEH4W5PLkuWV9U3Oko9QOJvkMYGEJ07BHvJ30wGwiD3L0Z78qe64qTWTXaT6tFevcztf9ATKpFDiMqgVvnx2LRIK-SBsTP349gd4fBahkI61pNjDaTlABrrkUCVgAM8biX_9N_rWxiZpUMzqtd6fjJY" />
-          <div className="absolute inset-0 bg-espresso/20"></div>
-        </div>
-        <div className="relative z-10 w-full text-center px-8">
-          <h2
-            className="text-[22vw] font-editorial font-black leading-none text-white tracking-tighter uppercase drop-shadow-2xl">
-            ABOUT
-          </h2>
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-            <span className="text-[10px] font-bold tracking-[0.6em] text-white/80 uppercase">The Craftsmanship
-              Archive</span>
-            <span
-              className="material-symbols-outlined animate-bounce text-white/60 text-3xl font-light">keyboard_double_arrow_down</span>
-          </div>
-        </div>
-      </section>
-      <section className="relative w-full h-[90vh] bg-chocolate overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 w-full h-full">
-          <img alt="Model in lehenga walking through a royal corridor"
-            className="w-full h-full object-cover opacity-60"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-chocolate/20 to-chocolate/80"></div>
-        </div>
-        <div className="relative z-10 text-center px-6">
-          <span className="text-gold text-[10px] font-bold uppercase tracking-[0.8em] mb-6 block">CINEMATIC
-            JOURNEY</span>
-          <h2
-            className="text-6xl lg:text-9xl font-editorial font-black text-champagne uppercase tracking-tighter mb-12">
-            HERITAGE<br /><span className="italic font-light">IN MOTION</span>
-          </h2>
-          <div className="flex items-center justify-center gap-6">
-            <button
-              className="size-20 rounded-full border border-champagne/30 flex items-center justify-center text-champagne hover:bg-champagne hover:text-chocolate transition-all duration-500">
-              <span className="material-symbols-outlined text-4xl fill-1">pause</span>
-            </button>
-          </div>
-        </div>
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-4">
-          <div className="h-px w-24 bg-champagne/20"></div>
-          <span className="text-[9px] font-bold tracking-[0.5em] text-white/40 uppercase">A Study of Royal
-            Silhouettes</span>
-          <div className="h-px w-24 bg-champagne/20"></div>
-        </div>
-      </section>
       <section className="py-48 bg-oatmeal overflow-hidden">
         <div className="container mx-auto px-8 lg:px-24">
           <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
@@ -64,7 +99,7 @@ const AboutPage = () => {
               <div className="relative">
                 <img alt="Exterior editorial shot of the elegant Angel Archive flagship boutique"
                   className="w-full aspect-[4/5] object-cover shadow-[40px_40px_0px_0px_#7A5C41]"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo" />
+                  src="/assets/landing/bridal-edit-center.jpg" />
                 <div className="absolute -bottom-10 -right-10 bg-white p-8 border fine-line hidden lg:block">
                   <span className="font-barcode text-4xl block text-bronze/40">AUS-3000</span>
                   <span className="text-[10px] font-bold tracking-widest text-gold uppercase">EST. 2024
@@ -138,7 +173,7 @@ const AboutPage = () => {
                       Phone: <a href="tel:+61466853704" className="text-gold hover:underline">+61 466 853 704</a>
                     </p>
                     <p className="text-sm font-semibold text-bronze">
-                      Email: <a href="mailto:support@angelfashionstudio.com" className="text-gold hover:underline">support@angelfashionstudio.com</a>
+                      Email: <a href="mailto:support@angelfashionstudio.org" className="text-gold hover:underline">support@angelfashionstudio.org</a>
                     </p>
                   </div>
                 </div>
@@ -175,88 +210,41 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
-      <section className="relative h-[110vh] w-full overflow-hidden bg-chocolate">
-        <img alt="High-fashion couple in premium ethnic wear"
-          className="w-full h-full object-cover opacity-90 brightness-75"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmFScEDPw2oVIyyffyDHGtZ8bLFCMmZ2Md_iA0IwUuIxH2bfx9aE7CBAWEeGKhSH_Llbmydvl3LOlMJk-eSOpqbQG-mMpXtC1Qn1N2BeIXpsD8hsnIH_ycl-iPRvndn3mh4jWysPSOpia-M62pBXqqOepa5XOXOTFhD76ggcu6bnWyiHYXafhH8UJbDjqKt3tGhQO0x-4VpcnolC_MunD_gXKojInRS6J2S8hpa0do1Tb2Sh2FWt3JB6okwH0lvrNlYwHnva3w3B4" />
-        <div className="absolute top-24 left-1/2 -translate-x-1/2 text-center z-10">
-          <h2 className="text-6xl lg:text-[7rem] font-editorial font-black text-champagne uppercase leading-[0.8]">
-            SHOP THE LOOK
-          </h2>
-          <p className="text-gold text-[10px] font-bold uppercase tracking-[0.6em] mt-8">The Royal Archival Ensemble
-          </p>
-        </div>
-        <div className="absolute top-[40%] left-[35%] shop-hotspot">
-          <button
-            className="size-8 rounded-full bg-gold/80 backdrop-blur-sm border border-champagne/40 flex items-center justify-center text-champagne hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-sm font-bold">add</span>
-          </button>
-          <div
-            className="hotspot-card absolute left-12 top-1/2 -translate-y-1/2 w-56 p-6 bg-white/10 backdrop-blur-2xl border border-white/20 opacity-0 -translate-y-2 pointer-events-none transition-all duration-500 shadow-2xl">
-            <h4 className="text-champagne font-editorial font-bold text-lg mb-1">Archive Suite</h4>
-            <p className="text-gold text-[9px] font-bold uppercase tracking-widest mb-3">Wedding Ensemble</p>
-            <p className="text-white text-xl font-editorial">$1,280</p>
+      {/* Contact — replaces the newsletter capture. A visitor on the About page
+          is usually trying to reach the studio, not subscribe to a mailing list,
+          and the newsletter field posted nowhere. */}
+      <section className="bg-oatmeal py-24 lg:py-32 px-6 lg:px-24 relative overflow-hidden">
+        <div className="container mx-auto max-w-5xl relative z-10">
+          <div className="text-center mb-12 lg:mb-16">
+            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-gold block mb-4">
+              Get in Touch
+            </span>
+            <p className="font-editorial text-xl sm:text-2xl lg:text-3xl text-bronze tracking-tight">
+              Tell us what you are looking for.
+            </p>
           </div>
-        </div>
-        <div className="absolute top-[55%] left-[65%] shop-hotspot">
-          <button
-            className="size-8 rounded-full bg-gold/80 backdrop-blur-sm border border-champagne/40 flex items-center justify-center text-champagne hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-sm font-bold">add</span>
-          </button>
-          <div
-            className="hotspot-card absolute right-12 top-1/2 -translate-y-1/2 w-56 p-6 bg-white/10 backdrop-blur-2xl border border-white/20 opacity-0 -translate-y-2 pointer-events-none transition-all duration-500 shadow-2xl">
-            <h4 className="text-champagne font-editorial font-bold text-lg mb-1">Velvet Overlay</h4>
-            <p className="text-gold text-[9px] font-bold uppercase tracking-widest mb-3">Zari Handwork</p>
-            <p className="text-white text-xl font-editorial">$645</p>
-          </div>
-        </div>
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
-          <button
-            className="px-16 py-8 bg-champagne text-chocolate font-bold text-[10px] uppercase tracking-[0.5em] hover:bg-gold transition-all duration-700 rounded-full">
-            Add All To Concierge
-          </button>
-        </div>
-      </section>
-      <section className="bg-oatmeal py-64 px-12 lg:px-24 relative overflow-hidden">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[30vw] font-editorial font-black text-bronze/5 pointer-events-none select-none uppercase tracking-tighter">
-          HERITAGE
-        </div>
-        <div className="container mx-auto text-center relative z-10">
-          <h2 className="text-7xl lg:text-[11rem] font-editorial font-black text-bronze uppercase mb-20 leading-none">
-            STAY CONNECTED
-          </h2>
-          <div className="max-w-3xl mx-auto">
-            <div className="relative group">
-              <input
-                className="w-full bg-transparent border-b-2 border-bronze/10 py-16 px-8 text-2xl lg:text-6xl font-editorial text-bronze placeholder:text-bronze/10 focus:outline-none focus:border-gold transition-colors"
-                placeholder="YOUR EMAIL ADDRESS" type="email" />
-              <button
-                className="absolute right-6 top-1/2 -translate-y-1/2 size-28 rounded-full bg-gold text-white flex items-center justify-center hover:bg-bronze transition-all shadow-2xl group-hover:scale-105 duration-700">
-                <span className="material-symbols-outlined text-5xl">east</span>
-              </button>
-            </div>
-            <p className="text-[13px] font-bold uppercase tracking-[0.8em] mt-16 mb-12 text-gold">Exclusive access to
-              heritage drops</p>
-            
-            {/* Social Network Links */}
-            <div className="flex items-center justify-center gap-6 mt-16 border-t border-bronze/10 pt-16">
-              {socialLinks.map((link) => (
-                <a 
-                  key={link.id} 
-                  href={link.url} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="size-16 rounded-full border border-bronze/30 flex items-center justify-center text-bronze hover:bg-bronze hover:text-white hover:scale-110 transition-all duration-500 shadow-sm"
-                  title={link.text}
-                >
-                  {React.cloneElement(link.icon, { fontSize: '1.8rem', color: 'inherit' })}
-                </a>
-              ))}
-            </div>
+
+          <ContactForm />
+
+          {/* Maps, Facebook, Instagram and TikTok */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-16 border-t border-bronze/10 pt-12">
+            {socialLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="size-12 sm:size-14 rounded-full border border-bronze/25 flex items-center justify-center text-bronze hover:bg-bronze hover:text-white hover:scale-105 transition-all duration-500"
+                title={link.text}
+                aria-label={link.text}
+              >
+                {React.cloneElement(link.icon, { fontSize: '1.4rem', color: 'inherit' })}
+              </a>
+            ))}
           </div>
         </div>
       </section>
+
     </main>
   );
 };

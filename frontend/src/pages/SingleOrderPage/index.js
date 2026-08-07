@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useOrderContext } from '../../context/order_context';
+import { useUserContext } from '../../context/user_context';
 import { formatPrice, getOrderStatusColor } from '../../utils/helpers';
 import { Loading, Error } from '../../components';
 import { domain } from '../../utils/constants';
 
 const SingleOrderPage = () => {
     const { id } = useParams();
+    const { currentUser } = useUserContext();
     const {
         single_order_loading: loading,
         single_order_error: error,
@@ -17,8 +19,9 @@ const SingleOrderPage = () => {
     } = useOrderContext();
 
     useEffect(() => {
+        if (!id) return;
         fetchSingleOrder(id);
-        document.title = `Order #${id.slice(-8).toUpperCase()} | Angel Archive`;
+        document.title = `Order #${String(id).slice(-8).toUpperCase()} | Angel Archive`;
     }, [id, fetchSingleOrder]);
 
     if (loading) return <Loading />;
@@ -44,9 +47,13 @@ const SingleOrderPage = () => {
 
     const handleDownloadInvoice = async () => {
         try {
+            // The invoice route is now customer-authenticated, so it needs the
+            // same Firebase ID token as the rest of the order endpoints.
+            const token = currentUser ? await currentUser.getIdToken() : null;
             const response = await axios.get(`${domain}/api/orders/${_id}/invoice`, {
                 responseType: 'blob', // Important: tell Axios to expect binary data
-                withCredentials: true
+                withCredentials: true,
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
             // Create a Blob from the PDF Stream
@@ -87,7 +94,7 @@ const SingleOrderPage = () => {
                             Archival Acquisition
                         </span>
                         <h1 className="text-5xl lg:text-7xl font-editorial font-black text-bronze uppercase tracking-tighter leading-none">
-                            #{_id.slice(-8).toUpperCase()}
+                            #{String(_id || '').slice(-8).toUpperCase()}
                         </h1>
                         <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-bronze/40">
                             Secured on {new Date(createdAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -132,7 +139,7 @@ const SingleOrderPage = () => {
                                 Curated Items
                             </h3>
                             <div className="space-y-6">
-                                {orderItems.map((item, index) => (
+                                {(orderItems || []).map((item, index) => (
                                     <div key={index} className="flex gap-8 group">
                                         <div className="size-24 lg:size-32 rounded-3xl overflow-hidden border border-bronze/5 shadow-xl shadow-bronze/5">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />

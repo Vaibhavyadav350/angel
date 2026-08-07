@@ -49,35 +49,24 @@ const categories = [
     sub: 'Fresh Style · Just In',
     image: '/assets/landing/hero-lehenga.jpg',
     url: '/products?collection=new+arrivals'
-  },
-  {
-    name: 'The Sale',
-    sub: 'Limited Time · Best Value',
-    image: '/assets/landing/cat-lehenga.jpg',
-    url: '/products?collection=sale',
-    isSale: true
   }
 ];
 
 const ShopByCategory = () => {
   return (
-    <section className="bg-chocolate py-20 md:py-32 overflow-hidden relative">
-      {/* Editorial Background Text */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full flex justify-center whitespace-nowrap opacity-[0.03] select-none pointer-events-none z-0">
-        <h2 className="text-[25vw] font-editorial font-black leading-none uppercase tracking-tighter text-white">
-          CATEGORIES
-        </h2>
-      </div>
+    <section className="bg-chocolate section-rhythm overflow-hidden relative">
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
-        <div className="text-center mb-16 md:mb-24">
-          <p className="text-[#C5A059] text-[10px] tracking-[0.5em] uppercase font-bold mb-4">Explore Our World</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-editorial font-bold text-white leading-tight uppercase tracking-tighter">
-            Shop by <span className="text-[#C5A059] italic font-light">Category</span>
-          </h2>
+        <div className="text-center mb-12 sm:mb-16">
+          <p className="text-[#C5A059] text-[9px] sm:text-[10px] tracking-[0.5em] uppercase font-bold mb-3 sm:mb-4">
+            The Full Collection
+          </p>
+          <p className="font-editorial text-lg sm:text-2xl lg:text-3xl text-white/90 tracking-tight">
+            Everything we make, in one place.
+          </p>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {categories.map((cat, idx) => (
             <Link 
               key={idx} 
@@ -86,7 +75,7 @@ const ShopByCategory = () => {
             >
               {/* Semicircle Arch Shape - aspect-square on mobile, aspect-[2/3] on desktop */}
               <div className="relative w-full aspect-square sm:aspect-[2/3] overflow-hidden rounded-t-full border border-white/10 group-hover:border-[#C5A059]/50 transition-all duration-700 shadow-2xl">
-                <img 
+                <img loading="lazy" decoding="async" 
                   src={cat.image} 
                   alt={cat.name} 
                   className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110"
@@ -96,13 +85,6 @@ const ShopByCategory = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-chocolate/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-end justify-center pb-8">
                   <span className="text-white text-[10px] font-bold tracking-[0.3em] uppercase">Explore</span>
                 </div>
-
-                {/* Sale Badge */}
-                {cat.isSale && (
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[9px] font-bold tracking-[0.3em] uppercase px-4 py-1.5 rounded-full shadow-lg z-20">
-                    Sale
-                  </div>
-                )}
               </div>
               
               <h3 className="mt-6 text-[10px] font-bold tracking-[0.25em] text-white/90 group-hover:text-[#C5A059] transition-colors uppercase text-center leading-tight">

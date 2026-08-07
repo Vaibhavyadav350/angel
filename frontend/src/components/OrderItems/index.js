@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatPrice } from '../../utils/helpers';
+import { colorSwatch } from '../../utils/categoryData';
 
 const OrderItem = ({ name, price, quantity, image, color, size, product }) => {
   return (
@@ -9,7 +10,7 @@ const OrderItem = ({ name, price, quantity, image, color, size, product }) => {
         <div>
           <h5 className='name'>{name}</h5>
           <p className='color'>
-            color : <span style={{ background: color }}></span>
+            color : <span style={{ background: colorSwatch(color) }}></span>
           </p>
           <p className='size'>
             size :&nbsp;<span>{size}</span>

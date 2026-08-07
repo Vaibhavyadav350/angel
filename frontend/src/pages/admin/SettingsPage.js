@@ -3,6 +3,7 @@ import SidebarWithHeader from '../../components/admin/SidebarWithHeader';
 import { useSettingsContext } from '../../context/settings_context';
 import { toast } from 'react-toastify';
 import shippingConfig from '../../utils/shipping.json';
+import NumberField from '../../components/admin/ui/NumberField';
 
 const SettingsPage = () => {
   const { settings, loading, updateSettings } = useSettingsContext();
@@ -67,15 +68,11 @@ const SettingsPage = () => {
     else toast.error(res.message || 'Failed to save settings', { position: 'top-center' });
   };
 
-  const inputClass = 'w-full bg-champagne/50 border border-bronze/20 rounded px-3 py-2.5 text-sm text-bronze placeholder:text-bronze/30 focus:outline-none focus:border-gold transition-colors';
   const labelClass = 'block text-[10px] font-bold uppercase tracking-[0.3em] text-bronze/60 mb-2';
   const moneyField = (name, label, hint) => (
     <div>
       <label className={labelClass}>{label}</label>
-      <div className="relative">
-        <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
-        <input className={`${inputClass} pl-8`} type="number" min="0" value={form[name] ?? ''} onChange={(e) => setField(name, e.target.value)} />
-      </div>
+      <NumberField prefix="$" min={0} placeholder="0" value={form[name]} onChange={(v) => setField(name, v)} blankWhenZero={false} />
       {hint && <p className="text-[9px] text-bronze/40 mt-1">{hint}</p>}
     </div>
   );
@@ -126,7 +123,7 @@ const SettingsPage = () => {
             <h4 className={heading}>Tax</h4>
             <div>
               <label className={labelClass}>GST Rate (%)</label>
-              <input className={inputClass} type="number" min="0" value={form.gstRate ?? ''} onChange={(e) => setField('gstRate', e.target.value)} />
+              <NumberField suffix="%" min={0} max={100} placeholder="10" blankWhenZero={false} value={form.gstRate} onChange={(v) => setField('gstRate', v)} />
               <p className="text-[9px] text-bronze/40 mt-1">Prices are GST-inclusive; this is shown as "Includes GST" on invoices.</p>
             </div>
           </div>
@@ -155,17 +152,15 @@ const SettingsPage = () => {
                         {b.label || `Up to ${(Number(b.maxGrams) / 1000).toFixed(1)} kg`}
                       </td>
                       <td className="py-2 pr-3">
-                        <div className="relative w-28">
-                          <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
-                          <input className={`${inputClass} pl-8`} type="number" min="0"
-                            value={b.standard ?? ''} onChange={(e) => setBand(i, 'standard', e.target.value)} />
+                        <div className="w-28">
+                          <NumberField prefix="$" min={0} placeholder="0" blankWhenZero={false}
+                            value={b.standard} onChange={(v) => setBand(i, 'standard', v)} />
                         </div>
                       </td>
                       <td className="py-2">
-                        <div className="relative w-28">
-                          <span className="absolute left-3 top-2.5 text-bronze/40 text-sm">$</span>
-                          <input className={`${inputClass} pl-8`} type="number" min="0"
-                            value={b.express ?? ''} onChange={(e) => setBand(i, 'express', e.target.value)} />
+                        <div className="w-28">
+                          <NumberField prefix="$" min={0} placeholder="0" blankWhenZero={false}
+                            value={b.express} onChange={(v) => setBand(i, 'express', v)} />
                         </div>
                       </td>
                     </tr>
@@ -179,15 +174,13 @@ const SettingsPage = () => {
               <div>
                 <label className={labelClass}>Ask For A Quote Above</label>
                 <div className="relative">
-                  <input
-                    className={inputClass}
-                    type="number"
-                    min="1"
-                    step="0.5"
-                    value={(Number(form.quoteAboveGrams ?? shippingConfig.quoteAboveGrams) / 1000) || ''}
-                    onChange={(e) => setField('quoteAboveGrams', Math.round(Number(e.target.value) * 1000))}
+                  <NumberField
+                    suffix="kg"
+                    min={1}
+                    placeholder={String(shippingConfig.quoteAboveGrams / 1000)}
+                    value={Number(form.quoteAboveGrams ?? shippingConfig.quoteAboveGrams) / 1000}
+                    onChange={(v) => setField('quoteAboveGrams', Math.round(v * 1000))}
                   />
-                  <span className="absolute right-3 top-2.5 text-bronze/40 text-sm">kg</span>
                 </div>
                 <p className="text-[9px] text-bronze/40 mt-1">Orders heavier than this cannot check out — the customer is asked to contact you for a delivery quote.</p>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaInstagram, FaFacebookF, FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown } from 'react-icons/fa';
+import { socialLinks } from '../../utils/constants';
 import logo from '../../assets/logo.png';
 
 const footerLinks = {
@@ -55,8 +56,22 @@ const NewFooter = () => {
               Exquisite hand-spun garments tailored for the modern spirit.
             </p>
             <div className="flex gap-4">
-              <a href="https://www.instagram.com/angiafs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all" aria-label="Instagram"><FaInstagram size={18} className="text-white" /></a>
-              <a href="https://www.facebook.com/p/Angel-Fashion-Studio-61552253573789/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#C5A059] hover:border-[#C5A059] transition-all" aria-label="Facebook"><FaFacebookF size={18} className="text-white" /></a>
+              {/* Driven by `socialLinks` so the footer, the About page and anywhere
+                  else stay in step — the URLs were previously hardcoded here and
+                  only covered two of the four channels. */}
+              {socialLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.text}
+                  title={link.text}
+                  className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#C5A059] hover:border-[#C5A059] transition-all"
+                >
+                  {React.cloneElement(link.icon, { fontSize: '1.05rem', color: 'inherit' })}
+                </a>
+              ))}
             </div>
           </div>
 

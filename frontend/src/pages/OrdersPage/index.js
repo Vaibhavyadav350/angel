@@ -126,7 +126,7 @@ const OrdersPage = () => {
       <section className="pb-32 px-8 lg:px-24">
         <div className="container mx-auto max-w-7xl">
           <div className="space-y-8">
-            {orders.map((order) => (
+            {(orders || []).map((order) => (
               <OrderCard
                 key={order._id}
                 order={order}
@@ -157,7 +157,7 @@ const OrdersPage = () => {
 };
 
 const OrderCard = ({ order, openReturnModal }) => {
-  const { _id, createdAt, totalPrice, orderStatus, orderItems, returnStatus } = order;
+  const { _id, createdAt, totalPrice, orderStatus, orderItems = [], returnStatus } = order;
   const statusColor = getOrderStatusColor(orderStatus);
 
   return (
@@ -167,7 +167,7 @@ const OrderCard = ({ order, openReturnModal }) => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12">
           <div className="space-y-2">
             <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/30 block">Order Reference</span>
-            <h3 className="text-lg font-bold text-bronze tracking-wide">#{_id.slice(-8).toUpperCase()}</h3>
+            <h3 className="text-lg font-bold text-bronze tracking-wide">#{String(_id || '').slice(-8).toUpperCase()}</h3>
             <p className="text-[9px] font-bold uppercase tracking-widest text-bronze/40 italic">
               Placed on {new Date(createdAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>

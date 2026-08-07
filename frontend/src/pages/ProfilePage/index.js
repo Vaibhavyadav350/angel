@@ -6,6 +6,7 @@ import { useCartContext } from '../../context/cart_context';
 import { useProductsContext } from '../../context/products_context';
 import { useOrderContext } from '../../context/order_context';
 import { formatPrice } from '../../utils/helpers';
+import { default_profile_image } from '../../utils/constants';
 import { NewArrivalsCarousel } from '../../components/archive';
 
 // Reusable archive input style
@@ -144,7 +145,7 @@ const ProfilePage = () => {
                   <div className="size-48 rounded-full overflow-hidden border-2 border-gold/30 p-1 bg-white shadow-xl relative">
                     <img alt="User Profile"
                       className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-700"
-                      src={image || 'https://via.placeholder.com/150'} />
+                      src={image || default_profile_image} />
                     <input
                       type="file"
                       accept="image/*"
@@ -246,7 +247,7 @@ const ProfilePage = () => {
                             <span className="material-symbols-outlined text-gold">local_shipping</span>
                           </div>
                           <div>
-                            <p className="text-[9px] font-bold text-gold uppercase tracking-[0.4em]">Order #{_id.substring(0, 8)}</p>
+                            <p className="text-[9px] font-bold text-gold uppercase tracking-[0.4em]">Order #{String(_id || '').substring(0, 8)}</p>
                             <h4 className="text-2xl font-editorial font-bold text-bronze uppercase">Archive Collection</h4>
                           </div>
                         </div>
@@ -267,7 +268,7 @@ const ProfilePage = () => {
                       {/* Expanded details (Simplified for list view to just show items snippet) */}
                       <div className="p-10 bg-white/20">
                         <div className="flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
-                          {orderItems.map((item) => (
+                          {(orderItems || []).map((item) => (
                             <div key={item._id} className="min-w-[200px] flex items-center gap-4 p-4 bg-white/40 rounded-3xl border border-gold/5">
                               <div className="size-16 rounded-2xl overflow-hidden border border-gold/10 shrink-0">
                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -294,7 +295,7 @@ const ProfilePage = () => {
         <div className="absolute inset-0 w-full h-full">
           <img alt="Model in lehenga"
             className="w-full h-full object-cover opacity-60"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi1wnjhK4qOjfkb80VGF0IuC5E1qGaFVrrnRKRpSjPk1nnNRFqyPkRSRGISN87lzBIputOQptvoh3tCcy5qCIbij1762gia4rJHW8KOC5XKsACOQ8ki_VqYYUtr6scumc2oUsNJc-KdWgbnpegItgvJePBLEdEsVoMSZ8FEooUNCGPSeTjp6qQDLh53C_b5Ms-Szy63vHqMzXINit5Yz7cv4pH5ghB0yxXL1jojp7MOzA1-z1etBt2oepFyBtHbFPabdFTTMa5aHo" />
+            src="/assets/landing/bridal-edit-center.jpg" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-chocolate/20 to-chocolate/80"></div>
         </div>
         <div className="relative z-10 text-center px-6">

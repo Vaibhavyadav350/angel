@@ -68,7 +68,7 @@ const CustomerDiaries = () => {
               >
                 {/* Background Image */}
                 <div className="absolute inset-0 w-full h-full">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={review.image}
                     alt={review.author}
                     className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110"
@@ -101,7 +101,7 @@ const CustomerDiaries = () => {
                     
                     <div className="flex items-center gap-3 pt-4 border-t border-white/20">
                       <div className="size-10 rounded-full overflow-hidden border border-white/30">
-                        <img src={review.image} alt={review.author} className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={review.image} alt={review.author} className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <h4 className="text-white text-xs md:text-sm font-bold tracking-wider uppercase">{review.author}</h4>

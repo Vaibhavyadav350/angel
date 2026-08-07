@@ -156,8 +156,18 @@ export const upload_url = `${domain}/api/upload/`;
 export const newsletter_url = `${domain}/api/newsletter/subscribe`;
 export const user_profile_url = `${domain}/api/users/profile`;
 export const wishlist_toggle_url = `${domain}/api/users/wishlist/toggle`;
+// Inline SVG rather than a hotlinked image. The previous value pointed at
+// icon-library.com, so every signed-in page made a request to a third-party
+// domain for an avatar placeholder that could disappear at any time.
 export const default_profile_image =
-  'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg';
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+       <rect width="100" height="100" fill="#F0E6D6"/>
+       <circle cx="50" cy="38" r="17" fill="#C9B49A"/>
+       <path d="M18 92c0-19 14-30 32-30s32 11 32 30z" fill="#C9B49A"/>
+     </svg>`
+  );
 
 // Admin constants (FaHome, FaProductHunt, FaShoppingCart, FaUserTie already imported above)
 

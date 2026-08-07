@@ -158,7 +158,7 @@ addSheet('4. About Page', [
   ['Visit the Store', 'Title', 'Visit the Store', ''],
   ['Visit the Store', 'Address', 'Angel Fashion Studio, Unit 32/150 Palmers Road, Truganina VIC 3029, Australia', ''],
   ['Visit the Store', 'Phone', '+61 466 853 704', ''],
-  ['Visit the Store', 'Email', 'support@angelfashionstudio.com', ''],
+  ['Visit the Store', 'Email', 'support@angelfashionstudio.org', ''],
   ['Visit the Store', 'Google Maps', 'Interactive map embedded + "Open in Google Maps" button', ''],
   [],
   ['Shop the Look', 'Title', 'SHOP THE LOOK', ''],
@@ -184,7 +184,7 @@ addSheet('5. Contact Page', [
   [],
   ['Call Us', 'Phone Number', '+61 466 853 704', ''],
   [],
-  ['Email', 'Email Address', 'support@angelfashionstudio.com', ''],
+  ['Email', 'Email Address', 'support@angelfashionstudio.org', ''],
   [],
   ['Hours', 'Weekday', 'Monday – Saturday: 10am – 6pm', ''],
   ['', 'Weekend', 'Sunday: By Appointment Only', ''],
@@ -202,7 +202,7 @@ addSheet('6. Privacy Policy', [
   ['How We Use Your Information', 'Your information is used to process orders, communicate about your purchases, improve our website experience, and send marketing communications (only with your consent). We never sell your personal data to third parties.', ''],
   ['Data Security', 'We use industry-standard encryption (SSL/TLS) to protect your data during transmission. Payment processing is handled securely through eWAY — we never store your full card details on our servers.', ''],
   ['Cookies', 'We use essential cookies to maintain your session and preferences. Analytics cookies help us understand how visitors interact with our site. You may disable cookies via your browser settings.', ''],
-  ['Contact', 'For privacy-related enquiries, you can contact us through the chat option on our website or email us at support@angelfashionstudio.com.', ''],
+  ['Contact', 'For privacy-related enquiries, you can contact us through the chat option on our website or email us at support@angelfashionstudio.org.', ''],
 ], [25, 120, 30]);
 
 

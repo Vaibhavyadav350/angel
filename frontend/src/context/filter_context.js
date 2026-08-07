@@ -25,6 +25,7 @@ const initialState = {
     category: 'all',
     subCategory: 'all',
     productType: 'all',
+    fabric: 'all',
     color: 'all',
     min_price: 0,
     max_price: 0,

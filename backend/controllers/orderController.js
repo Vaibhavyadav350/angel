@@ -18,10 +18,18 @@ const { sendStatusUpdate, sendReturnUpdate, sendOrderConfirmation } = require('.
 // ============================================================================
 
 
+// A customer may only touch their own order. Admin routes are guarded separately
+// by isAuthenticatedAdmin, so `allowAdmin` lets shared handlers serve both.
+const ownsOrder = (order, req) => {
+  const email = req.customer?.email;
+  return Boolean(email) && String(order?.user?.email || '').toLowerCase() === email;
+};
+
 // Generate PDF Invoice (Australian Tax Invoice)
 exports.getOrderInvoice = catchAsyncError(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) return next(new ErrorHandler('Order not found', 404));
+  if (!ownsOrder(order, req)) return next(new ErrorHandler('Order not found', 404));
 
   await pdfService.generateInvoice(order, res);
 });
@@ -43,6 +51,10 @@ exports.getSingleOrder = catchAsyncError(async (req, res, next) => {
   if (!order) {
     return next(new ErrorHandler('Order not found', 404));
   }
+  // An order id alone used to be enough to read a stranger's address and phone.
+  if (!ownsOrder(order, req)) {
+    return next(new ErrorHandler('Order not found', 404));
+  }
   res.status(200).json({
     success: true,
     data: order,
@@ -51,9 +63,12 @@ exports.getSingleOrder = catchAsyncError(async (req, res, next) => {
 
 // send user orders
 exports.getUserOrders = catchAsyncError(async (req, res, next) => {
-  const { email } = req.body;
+  // The email comes from the VERIFIED Firebase token, never from the request
+  // body. Trusting the body meant anyone who knew a customer's address could
+  // pull their whole order history — name, phone, shipping address and totals.
+  const email = req.customer?.email;
   if (!email) {
-    return next(new ErrorHandler('Order not found', 400));
+    return next(new ErrorHandler('Please sign in to view your orders', 401));
   }
   const orders = await Order.find({ 'user.email': email }).sort({ createdAt: -1 });
   res.status(200).json({

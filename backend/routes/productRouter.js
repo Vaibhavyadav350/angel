@@ -6,7 +6,6 @@ const productController = require('../controllers/productController');
 router.route('/').get(productController.getAllProducts);
 
 // get dynamic collections
-router.route('/trending').get(productController.getTrendingProducts);
 router.route('/new-arrivals').get(productController.getNewArrivals);
 
 // send a single product

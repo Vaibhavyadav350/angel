@@ -22,7 +22,7 @@ function SingleProductInfo({ product }) {
     stock = 0,
     numberOfReviews = 0,
     shipping = true,
-    featured = false,
+    fabric = '',
     admin = '',
     createdAt,
   } = product;
@@ -61,7 +61,7 @@ function SingleProductInfo({ product }) {
     { label: 'Company', value: company },
     { label: 'Category', value: category },
     { label: 'Shipping', value: shipping ? formatPrice(55000) : formatPrice(0) },
-    { label: 'Featured', value: featured ? 'Yes' : 'No' },
+    { label: 'Cloth', value: fabric || '—' },
     { label: 'Created By', value: createdBy },
     { label: 'Created At', value: createdAt ? `${new Date(createdAt).toDateString()}, ${new Date(createdAt).toLocaleTimeString('en-IN')}` : '' },
   ];

@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatPrice } from '../../utils/helpers';
 import { Link } from 'react-router-dom';
+import { colorSwatch } from '../../utils/categoryData';
 
 const ListView = ({ products }) => {
   return (
@@ -50,7 +51,7 @@ const ListView = ({ products }) => {
                       <span className="text-[10px] font-bold uppercase tracking-widest text-bronze/60">Colors:</span>
                       <div className="flex gap-1.5">
                         {product.colors.map((color, index) => (
-                          <span key={index} className="size-4 rounded-full border border-bronze/20 shadow-sm" style={{ backgroundColor: color }} title={color}></span>
+                          <span key={index} className="size-4 rounded-full border border-bronze/20 shadow-sm" style={{ background: colorSwatch(color) }} title={color}></span>
                         ))}
                       </div>
                     </div>

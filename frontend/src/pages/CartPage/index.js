@@ -3,6 +3,7 @@ import { useCartContext } from '../../context/cart_context';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../../utils/helpers';
 import { OptimizedImage } from '../../components/archive/shared';
+import { colorSwatch } from '../../utils/categoryData';
 
 const CartPage = () => {
   const { cart, total_amount, shipping_fee, removeItem, toggleAmount, clearCart } = useCartContext();
@@ -75,7 +76,7 @@ const CartPage = () => {
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase leading-none">{name}</h3>
                         <div className="space-y-1">
                           <p className="text-[9px] font-bold tracking-[0.2em] text-gold uppercase flex items-center gap-2">
-                            <span className="size-2 rounded-full border border-bronze/20" style={{ background: color }}></span>
+                            <span className="size-2 rounded-full border border-bronze/20" style={{ background: colorSwatch(color) }}></span>
                             {color}
                           </p>
                           {size && <p className="text-[9px] font-bold tracking-[0.2em] text-bronze/40 uppercase">Size: {size}</p>}
