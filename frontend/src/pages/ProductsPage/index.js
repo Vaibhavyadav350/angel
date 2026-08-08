@@ -335,15 +335,25 @@ const ProductsPage = () => {
           }}
         />
 
-        {/* A drawn circle is a substitute for ornament; with real ornament on the
-            band it is just one more thing competing. */}
-        {!theme.banner && (
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-28 -right-20 w-[420px] h-[420px] rounded-full border opacity-25 hidden lg:block"
-            style={{ borderColor: theme.accent }}
+        {/* Concentric arcs, sweeping in from the top right.
+            The cloth pages ended up with a stronger identity than the departments
+            purely because their circular swatch sits inside a ring, and the eye
+            reads that as designed. This is the same motif at architectural scale,
+            so every listing page speaks one geometric language.
+
+            Two arcs rather than one — a single ring reads as a stray shape, a
+            pair reads as intent. Over a banner they run lighter, since they are
+            sharing the band with real embroidery. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden lg:block overflow-hidden">
+          <span
+            className="absolute -top-28 -right-20 w-[420px] h-[420px] rounded-full border"
+            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.16 : 0.25 }}
           />
-        )}
+          <span
+            className="absolute -top-44 -right-40 w-[600px] h-[600px] rounded-full border"
+            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.1 : 0.16 }}
+          />
+        </div>
 
         <div className="container mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-16 pt-20 sm:pt-24 lg:pt-28 pb-8 lg:pb-10 relative z-10">
           <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-bold uppercase tracking-[0.25em] text-bronze/45 mb-4 lg:mb-5">
@@ -462,6 +472,15 @@ const ProductsPage = () => {
                      and the ornament sit in the same plane and both lose.
                      On a plain ground there is nothing to sit on, so it stays the
                      lighter framed panel it was. */
+                  <div className="relative">
+                    {/* The same ring that circles the cloth swatch, scaled up so
+                        the print sits inside an orbit rather than floating. Drawn
+                        before the mount in the DOM so the mount paints over it. */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] xl:w-[340px] aspect-square rounded-full border pointer-events-none"
+                      style={{ borderColor: `${theme.accent}2E` }}
+                    />
                   <div
                     className={`relative w-[210px] xl:w-[240px] rounded-xl ${
                       theme.banner
@@ -491,6 +510,7 @@ const ProductsPage = () => {
                         style={{ borderColor: `${theme.accent}33` }}
                       />
                     )}
+                  </div>
                   </div>
                 )}
               </div>
