@@ -247,31 +247,9 @@ const ProductsPage = () => {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
-          style={{ background: `linear-gradient(180deg, #FFFFFF55 0%, transparent 45%, ${theme.accent}0F 100%)` }}
+          style={{ background: `linear-gradient(180deg, ${theme.tint}88 0%, transparent 45%, ${theme.accent}14 100%)` }}
         />
 
-        {/* The lattice stands in for ornament. Where a banner shows it is
-            redundant — but the banner is desktop-only, so on a phone the lattice
-            is the ONLY texture there is and must survive. Hiding it outright left
-            phones with a flat block of colour. */}
-        <div
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 opacity-[0.55] ${theme.banner ? 'md:hidden' : ''}`}
-          style={{
-            backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent(
-              `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
-                 <g fill="none" stroke="${theme.accent}" stroke-width="1" stroke-opacity="0.16">
-                   <path d="M36 0 L72 36 L36 72 L0 36 Z"/>
-                   <circle cx="36" cy="36" r="11"/>
-                   <path d="M36 25 L47 36 L36 47 L25 36 Z"/>
-                 </g>
-               </svg>`
-            )}")`,
-            backgroundSize: '72px 72px',
-            maskImage: 'radial-gradient(120% 100% at 30% 0%, black, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(120% 100% at 30% 0%, black, transparent 70%)',
-          }}
-        />
 
         {/* The banner itself. Desktop only: the artwork is 1.75:1 and the band is
             far wider than it is tall, so on a phone `cover` crops to the middle —
@@ -331,15 +309,14 @@ const ProductsPage = () => {
               backgroundImage: `url(${theme.image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center 25%',
-              opacity: 0.2,
-              // Masked on both axes. Sideways alone left the photograph meeting
-              // the product grid on a hard horizontal cut.
+              opacity: 0.5,
+              mixBlendMode: 'multiply',
+              filter: 'sepia(0.2) saturate(1.2) contrast(1.05)',
+              // Soft radial gradient mask so the photograph edges fade into the champagne background color
               maskImage:
-                'linear-gradient(to right, transparent, black 70%), linear-gradient(to bottom, #000 45%, transparent 100%)',
+                'radial-gradient(ellipse 70% 80% at 50% 50%, black 20%, transparent 75%)',
               WebkitMaskImage:
-                'linear-gradient(to right, transparent, black 70%), linear-gradient(to bottom, #000 45%, transparent 100%)',
-              maskComposite: 'intersect',
-              WebkitMaskComposite: 'source-in',
+                'radial-gradient(ellipse 70% 80% at 50% 50%, black 20%, transparent 75%)',
             }}
           />
         )}
@@ -354,38 +331,26 @@ const ProductsPage = () => {
           />
         )}
 
-        {/* Contrast wash. The banners already reserve a quiet left half, so they
-            need only a light veil to guarantee the type — washing them as hard as
-            a cropped photograph would flatten the silk they were drawn for.
-            When a banner is present, the wash must stretch down to cover the
-            overhang (-bottom-[420px]) so the filter and sort text remain readable. */}
+        {/* Contrast wash. Guarantees readability of the headline while letting the photo bleed through on the right */}
         <div
           aria-hidden="true"
           className={`pointer-events-none absolute ${theme.banner ? 'inset-x-0 top-0 -bottom-[420px]' : 'inset-0'}`}
           style={{
             background: theme.banner
               ? `linear-gradient(90deg, ${theme.tint}E6 0%, ${theme.tint}99 34%, transparent 62%)`
-              : `linear-gradient(90deg, ${theme.tint} 20%, ${theme.tint}CC 44%, transparent 78%)`,
+              : `linear-gradient(90deg, ${theme.tint}F2 0%, ${theme.tint}B3 28%, ${theme.tint}44 55%, transparent 78%)`,
           }}
         />
 
-        {/* Concentric arcs, sweeping in from the top right.
-            The cloth pages ended up with a stronger identity than the departments
-            purely because their circular swatch sits inside a ring, and the eye
-            reads that as designed. This is the same motif at architectural scale,
-            so every listing page speaks one geometric language.
-
-            Two arcs rather than one — a single ring reads as a stray shape, a
-            pair reads as intent. Over a banner they run lighter, since they are
-            sharing the band with real embroidery. */}
+        {/* Concentric arcs, sweeping in from the top right. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden lg:block overflow-hidden">
           <span
-            className="absolute -top-28 -right-20 w-[420px] h-[420px] rounded-full border"
-            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.16 : 0.25 }}
+            className="absolute -top-28 -right-20 w-[420px] h-[420px] rounded-full border-2"
+            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.25 : 0.4 }}
           />
           <span
-            className="absolute -top-44 -right-40 w-[600px] h-[600px] rounded-full border"
-            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.1 : 0.16 }}
+            className="absolute -top-44 -right-40 w-[600px] h-[600px] rounded-full border-2"
+            style={{ borderColor: theme.accent, opacity: theme.banner ? 0.18 : 0.28 }}
           />
         </div>
 

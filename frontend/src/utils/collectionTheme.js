@@ -36,7 +36,7 @@ const CHAMPAGNE = '#F7E7CE';
 
 const ARCHIVE = {
   eyebrow: 'Curated Archive',
-  tint: '#F7EFE3',
+  tint: CHAMPAGNE,
   accent: GOLD,
   line: 'Every piece in the studio, from bridal heirlooms to everyday wear.',
   image: '/assets/landing/bridal-edit-center.jpg',
@@ -85,31 +85,31 @@ const CATEGORY = {
 const COLLECTION = {
   'new arrivals': {
     eyebrow: 'Just Arrived',
-    tint: '#F4EFE6',
+    tint: CHAMPAGNE,
     line: 'The newest pieces to enter the studio.',
     image: '/assets/landing/hero-lehenga.jpg',
   },
   sale: {
     eyebrow: 'The Sale',
-    tint: '#F6E9E7',
+    tint: CHAMPAGNE,
     line: 'Selected pieces, reduced for a limited time.',
     image: '/assets/landing/cat-saree.jpg',
   },
   'best sellers': {
     eyebrow: 'Best Sellers',
-    tint: '#F3EDE2',
+    tint: CHAMPAGNE,
     line: 'The pieces our customers return to most.',
     image: '/assets/landing/cat-anarkali.jpg',
   },
   'ready to ship': {
     eyebrow: 'Ready To Ship',
-    tint: '#EFEDE6',
+    tint: CHAMPAGNE,
     line: 'In stock and on its way within a day.',
     image: '/assets/landing/occ-evening.jpg',
   },
   'plus sizes': {
     eyebrow: 'Plus Sizes',
-    tint: '#F1ECE6',
+    tint: CHAMPAGNE,
     line: 'The same craft, cut across a fuller range of sizes.',
     image: '/assets/landing/salwar-1.jpg',
   },
@@ -120,14 +120,14 @@ const COLLECTION = {
 // reusing them keeps the two surfaces speaking to each other. Rendered small and
 // round here, exactly as they appear on the home page.
 const FABRIC = {
-  'A-Line': { tint: '#F4EFE7' },
-  Fishtail: { tint: '#EFF0EC' },
-  Banarasi: { tint: '#F6EDE1' },
-  Silk: { tint: '#F5F0E6' },
-  Velvet: { tint: '#F1EAEC' },
-  Georgette: { tint: '#EEF0EE' },
-  Net: { tint: '#F1EFEA' },
-  Organza: { tint: '#F5F1E9' },
+  'A-Line': { tint: CHAMPAGNE },
+  Fishtail: { tint: CHAMPAGNE },
+  Banarasi: { tint: CHAMPAGNE },
+  Silk: { tint: CHAMPAGNE },
+  Velvet: { tint: CHAMPAGNE },
+  Georgette: { tint: CHAMPAGNE },
+  Net: { tint: CHAMPAGNE },
+  Organza: { tint: CHAMPAGNE },
 };
 
 const fabricImage = (name) =>
