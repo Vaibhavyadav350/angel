@@ -9,12 +9,25 @@ import {
   CLEAR_FILTERS,
   SET_INITIAL_FILTERS,
 } from '../actions';
+import { unitSellingPrice } from '../utils/pricing';
+
+// Everything price-related on this page must use the price the shopper actually
+// pays, not the RRP. 33 of 58 products are discounted, so sorting, the slider
+// bounds and the slider filter were all working off a number that appears on the
+// card only as struck-through text.
+const shownPrice = (product) => unitSellingPrice(product);
+
+// Out of stock sinks below in stock, whatever the sort. 25 of 58 products have
+// no stock; ranked purely on price they lead the grid and the only buyable piece
+// ends up below the fold.
+const inStock = (product) => Number(product?.stock) > 0;
+const availabilityFirst = (a, b) => Number(inStock(b)) - Number(inStock(a));
 
 const filter_reducer = (state, action) => {
   if (action.type === LOAD_PRODUCTS) {
     // Guard against an empty product list — Math.max(...[]) is -Infinity, which
     // would break the price slider and filter every product out.
-    const prices = action.payload.map((product) => product.price).filter((p) => typeof p === 'number');
+    const prices = action.payload.map(shownPrice).filter((p) => typeof p === 'number' && !Number.isNaN(p));
     const maxPrice = prices.length ? Math.max(...prices) : 0;
     const minPrice = prices.length ? Math.min(...prices) : 0;
 
@@ -42,35 +55,21 @@ const filter_reducer = (state, action) => {
     const { sort, filtered_products } = state;
     let tempProducts = [...filtered_products];
 
-    //low-high
+    // low-high
     if (sort === 'price-lowest') {
-      tempProducts = tempProducts.sort((a, b) => {
-        if (a.price < b.price) {
-          return -1;
-        }
-        return 1;
-      });
+      tempProducts.sort((a, b) => availabilityFirst(a, b) || shownPrice(a) - shownPrice(b));
     }
-    //high-low
+    // high-low
     if (sort === 'price-highest') {
-      tempProducts = tempProducts.sort((a, b) => {
-        if (a.price < b.price) {
-          return 1;
-        }
-        return -1;
-      });
+      tempProducts.sort((a, b) => availabilityFirst(a, b) || shownPrice(b) - shownPrice(a));
     }
-    //accending
+    // ascending
     if (sort === 'name-a') {
-      tempProducts = tempProducts.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      tempProducts.sort((a, b) => availabilityFirst(a, b) || a.name.localeCompare(b.name));
     }
-    //descending
+    // descending
     if (sort === 'name-z') {
-      tempProducts = tempProducts.sort((a, b) => {
-        return b.name.localeCompare(a.name);
-      });
+      tempProducts.sort((a, b) => availabilityFirst(a, b) || b.name.localeCompare(a.name));
     }
 
     return { ...state, filtered_products: tempProducts };
@@ -157,7 +156,7 @@ const filter_reducer = (state, action) => {
     }
     //price
     tempProducts = tempProducts.filter((product) => {
-      return product.price <= price;
+      return shownPrice(product) <= price;
     });
     //shipping
     if (shipping) {

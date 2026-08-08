@@ -45,6 +45,7 @@ const Product = ({ image, name, price, id, category, subCategory, collections, d
   // 43% of the catalogue currently has no stock. Those cards used to look
   // identical to buyable ones, so the shopper only found out after clicking.
   const soldOut = !(Number(stock) > 0);
+  const lowStock = !soldOut && Number(stock) <= 3;
 
   return (
     <motion.div
@@ -73,9 +74,12 @@ const Product = ({ image, name, price, id, category, subCategory, collections, d
           )}
         </Link>
 
-        {/* Sold out outranks the collection badge — availability is the more
-            useful thing to know at a glance. */}
-        {badge && (
+        {/* Sold out genuinely outranks the collection badge — this said so
+            already but rendered both anyway, so all 25 unavailable products kept
+            their badge and 5 of them still advertised SALE on something nobody
+            could buy. Availability is the more useful thing to know, and the
+            SOLD OUT bar is already saying it. */}
+        {badge && !soldOut && (
           <span
             className={`absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 px-2 py-1 sm:px-3 sm:py-1.5 text-[7px] sm:text-[8px] font-black uppercase tracking-[0.15em] sm:tracking-[0.18em] ${BADGE_TONE_CLASSES[badge.tone]}`}
           >
@@ -100,6 +104,14 @@ const Product = ({ image, name, price, id, category, subCategory, collections, d
             {name}
           </h3>
         </Link>
+
+        {lowStock && (
+          /* True and checkable, unlike invented urgency — 21 products are
+             genuinely down to three or fewer. */
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B3261E]/80">
+            Only {Number(stock)} left
+          </p>
+        )}
 
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 min-w-0">
