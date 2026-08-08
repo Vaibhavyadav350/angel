@@ -285,10 +285,11 @@ const ProductsPage = () => {
               backgroundImage: `url(${theme.banner})`,
               backgroundSize: 'cover',
               backgroundPosition: 'right center',
-              // Faded well back: the banner is the surface the page sits on, not
-              // the subject. At full strength it competed with the mounted print
-              // resting on it and with the products below.
-              opacity: 0.55,
+              // Per banner, not one number for all four. The embroidery artwork
+              // is a quiet textile texture and reads as nothing at 55%; the
+              // Jewellery banner is a busy product photograph and needs holding
+              // back at exactly that. Falls back to the cautious value.
+              opacity: theme.bannerOpacity ?? 0.55,
             }}
           />
         )}

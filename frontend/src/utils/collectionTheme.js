@@ -33,10 +33,14 @@ const ARCHIVE = {
 const CATEGORY = {
   Women: {
     eyebrow: 'The Women’s Archive',
-    tint: '#F5E9E6',
+    // Sampled from the banner's own quiet left third, so the flat colour behind
+    // the artwork and the artwork itself meet without a seam. The old #F5E9E6
+    // belonged to the blush banner and was the one pink surface on the site.
+    tint: '#F0E6D8',
     line: 'Lehengas, sarees and salwar kameez — cut for celebration.',
     image: '/assets/landing/cat-lehenga.jpg',
     banner: '/assets/landing/cat-women-banner.jpg',
+    bannerOpacity: 0.85,
   },
   Men: {
     eyebrow: 'Menswear',
@@ -44,6 +48,7 @@ const CATEGORY = {
     line: 'Sherwanis, jackets and kurtas, tailored with restraint.',
     image: '/assets/landing/cat-sherwani.jpg',
     banner: '/assets/landing/cat-men-banner.jpg',
+    bannerOpacity: 0.85,
   },
   Kids: {
     eyebrow: 'The Young Heirs',
@@ -51,6 +56,7 @@ const CATEGORY = {
     line: 'Miniature heirlooms, made with the same care as the rest.',
     image: '/assets/landing/cat-kids.jpg',
     banner: '/assets/landing/cat-kids-banner.jpg',
+    bannerOpacity: 0.85,
   },
   Jewelry: {
     eyebrow: 'Archival Adornments',
@@ -58,6 +64,9 @@ const CATEGORY = {
     line: 'Kundan, polki and pearl — finished by hand.',
     image: '/assets/landing/cat-jewelry.jpg',
     banner: '/assets/landing/cat-jewelry-banner.jpg',
+    // A photograph of jewellery rather than a flat textile: far busier, so it
+    // stays held back where the embroidery banners can carry more weight.
+    bannerOpacity: 0.55,
   },
 };
 
