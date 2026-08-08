@@ -4,7 +4,8 @@ import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
 import { Loading, Error } from '../../components';
 import { useProductsContext } from '../../context/products_context';
-import { normalizeFilterValue } from '../../utils/categoryData';
+import { normalizeFilterValue, categoryData } from '../../utils/categoryData';
+import { collectionTheme } from '../../utils/collectionTheme';
 
 /**
  * Collection listing.
@@ -28,6 +29,7 @@ const ProductsPage = () => {
     clearFilters,
     setInitialFilters,
     filters,
+    all_products,
   } = useFilterContext();
 
   const { products_loading: loading, products_error: error } = useProductsContext();
@@ -110,6 +112,36 @@ const ProductsPage = () => {
     history,
   ]);
 
+  // Ground tint, accent and imagery for whatever is being browsed. Every route
+  // funnels into this one page, so without this Jewellery looked identical to
+  // Menswear.
+  const { category, subCategory, productType, collection, fabric } = filters;
+  const theme = useMemo(
+    () => collectionTheme({ category, subCategory, productType, collection, fabric }),
+    [category, subCategory, productType, collection, fabric]
+  );
+
+  // The way into the department, shown in the masthead. Without these the header
+  // was a title and one line floating in a tall band — decoration paying no rent.
+  const quickLinks = useMemo(() => {
+    if (!category || category === 'all') return [];
+    const subs = categoryData[category];
+    if (!subs) return [];
+    // Once inside a sub-category, offer its product types instead.
+    if (subCategory && subCategory !== 'all') {
+      return (subs[subCategory] || []).map((t) => ({
+        label: t,
+        to: `/products?category=${encodeURIComponent(category)}&subCategory=${encodeURIComponent(subCategory)}&productType=${encodeURIComponent(t)}`,
+        active: productType === t,
+      }));
+    }
+    return Object.keys(subs).map((sub) => ({
+      label: sub,
+      to: `/products?category=${encodeURIComponent(category)}&subCategory=${encodeURIComponent(sub)}`,
+      active: false,
+    }));
+  }, [category, subCategory, productType]);
+
   // Keep the grid in view when a refinement shortens the list.
   const filterSignature = [
     filters.category, filters.subCategory, filters.productType, filters.collection, filters.fabric,
@@ -179,37 +211,296 @@ const ProductsPage = () => {
     return cameFromNavigation && !refinedItThemselves;
   }, [filters]);
 
+  // An empty section used to be one small caption stranded in a tall empty
+  // column, which read as a broken page rather than a curated one. Rather than
+  // apologise into a void, offer the shopper something real to look at: pieces
+  // from the same department where possible, otherwise from the catalogue at
+  // large. Nothing is fabricated — these are ordinary products, clearly labelled
+  // as a different thing from what was asked for.
+  const suggestions = useMemo(() => {
+    if (products.length > 0) return [];
+    const pool = all_products || [];
+    const inStock = pool.filter((p) => (p.stock ?? 0) > 0);
+    const sameDepartment =
+      filters.category && filters.category !== 'all'
+        ? inStock.filter((p) => p.category === filters.category)
+        : [];
+    return (sameDepartment.length >= 4 ? sameDepartment : inStock).slice(0, 4);
+  }, [products.length, all_products, filters.category]);
+
   if (loading) return <Loading />;
   if (error) return <Error />;
 
   return (
     <main className="bg-champagne font-body min-h-screen">
       {/* ---------------------------------------------------------------- */}
-      {/* Header — editorial, not a billboard. Replaces the 12vw wordmark   */}
-      {/* and the 60vh hero that repeated the same word underneath it.      */}
+      {/* Header — a banded, per-context masthead. Compact by design: the       */}
+      {/* 60vh hero this replaced pushed the products a screen and a half down. */}
       {/* ---------------------------------------------------------------- */}
-      <header className="pt-24 sm:pt-28 lg:pt-36 pb-8 lg:pb-10 px-5 sm:px-8 lg:px-16">
-        <div className="container mx-auto max-w-[1500px]">
-          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-bold uppercase tracking-[0.25em] text-bronze/40 mb-6 lg:mb-8">
+      <header className="relative overflow-hidden" style={{ backgroundColor: theme.tint }}>
+        {/* Ground.
+            A department with a commissioned embroidery banner shows it full width
+            — those images are drawn with a deliberately empty left half for the
+            headline, so they are the ground rather than something hidden behind a
+            texture. Everything else falls back to the generated layers: a vertical
+            gradient, a jaali lattice, and a photograph bled off the right.   */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ background: `linear-gradient(180deg, #FFFFFF55 0%, transparent 45%, ${theme.accent}0F 100%)` }}
+        />
+
+        {/* The lattice stands in for ornament. Where a banner shows it is
+            redundant — but the banner is desktop-only, so on a phone the lattice
+            is the ONLY texture there is and must survive. Hiding it outright left
+            phones with a flat block of colour. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 opacity-[0.55] ${theme.banner ? 'md:hidden' : ''}`}
+          style={{
+            backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+                 <g fill="none" stroke="${theme.accent}" stroke-width="1" stroke-opacity="0.16">
+                   <path d="M36 0 L72 36 L36 72 L0 36 Z"/>
+                   <circle cx="36" cy="36" r="11"/>
+                   <path d="M36 25 L47 36 L36 47 L25 36 Z"/>
+                 </g>
+               </svg>`
+            )}")`,
+            backgroundSize: '72px 72px',
+            maskImage: 'radial-gradient(120% 100% at 30% 0%, black, transparent 70%)',
+            WebkitMaskImage: 'radial-gradient(120% 100% at 30% 0%, black, transparent 70%)',
+          }}
+        />
+
+        {/* The banner itself. Desktop only: the artwork is 1.75:1 and the band is
+            far wider than it is tall, so on a phone `cover` crops to the middle —
+            straight through the ornament — and the headline would land on top of
+            the embroidery instead of beside it. */}
+        {theme.banner && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 hidden md:block"
+            style={{
+              backgroundImage: `url(${theme.banner})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'right center',
+              // Faded well back: the banner is the surface the page sits on, not
+              // the subject. At full strength it competed with the mounted print
+              // resting on it and with the products below.
+              opacity: 0.55,
+            }}
+          />
+        )}
+
+        {/* A cloth page borrows the home page's circle, which is a tight square
+            crop — stretched across 60% of the band it turns to mush. So the
+            photograph only bleeds for departments and collections; cloth gets a
+            soft pool of its own colour behind the circle instead. */}
+        {theme.image && !theme.round && !theme.banner && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-3/5 hidden md:block"
+            style={{
+              backgroundImage: `url(${theme.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 25%',
+              opacity: 0.2,
+              maskImage: 'linear-gradient(to right, transparent, black 70%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 70%)',
+            }}
+          />
+        )}
+
+        {theme.round && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-1/2 hidden lg:block"
+            style={{
+              background: `radial-gradient(closest-side at 62% 50%, ${theme.accent}26, ${theme.accent}0A 55%, transparent 78%)`,
+            }}
+          />
+        )}
+
+        {/* Contrast wash. The banners already reserve a quiet left half, so they
+            need only a light veil to guarantee the type — washing them as hard as
+            a cropped photograph would flatten the silk they were drawn for. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: theme.banner
+              ? `linear-gradient(90deg, ${theme.tint}E6 0%, ${theme.tint}99 34%, transparent 62%)`
+              : `linear-gradient(90deg, ${theme.tint} 20%, ${theme.tint}CC 44%, transparent 78%)`,
+          }}
+        />
+
+        {/* A drawn circle is a substitute for ornament; with real ornament on the
+            band it is just one more thing competing. */}
+        {!theme.banner && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-28 -right-20 w-[420px] h-[420px] rounded-full border opacity-25 hidden lg:block"
+            style={{ borderColor: theme.accent }}
+          />
+        )}
+
+        <div className="container mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-16 pt-20 sm:pt-24 lg:pt-28 pb-8 lg:pb-10 relative z-10">
+          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-bold uppercase tracking-[0.25em] text-bronze/45 mb-4 lg:mb-5">
             <Link to="/" className="hover:text-gold transition-colors">Home</Link>
-            <span className="text-bronze/20">/</span>
+            <span className="text-bronze/25">/</span>
             <Link to="/products" className="hover:text-gold transition-colors">Collections</Link>
             {breadcrumb.map((crumb) => (
               <React.Fragment key={crumb}>
-                <span className="text-bronze/20">/</span>
+                <span className="text-bronze/25">/</span>
                 <span className="text-bronze">{crumb}</span>
               </React.Fragment>
             ))}
           </nav>
 
-          <span className="text-[10px] font-bold uppercase tracking-[0.6em] text-gold block mb-4">
-            Curated Archive
-          </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-editorial font-black text-bronze uppercase tracking-tighter leading-none">
-            {collectionTitle}
-          </h1>
-          <div className="h-px w-16 bg-gold mt-6" />
+          <div className="flex items-center justify-between gap-10">
+            <div className="min-w-0">
+              {/* Bronze rather than the gold accent: at 9px over a photographic
+                  banner gold measures about 2.1:1 against every ground tint, and
+                  small text needs 4.5:1. Bronze is the same brand palette and
+                  measures 5.2:1. Gold stays on the rule below, which is
+                  decoration and carries no reading load. */}
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.5em] block mb-2.5 text-bronze/75">
+                {theme.eyebrow}
+              </span>
+              {/* Scales down as the name gets longer, so "Jodhpuri Jaket Sets"
+                  does not set the height of the whole band. */}
+              <h1
+                className={`font-editorial font-black text-bronze uppercase tracking-tighter leading-[0.95] ${
+                  collectionTitle.length > 18
+                    ? 'text-2xl sm:text-3xl lg:text-4xl'
+                    : 'text-3xl sm:text-4xl lg:text-5xl'
+                }`}
+              >
+                {collectionTitle}
+              </h1>
+              <div className="h-[3px] w-14 mt-4" style={{ backgroundColor: theme.accent }} />
+              {theme.line && (
+                <p className="text-[12px] sm:text-[13px] font-medium text-bronze/60 mt-4 max-w-md leading-relaxed">
+                  {theme.line}
+                </p>
+              )}
+
+              {/* Quick links.
+                  The count varies from 2 to 8 depending on where you are, so the
+                  row cannot be laid out for one case. Two behaviours instead of a
+                  fixed grid:
+
+                  Phone — one line that scrolls sideways, bleeding to the screen
+                  edge so it is obvious more exists. Wrapping 8 chips at 390px
+                  produces four stacked lines and pushes the products off screen,
+                  which is the opposite of what a compact masthead is for.
+
+                  Tablet and up — wrap, but inside a capped width. The cap is what
+                  does the thinking: 3 chips stay on one line, 7 or 8 break evenly
+                  onto two, and nothing ever runs far enough right to crowd the
+                  mounted print. No counting, no breakpoint per department. */}
+              {quickLinks.length > 0 && (
+                <div className="mt-6 -mx-5 px-5 sm:mx-0 sm:px-0 overflow-x-auto sm:overflow-visible quicklinks">
+                  <div className="flex gap-2 flex-nowrap sm:flex-wrap sm:max-w-xl">
+                  {quickLinks.map((q) => (
+                    <Link
+                      key={q.label}
+                      to={q.to}
+                      /* Chocolate on gold, not white — the same pairing the
+                         product badges use, and the only readable one now that
+                         the accent is the house gold rather than a dark maroon. */
+                      className={`shrink-0 px-4 py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border transition-colors ${
+                        q.active ? 'text-chocolate' : 'bg-white/45 text-bronze/70 hover:text-bronze'
+                      }`}
+                      style={
+                        q.active
+                          ? { backgroundColor: theme.accent, borderColor: theme.accent }
+                          : { borderColor: `${theme.accent}44` }
+                      }
+                    >
+                      {q.label}
+                    </Link>
+                  ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {theme.image && (
+              <div className="hidden lg:block shrink-0">
+                {theme.round ? (
+                  /* Cloth: the same circle the shopper clicked on the home page,
+                     so the page they land on is visibly the one they chose. Kept
+                     small — it is a swatch, not a campaign image. */
+                  <div className="relative w-[170px] xl:w-[190px]">
+                    <span
+                      aria-hidden="true"
+                      className="absolute -inset-3 rounded-full border"
+                      style={{ borderColor: `${theme.accent}33` }}
+                    />
+                    <div
+                      className="relative aspect-square rounded-full overflow-hidden shadow-[0_18px_40px_-18px_rgba(61,43,31,0.55)]"
+                      style={{ boxShadow: `0 0 0 1px ${theme.accent}40 inset` }}
+                    >
+                      <img
+                        src={theme.image}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/45 pointer-events-none" />
+                    </div>
+                  </div>
+                ) : (
+                  /* Over a banner the photograph is mounted: a cream mat, a fine
+                     accent rule and a real shadow, so it reads as a print laid on
+                     the embroidered silk rather than a second image fighting the
+                     first. The mat is what does the work — without it the photo
+                     and the ornament sit in the same plane and both lose.
+                     On a plain ground there is nothing to sit on, so it stays the
+                     lighter framed panel it was. */
+                  <div
+                    className={`relative w-[210px] xl:w-[240px] rounded-xl ${
+                      theme.banner
+                        ? 'p-2.5 bg-[#FBF6EE] shadow-[0_30px_60px_-22px_rgba(61,43,31,0.55),0_0_70px_28px_rgba(253,250,246,0.5)] ring-1 ring-white/70'
+                        : 'ring-1 ring-white/40 shadow-[0_18px_45px_-20px_rgba(61,43,31,0.5)]'
+                    }`}
+                  >
+                    <div className={`relative aspect-[4/5] overflow-hidden ${theme.banner ? 'rounded-lg' : 'rounded-xl'}`}>
+                      <img
+                        src={theme.image}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                      {!theme.banner && (
+                        /* Thin inner rule — the framed-print detail that makes the
+                           panel read as an object rather than a cropped photo. */
+                        <span className="absolute inset-2 border border-white/25 rounded-lg pointer-events-none" />
+                      )}
+                    </div>
+                    {theme.banner && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-[5px] rounded-[10px] border pointer-events-none"
+                        style={{ borderColor: `${theme.accent}33` }}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+        <style>{`
+          .quicklinks::-webkit-scrollbar { display: none; }
+          .quicklinks { -ms-overflow-style: none; scrollbar-width: none; }
+        `}</style>
       </header>
 
       {/* ---------------------------------------------------------------- */}
@@ -258,8 +549,8 @@ const ProductsPage = () => {
             />
 
             {products.length < 1 ? (
-              <div className="flex items-center justify-center min-h-[45vh]">
-                <div className="text-center max-w-md space-y-5">
+              <div className="py-10 lg:py-14">
+                <div className="text-center max-w-md mx-auto space-y-5">
                   <div className="h-px w-12 bg-gold mx-auto" />
                   <h3 className="text-2xl lg:text-3xl font-editorial font-bold text-bronze uppercase tracking-tight">
                     {isBrowsingEmptySection ? 'New pieces arriving soon' : 'Nothing matches'}
@@ -277,6 +568,18 @@ const ProductsPage = () => {
                     {isBrowsingEmptySection ? 'Browse the full collection' : 'Clear all filters'}
                   </Link>
                 </div>
+
+                {suggestions.length > 0 && (
+                  <div className="mt-14 lg:mt-20">
+                    <div className="flex items-center gap-5 mb-8">
+                      <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.4em] text-bronze/45 whitespace-nowrap">
+                        In the meantime
+                      </span>
+                      <span className="h-px flex-1 bg-bronze/12" />
+                    </div>
+                    <GridView products={suggestions} />
+                  </div>
+                )}
               </div>
             ) : grid_view ? (
               <GridView products={products} />

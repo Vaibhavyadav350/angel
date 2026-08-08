@@ -6,6 +6,7 @@ import TrustNewsletter from '../../components/home/TrustNewsletter';
 import CategoryShowcase from '../../components/home/CategoryShowcase';
 import CustomerDiaries from '../../components/home/CustomerDiaries';
 import CircularCategories from '../../components/home/CircularCategories';
+import PromiseMarquee from '../../components/home/PromiseMarquee';
 
 const HomePage = () => {
   useEffect(() => {
@@ -19,6 +20,8 @@ const HomePage = () => {
         <HeroSection />
         
         {/* 2. Circular Categories */}
+        <PromiseMarquee />
+
         <CircularCategories />
 
         {/* 3. The Discovery Series (Static Editorial Sections) */}

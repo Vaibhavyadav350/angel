@@ -290,6 +290,27 @@ exports.deleteReview = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Which cloths actually have products behind them.
+//
+// The home page cloth strip used to render a hardcoded list of eight, four of
+// which had no products at all — clicking them landed the shopper on an empty
+// "arriving soon" page. Counts come from the database so a cloth appears only
+// once something is tagged with it, and disappears again if the last piece sells
+// out of the catalogue.
+exports.getFabricCounts = catchAsyncError(async (req, res) => {
+  const rows = await Product.aggregate([
+    { $match: { fabric: { $nin: [null, ''] } } },
+    { $group: { _id: '$fabric', count: { $sum: 1 } } },
+  ]);
+
+  const counts = {};
+  rows.forEach((r) => {
+    if (r._id) counts[String(r._id).trim()] = r.count;
+  });
+
+  res.status(200).json({ success: true, counts });
+});
+
 exports.getNewArrivals = catchAsyncError(async (req, res, next) => {
   const limit = req.query.limit ? parseInt(req.query.limit) : 5;
   const products = await Product.find().sort({ createdAt: -1 }).limit(limit);

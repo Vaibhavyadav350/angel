@@ -22,6 +22,13 @@ const NewNavbar = () => {
   const { currentUser } = useUserContext();
 
   const isHomePage = location.pathname === '/';
+  // The listing page carries its own tinted masthead. A solid champagne bar on
+  // top of it reads as a second header, so the nav sits transparent over the
+  // band and only takes a background once you scroll past it — the same
+  // behaviour as the hero on the home page. Its type stays dark either way,
+  // because the band is light.
+  const overBand = location.pathname === '/products';
+  const floating = (isHomePage || overBand) && !scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -55,12 +62,12 @@ const NewNavbar = () => {
     }
   };
 
-  const navBg = isHomePage && !scrolled
-    ? 'bg-transparent'
-    : 'bg-champagne/95 backdrop-blur-md shadow-sm';
+  const navBg = floating ? 'bg-transparent' : 'bg-champagne/95 backdrop-blur-md shadow-sm';
 
-  const textColor = isHomePage && !scrolled ? 'text-white' : 'text-[#3D2B1F]';
-  const iconColor = isHomePage && !scrolled ? 'text-white hover:text-[#C5A059]' : 'text-[#3D2B1F] hover:text-[#C5A059]';
+  // Only the home hero is dark enough to need light type.
+  const onDarkHero = isHomePage && !scrolled;
+  const textColor = onDarkHero ? 'text-white' : 'text-[#3D2B1F]';
+  const iconColor = onDarkHero ? 'text-white hover:text-[#C5A059]' : 'text-[#3D2B1F] hover:text-[#C5A059]';
 
   const mainNavLinks = [
     { label: 'NEW ARRIVALS', key: null, url: '/products?collection=new%20arrivals' },
@@ -85,7 +92,7 @@ const NewNavbar = () => {
             <img
               src={logo}
               alt="Angel Fashion Studio Logo"
-              className={`h-12 md:h-16 scale-[2.1] md:scale-[2.8] origin-left -translate-y-2 object-contain transition-all duration-300 ${isHomePage && !scrolled ? 'brightness-0 invert' : ''}`}
+              className={`h-12 md:h-16 scale-[2.1] md:scale-[2.8] origin-left -translate-y-2 object-contain transition-all duration-300 ${onDarkHero ? 'brightness-0 invert' : ''}`}
             />
           </Link>
 

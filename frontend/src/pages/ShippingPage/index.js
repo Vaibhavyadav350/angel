@@ -14,10 +14,35 @@ const ShippingPage = () => {
                 <div className="container mx-auto max-w-3xl space-y-12">
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Pricing</h3>
-                        <ul className="list-disc list-inside space-y-2 text-sm font-medium leading-relaxed text-bronze/70">
-                            <li>Regular Post — $8 for any size of order anywhere in Australia</li>
-                            <li>Express Post — $18 for any size of order anywhere in Australia</li>
-                        </ul>
+                        <p className="text-sm font-medium leading-relaxed text-bronze/70">
+                            Delivery is charged by parcel size, worked out automatically from what you order.
+                            A single garment, or a handful of jewellery, falls into the smallest bands.
+                        </p>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-bronze/70">
+                                <thead>
+                                    <tr className="text-left text-[10px] font-bold uppercase tracking-widest text-bronze/50 border-b border-bronze/10">
+                                        <th className="py-2 pr-4">Parcel size</th>
+                                        <th className="py-2 pr-4">Regular Post</th>
+                                        <th className="py-2">Express Post</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="font-medium">
+                                    <tr className="border-b border-bronze/5"><td className="py-2 pr-4">Up to 0.5 kg</td><td className="py-2 pr-4">$5</td><td className="py-2">$15</td></tr>
+                                    <tr className="border-b border-bronze/5"><td className="py-2 pr-4">Up to 2 kg</td><td className="py-2 pr-4">$8</td><td className="py-2">$18</td></tr>
+                                    <tr className="border-b border-bronze/5"><td className="py-2 pr-4">Up to 5 kg</td><td className="py-2 pr-4">$14</td><td className="py-2">$28</td></tr>
+                                    <tr className="border-b border-bronze/5"><td className="py-2 pr-4">Up to 10 kg</td><td className="py-2 pr-4">$22</td><td className="py-2">$40</td></tr>
+                                    <tr className="border-b border-bronze/5"><td className="py-2 pr-4">Up to 22 kg</td><td className="py-2 pr-4">$35</td><td className="py-2">$60</td></tr>
+                                    <tr><td className="py-2 pr-4">Over 22 kg</td><td className="py-2 pr-4" colSpan={2}>Contact us for a delivery quote</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed text-bronze/70">
+                            The exact delivery charge is always shown at checkout before you pay. Prices apply
+                            anywhere in Australia; we do not currently ship overseas. Orders too large to post
+                            as a single consignment cannot be completed online — please contact us and we will
+                            quote the freight for you.
+                        </p>
                     </div>
                     <div className="h-px bg-bronze/10" />
                     <div className="space-y-4">
@@ -60,7 +85,13 @@ const ShippingPage = () => {
                     <div className="space-y-4">
                         <h3 className="text-2xl font-editorial font-bold text-bronze uppercase">Free Shipping</h3>
                         <p className="text-sm font-medium leading-relaxed text-bronze/70">
-                            Orders over $200 qualify for free standard (Regular Post) shipping anywhere in Australia.
+                            Orders over $200 qualify for free Regular Post anywhere in Australia. The $200 is
+                            assessed on the amount actually payable, after any product discount and any coupon.
+                        </p>
+                        <p className="text-sm font-medium leading-relaxed text-bronze/70">
+                            Free delivery covers the standard $8 Regular Post charge. On an unusually large or
+                            heavy order that falls into a higher band, the $8 is deducted and only the difference
+                            is payable. Express Post is never free.
                         </p>
                     </div>
                     <div className="h-px bg-bronze/10" />
