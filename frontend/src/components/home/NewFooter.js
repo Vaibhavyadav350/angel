@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa';
 import { socialLinks } from '../../utils/constants';
+import PaymentMethods from '../PaymentMethods';
 import logo from '../../assets/logo.png';
 
 const footerLinks = {
@@ -14,9 +15,9 @@ const footerLinks = {
   ],
   "Shop Men & Kids": [
     { name: "Classic Sherwanis", url: "/products?category=Men&subCategory=SHERWANIS" },
-    { name: "Indo Western", url: "/products?category=Women&subCategory=LEHENGAS&productType=Indo+Western" },
-    { name: "Girls Ethnic", url: "/products?category=Kids" },
-    { name: "Boys Ethnic", url: "/products?category=Kids" },
+    { name: "Indo Western", url: "/products?category=Men&subCategory=SHERWANIS&productType=Indowestern+Sherwani" },
+    { name: "Girls Ethnic", url: "/products?category=Kids&subCategory=Girls" },
+    { name: "Boys Ethnic", url: "/products?category=Kids&subCategory=Boys" },
     { name: "Men's Jackets", url: "/products?category=Men&subCategory=JACKET" }
   ],
   "Legal & Support": [
@@ -28,7 +29,6 @@ const footerLinks = {
   ],
   "Our Studio": [
     { name: "About Us", url: "/about" },
-    { name: "Our Heritage", url: "/about" },
     { name: "Store Locator", url: "/contact" },
     { name: "Wholesale", url: "/contact" }
   ]
@@ -45,7 +45,7 @@ const NewFooter = () => {
     <footer className="bg-[#3D2B1F] text-[#F7E7CE] pt-16 pb-24 md:pb-12 border-t border-white/5">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-16">
           
           {/* Column 1: Brand */}
           <div className="space-y-6">
@@ -115,14 +115,24 @@ const NewFooter = () => {
 
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] text-white/20 tracking-[0.4em] uppercase font-bold">
-          <p>© 2025 ANGEL FASHION STUDIO. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-8">
-            <Link to="/privacy-policy" className="hover:text-white transition-colors">Legal</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Compliance</Link>
-            <Link to="/shipping" className="hover:text-white transition-colors">Logistics</Link>
-          </div>
+        {/* Payment + provenance.
+            This replaces a row of three links — Legal, Compliance, Logistics —
+            which pointed at the privacy, terms and shipping pages already listed
+            under "Legal & Support" a few centimetres above. Three renamed
+            duplicates of visible links is noise; what a shopper actually looks
+            for at the end of a store page is how they can pay and who they are
+            buying from. */}
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <PaymentMethods />
+          <p className="text-[9px] text-white/25 tracking-[0.3em] uppercase font-bold md:text-right">
+            Prices in AUD, inclusive of GST
+          </p>
+        </div>
+
+        <div className="pt-6 text-[9px] text-white/20 tracking-[0.4em] uppercase font-bold">
+          {/* Dynamic, so the year is never quietly wrong the moment January
+              arrives — it was still reading 2025. */}
+          <p>© {new Date().getFullYear()} Angel Fashion Studio. All rights reserved.</p>
         </div>
       </div>
     </footer>
