@@ -87,25 +87,9 @@ const DesktopSortDropdown = ({ sort, updateSort }) => {
   );
 };
 
-/* ─── Mobile sort trigger (inside unified pill) ────────────────────────── */
-const MobileSortTrigger = ({ sort, onOpen }) => {
-  const selected = SORT_OPTIONS.find((o) => o.value === sort) || SORT_OPTIONS[0];
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="sm:hidden flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.18em] focus:outline-none"
-    >
-      <span className="text-gold tracking-[0.3em]">Sort</span>
-      <span className="text-bronze/55">{selected.short}</span>
-      <span className="material-symbols-outlined text-[13px] text-bronze/40">expand_more</span>
-    </button>
-  );
-};
 
 /* ─── Mobile bottom sheet ──────────────────────────────────────────────── */
 const MobileSortSheet = ({ sort, updateSort, open, onClose }) => {
-  const selected = SORT_OPTIONS.find((o) => o.value === sort) || SORT_OPTIONS[0];
 
   // Prevent body scroll while open
   useEffect(() => {
