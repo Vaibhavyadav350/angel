@@ -22,6 +22,18 @@
 // their ground tint and their own photography, which is the quiet way to do it.
 const GOLD = '#C5A059';
 
+// The page's own ground, straight from the Tailwind palette.
+//
+// Every band used to carry a tint of its own — near-white creams and greys that
+// were close to champagne but not it. Against the champagne page below, "close
+// but not it" is exactly what reads as a seam: the eye finds the edge instantly.
+//
+// The banner departments now sit on champagne itself, so the quiet left half of
+// the band IS the page and there is no line to see. Ornament simply emerges on
+// the right. Collections and cloth keep a hint of their own colour, which the
+// bottom fade dissolves.
+const CHAMPAGNE = '#F7E7CE';
+
 const ARCHIVE = {
   eyebrow: 'Curated Archive',
   tint: '#F7EFE3',
@@ -36,7 +48,7 @@ const CATEGORY = {
     // Sampled from the banner's own quiet left third, so the flat colour behind
     // the artwork and the artwork itself meet without a seam. The old #F5E9E6
     // belonged to the blush banner and was the one pink surface on the site.
-    tint: '#F0E6D8',
+    tint: CHAMPAGNE,
     line: 'Lehengas, sarees and salwar kameez — cut for celebration.',
     image: '/assets/landing/cat-lehenga.jpg',
     banner: '/assets/landing/cat-women-banner.jpg',
@@ -44,7 +56,7 @@ const CATEGORY = {
   },
   Men: {
     eyebrow: 'Menswear',
-    tint: '#EFE9E0',
+    tint: CHAMPAGNE,
     line: 'Sherwanis, jackets and kurtas, tailored with restraint.',
     image: '/assets/landing/cat-sherwani.jpg',
     banner: '/assets/landing/cat-men-banner.jpg',
@@ -52,7 +64,7 @@ const CATEGORY = {
   },
   Kids: {
     eyebrow: 'The Young Heirs',
-    tint: '#F2EEE5',
+    tint: CHAMPAGNE,
     line: 'Miniature heirlooms, made with the same care as the rest.',
     image: '/assets/landing/cat-kids.jpg',
     banner: '/assets/landing/cat-kids-banner.jpg',
@@ -60,7 +72,7 @@ const CATEGORY = {
   },
   Jewelry: {
     eyebrow: 'Archival Adornments',
-    tint: '#F6EFE1',
+    tint: CHAMPAGNE,
     line: 'Kundan, polki and pearl — finished by hand.',
     image: '/assets/landing/cat-jewelry.jpg',
     banner: '/assets/landing/cat-jewelry-banner.jpg',

@@ -106,3 +106,21 @@ export const isPaleColor = (name) => {
   // Perceived luminance.
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.82;
 };
+
+// ---------------------------------------------------------------------------
+// Display spelling.
+//
+// The store is Australian, so the customer-facing word is "Jewellery". The
+// stored value stays "Jewelry" — it is the category on all 58 products, it is in
+// every /products?category=Jewelry link already indexed or bookmarked, and it is
+// the backend enum. Renaming the data would mean a production migration and dead
+// URLs to fix a label.
+//
+// So the data keeps its spelling and only the label changes. Anything that shows
+// a category to a shopper goes through here.
+// ---------------------------------------------------------------------------
+const DISPLAY_NAMES = {
+  Jewelry: 'Jewellery',
+};
+
+export const categoryLabel = (value) => DISPLAY_NAMES[value] || value;

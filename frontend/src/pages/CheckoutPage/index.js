@@ -47,6 +47,7 @@ const CheckoutPage = () => {
   const [guestEmailConfirm, setGuestEmailConfirm] = useState('');
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   useEffect(() => {
     document.title = 'Angel Fashion Studio | Secure Checkout';
@@ -148,18 +149,85 @@ const CheckoutPage = () => {
   const labelClasses = "text-[9px] font-bold uppercase tracking-widest text-gold block mb-2";
 
   return (
-    <main className="pt-32 pb-24 px-6 lg:px-24 min-h-screen bg-champagne font-body">
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-20">
+    <main className="pt-20 lg:pt-32 pb-32 bg-champagne font-body">
+      <div className="container mx-auto max-w-7xl px-4 lg:px-24">
+
+        {/* ── Mobile: sticky bottom pay bar ── */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-4 pb-6 pt-4 bg-champagne border-t border-bronze/10"
+        >
+          <button
+            form="checkout-form"
+            type="submit"
+            disabled={processing || summary.requiresQuote}
+            className="w-full flex items-center justify-center gap-3 py-4 bg-chocolate text-champagne font-bold text-[10px] uppercase tracking-[0.35em] rounded-2xl hover:bg-bronze transition-all shadow-xl disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[13px]">lock</span>
+            <span>{processing ? 'Redirecting...' : `Pay ${formatPrice(summary.toPay)}`}</span>
+          </button>
+          {error && <p className="text-red-500 text-[9px] font-bold uppercase tracking-widest mt-2 text-center">{error}</p>}
+        </div>
+
+        {/* ── Mobile: collapsible order summary strip ── */}
+        <div className="lg:hidden mb-6">
+          <button
+            type="button"
+            onClick={() => setSummaryOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-white/50 backdrop-blur-md rounded-2xl border border-bronze/10 shadow-sm"
+          >
+            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/60">
+              {cart.length} {cart.length === 1 ? 'item' : 'items'} · {formatPrice(summary.toPay)}
+            </span>
+            <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] text-gold">
+              {summaryOpen ? 'Hide' : 'Show'} order
+              <span className="material-symbols-outlined text-[14px]" style={{ transform: summaryOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>expand_more</span>
+            </div>
+          </button>
+
+          {summaryOpen && (
+            <div className="mt-2 bg-white/50 backdrop-blur-md rounded-2xl border border-bronze/10 p-4 space-y-3">
+              {cart.map((item) => (
+                <div key={item.id} className="flex gap-3 items-center">
+                  <div className="size-14 shrink-0 bg-white border border-bronze/10 overflow-hidden rounded-lg">
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-[10px] font-editorial font-bold text-bronze uppercase truncate">{item.name}</h4>
+                    <p className="text-[8px] font-bold tracking-widest text-bronze/40 uppercase">Qty: {item.amount}</p>
+                  </div>
+                  <span className="text-[11px] font-editorial font-bold text-bronze shrink-0">{formatPrice(item.price * item.amount)}</span>
+                </div>
+              ))}
+              <div className="pt-3 border-t border-bronze/10 space-y-1.5">
+                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-bronze/50">
+                  <span>Subtotal</span><span>{formatPrice(summary.itemTotal)}</span>
+                </div>
+                <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-bronze/50">
+                  <span>Delivery</span><span>{summary.delivery === 0 ? 'Free' : formatPrice(summary.delivery)}</span>
+                </div>
+                {summary.coupon > 0 && (
+                  <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-emerald-600">
+                    <span>Coupon ({discount.code})</span><span>−{formatPrice(summary.coupon)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-2 border-t border-bronze/10">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">Total</span>
+                  <span className="text-lg font-editorial font-black text-bronze">{formatPrice(summary.toPay)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
 
           {/* Left Column - Shipping Form */}
-          <div className="flex-1 space-y-16">
+          <div className="flex-1 space-y-10 lg:space-y-16">
             <section>
-              <h2 className="text-4xl lg:text-5xl font-editorial font-black text-bronze uppercase tracking-tighter mb-12">
+              <h2 className="text-3xl lg:text-5xl font-editorial font-black text-bronze uppercase tracking-tighter mb-8 lg:mb-12">
                 Delivery Details
               </h2>
 
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8" onSubmit={handleSubmit}>
+              <form id="checkout-form" className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 lg:gap-y-8" onSubmit={handleSubmit}>
 
                 {/* Email fields — shown first for guests so confirmation email is never missed */}
                 {!currentUser && (
@@ -272,7 +340,7 @@ const CheckoutPage = () => {
                   />
                 </div>
 
-                <div className="col-span-2 pt-12 border-t border-bronze/10">
+                <div className="col-span-2 pt-8 lg:pt-12 border-t border-bronze/10">
                   {summary.requiresQuote && (
                     <div className="mb-6 p-5 border border-gold/40 bg-gold/5 rounded">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-bronze mb-2">
@@ -289,10 +357,11 @@ const CheckoutPage = () => {
                       </p>
                     </div>
                   )}
+                  {/* Desktop submit — mobile uses fixed bottom bar */}
                   <button
                     type="submit"
                     disabled={processing || summary.requiresQuote}
-                    className="w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 group flex items-center justify-center gap-4"
+                    className="hidden lg:flex w-full bg-chocolate text-champagne py-6 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-gold transition-all duration-500 shadow-xl disabled:opacity-50 items-center justify-center gap-4"
                   >
                     <span>
                       {summary.requiresQuote
@@ -301,10 +370,10 @@ const CheckoutPage = () => {
                           ? 'Redirecting to Payment...'
                           : 'Proceed to Secure Payment'}
                     </span>
-                    {!processing && !summary.requiresQuote && <span className="material-symbols-outlined text-sm pt-0.5 group-hover:translate-x-1 border-[1px] rounded-full border-champagne p-1 transition-all">lock</span>}
+                    {!processing && !summary.requiresQuote && <span className="material-symbols-outlined text-sm pt-0.5 border-[1px] rounded-full border-champagne p-1">lock</span>}
                   </button>
                   {error && (
-                    <div className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
+                    <div className="hidden lg:block text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 text-center">
                       {error}
                     </div>
                   )}

@@ -39,7 +39,7 @@ const categories = [
     url: '/products?category=Kids'
   },
   {
-    name: 'Fine Jewelry',
+    name: 'Fine Jewellery',
     sub: 'Bridal · Casual Wear',
     image: '/assets/landing/cat-jewelry.jpg',
     url: '/products?category=Jewelry'

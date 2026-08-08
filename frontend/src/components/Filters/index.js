@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFilterContext } from '../../context/filter_context';
 import { getUniqueValues, formatPrice } from '../../utils/helpers';
-import { categoryData, colorSwatch, isPaleColor } from '../../utils/categoryData';
+import { categoryData, colorSwatch, isPaleColor, categoryLabel } from '../../utils/categoryData';
 
 /**
  * Refinement sidebar — the one place on the listing page where the shopper
@@ -81,7 +81,7 @@ const Filters = () => {
           {categories.map((item) => (
             <React.Fragment key={item}>
               <FilterLink name="category" value={item} onClick={updateFilters} active={category === item}>
-                {item === 'all' ? 'All Categories' : item}
+                {item === 'all' ? 'All Categories' : categoryLabel(item)}
               </FilterLink>
 
               {category === item && subCategories.length > 0 && (

@@ -59,8 +59,23 @@ Global Styles
 html {
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted-gold) var(--champagne-cream);
+  /* The page scrollbar is not drawn. It was styled as a gold thumb on a
+     champagne track, which at 8px wide read as a decorative border running down
+     the right edge of every page rather than as a control — most obvious against
+     the listing masthead, where it looked like the banner had a frame.
+     Scrolling itself is untouched: wheel, trackpad, keyboard, touch and the
+     scroll position all behave exactly as before. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Root only. Panels that genuinely need a visible scrollbar — the mobile filter
+   sheet, admin modals — opt in with .custom-scrollbar and are unaffected. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 /* Custom Scrollbar for Webkit */
@@ -91,6 +106,8 @@ body {
   font-size: 0.875rem;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 ul {

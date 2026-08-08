@@ -4,7 +4,7 @@ import { useFilterContext } from '../../context/filter_context';
 import { Filters, Sort, GridView, ListView } from '../../components';
 import { Loading, Error } from '../../components';
 import { useProductsContext } from '../../context/products_context';
-import { normalizeFilterValue, categoryData } from '../../utils/categoryData';
+import { normalizeFilterValue, categoryData, categoryLabel } from '../../utils/categoryData';
 import { collectionTheme } from '../../utils/collectionTheme';
 
 /**
@@ -168,14 +168,14 @@ const ProductsPage = () => {
     if (filters.subCategory && filters.subCategory !== 'all') return filters.subCategory;
     if (filters.fabric && filters.fabric !== 'all') return filters.fabric;
     if (filters.collection && filters.collection !== 'all') return filters.collection;
-    if (filters.category && filters.category !== 'all') return filters.category;
+    if (filters.category && filters.category !== 'all') return categoryLabel(filters.category);
     return 'The Archive';
   }, [filters.category, filters.subCategory, filters.productType, filters.collection, filters.fabric]);
 
   const breadcrumb = useMemo(
     () =>
       [
-        filters.category !== 'all' && filters.category,
+        filters.category !== 'all' && categoryLabel(filters.category),
         filters.subCategory && filters.subCategory !== 'all' && filters.subCategory,
         filters.productType && filters.productType !== 'all' && filters.productType,
       ].filter(Boolean),
@@ -237,7 +237,7 @@ const ProductsPage = () => {
       {/* Header — a banded, per-context masthead. Compact by design: the       */}
       {/* 60vh hero this replaced pushed the products a screen and a half down. */}
       {/* ---------------------------------------------------------------- */}
-      <header className="relative overflow-hidden" style={{ backgroundColor: theme.tint }}>
+      <header className="relative" style={{ backgroundColor: theme.tint }}>
         {/* Ground.
             A department with a commissioned embroidery banner shows it full width
             — those images are drawn with a deliberately empty left half for the
@@ -280,16 +280,41 @@ const ProductsPage = () => {
         {theme.banner && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 hidden md:block"
+            /* -bottom-[420px] is the whole trick. The artwork is not confined to
+               the masthead any more — it runs on behind the toolbar and the first
+               rows of product, dying out slowly over 420px of extra height.
+
+               A fade inside the band could never work: however soft it was, the
+               ornament still had to finish somewhere, and the eye finds that
+               place instantly. Carrying it past the boundary means there is no
+               boundary to find. The page reads as one piece of embroidered
+               ground that the products happen to be laid on. */
+            className="pointer-events-none absolute inset-x-0 top-0 -bottom-[420px] hidden md:block"
             style={{
               backgroundImage: `url(${theme.banner})`,
               backgroundSize: 'cover',
               backgroundPosition: 'right center',
+              // The artwork is a cooler, greyer cream than the page's champagne
+              // (#E3D0BC against #F7E7CE). Sepia warms it into the same golden
+              // beige family, so the two stop reading as two different papers.
+              filter: 'sepia(0.32) saturate(1.18)',
               // Per banner, not one number for all four. The embroidery artwork
               // is a quiet textile texture and reads as nothing at 55%; the
               // Jewellery banner is a busy product photograph and needs holding
               // back at exactly that. Falls back to the cautious value.
               opacity: theme.bannerOpacity ?? 0.55,
+              // Dissolve the artwork itself rather than covering it. A veil of
+              // champagne over dense gold thread only tints the thread — the
+              // ornament stays readable right up to the cut, which is exactly
+              // what kept showing as an edge. Masking discards those pixels, so
+              // what remains at the bottom is the band's own champagne, which is
+              // the page colour to the byte.
+              // Measured across the taller box: full strength through the band,
+              // then a long quiet decay across the overhang.
+              maskImage:
+                'linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.28) 78%, transparent 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.28) 78%, transparent 100%)',
             }}
           />
         )}
@@ -307,8 +332,14 @@ const ProductsPage = () => {
               backgroundSize: 'cover',
               backgroundPosition: 'center 25%',
               opacity: 0.2,
-              maskImage: 'linear-gradient(to right, transparent, black 70%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent, black 70%)',
+              // Masked on both axes. Sideways alone left the photograph meeting
+              // the product grid on a hard horizontal cut.
+              maskImage:
+                'linear-gradient(to right, transparent, black 70%), linear-gradient(to bottom, #000 45%, transparent 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to right, transparent, black 70%), linear-gradient(to bottom, #000 45%, transparent 100%)',
+              maskComposite: 'intersect',
+              WebkitMaskComposite: 'source-in',
             }}
           />
         )}
@@ -325,10 +356,12 @@ const ProductsPage = () => {
 
         {/* Contrast wash. The banners already reserve a quiet left half, so they
             need only a light veil to guarantee the type — washing them as hard as
-            a cropped photograph would flatten the silk they were drawn for. */}
+            a cropped photograph would flatten the silk they were drawn for.
+            When a banner is present, the wash must stretch down to cover the
+            overhang (-bottom-[420px]) so the filter and sort text remain readable. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
+          className={`pointer-events-none absolute ${theme.banner ? 'inset-x-0 top-0 -bottom-[420px]' : 'inset-0'}`}
           style={{
             background: theme.banner
               ? `linear-gradient(90deg, ${theme.tint}E6 0%, ${theme.tint}99 34%, transparent 62%)`
@@ -356,6 +389,10 @@ const ProductsPage = () => {
           />
         </div>
 
+        {/* The band used to end on a hard horizontal line, because its tint was
+            near-champagne but not champagne. The tints now match, and this fades
+            the last 100px into the page as well, so the masthead resolves into
+            the grid instead of stopping against it. */}
         <div className="container mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-16 pt-20 sm:pt-24 lg:pt-28 pb-8 lg:pb-10 relative z-10">
           <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] font-bold uppercase tracking-[0.25em] text-bronze/45 mb-4 lg:mb-5">
             <Link to="/" className="hover:text-gold transition-colors">Home</Link>
@@ -527,7 +564,10 @@ const ProductsPage = () => {
       {/* ---------------------------------------------------------------- */}
       {/* Filters + grid                                                    */}
       {/* ---------------------------------------------------------------- */}
-      <div className="px-5 sm:px-8 lg:px-16 pb-20 lg:pb-28">
+      {/* z-10 puts the grid above the artwork overhanging from the masthead, so
+          the ornament reads as ground the products sit on rather than a layer
+          over them. */}
+      <div className="relative z-10 px-5 sm:px-8 lg:px-16 pb-20 lg:pb-28">
         <div className="container mx-auto max-w-[1500px] flex flex-col lg:flex-row gap-8 lg:gap-14">
           {/* Sidebar — the single refinement surface */}
           <div

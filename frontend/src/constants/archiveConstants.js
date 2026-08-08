@@ -28,7 +28,7 @@ export const FILTER_OPTIONS = [
   { value: 'all', label: 'All Work' },
   { value: 'Women', label: 'Women' },
   { value: 'Men', label: 'Men' },
-  { value: 'Jewelry', label: 'Jewelry' },
+  { value: 'Jewelry', label: 'Jewellery' },
 ];
 
 export const SOCIAL_LINKS = {
@@ -70,7 +70,7 @@ export const FOOTER_LINKS = {
   shop: [
     { label: "Women's Collection", href: '/products?category=Women' },
     { label: "Men's Collection", href: '/products?category=Men' },
-    { label: "Jewelry Collection", href: '/products?category=Jewelry' },
+    { label: "Jewellery Collection", href: '/products?category=Jewelry' },
   ],
   clientCare: [
     { label: 'Concierge', href: '/contact' },

@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatPrice } from '../../utils/helpers';
 import { Link } from 'react-router-dom';
+import { categoryLabel } from '../../utils/categoryData';
 import { colorSwatch } from '../../utils/categoryData';
 
 const ListView = ({ products }) => {
@@ -28,7 +29,7 @@ const ListView = ({ products }) => {
                 <h4 className="text-2xl font-editorial font-bold text-bronze">{name}</h4>
                 {category && (
                   <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold">
-                    {category}
+                    {categoryLabel(category)}
                   </p>
                 )}
                 

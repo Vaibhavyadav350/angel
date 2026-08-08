@@ -74,7 +74,7 @@ const NewNavbar = () => {
     { label: 'WOMEN', key: 'Women', url: '/products?category=Women' },
     { label: 'MEN', key: 'Men', url: '/products?category=Men' },
     { label: 'KIDS', key: 'Kids', url: '/products?category=Kids' },
-    { label: 'JEWELRY', key: 'Jewelry', url: '/products?category=Jewelry' },
+    { label: 'JEWELLERY', key: 'Jewelry', url: '/products?category=Jewelry' },
     { label: 'ABOUT', key: null, url: '/about' },
     { label: 'SALE', key: null, url: '/products?collection=sale', sale: true },
   ];

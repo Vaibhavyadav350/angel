@@ -6,6 +6,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { productBadge, BADGE_TONE_CLASSES } from '../../utils/productBadge';
+import { categoryLabel } from '../../utils/categoryData';
 
 /**
  * Product card.
@@ -91,7 +92,7 @@ const Product = ({ image, name, price, id, category, subCategory, collections, d
       {/* Details */}
       <div className="mt-3.5 sm:mt-5 flex flex-col gap-1.5 sm:gap-2">
         <p className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-bronze/35">
-          {category}
+          {categoryLabel(category)}
           {subCategory ? ` // ${subCategory}` : ''}
         </p>
 
