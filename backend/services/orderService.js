@@ -2,7 +2,7 @@ const Order = require('../models/orderModel');
 const Product = require('../models/productModel');
 const { updateUserSpend } = require('../controllers/userController');
 const pdfService = require('./pdfService');
-const { sendOrderConfirmation } = require('../utils/emailService');
+const { sendOrderConfirmation, sendOwnerNewOrder } = require('../utils/emailService');
 
 /**
  * Creates an order after a confirmed eWAY payment.
@@ -214,13 +214,24 @@ exports.createOrderFromTransaction = async (transaction, meta, compressedItems, 
     // Send Confirmation Email (non-blocking — fire and forget)
     // Do NOT await this — SMTP timeout was causing 504 Gateway Timeout on DigitalOcean
     // PDF failure is caught separately so email still sends even without the attachment
-    pdfService.generateInvoiceBuffer(newOrder)
+    //
+    // The invoice is generated ONCE and shared. The customer confirmation and the
+    // studio alert then hang off it as two independent chains rather than one,
+    // so a failure delivering to either address cannot suppress the other — and
+    // neither can delay the response to eWAY.
+    const invoice = pdfService.generateInvoiceBuffer(newOrder)
         .catch(pdfError => {
             console.error(`[PDF FAILED] Order ${newOrder._id}: ${pdfError.message} — sending email without attachment`);
             return null;
-        })
+        });
+
+    invoice
         .then(pdfBuffer => sendOrderConfirmation(newOrder.user, newOrder, pdfBuffer))
         .catch(emailError => console.error(`[EMAIL FAILED] To: ${newOrder.user?.email || 'unknown'} | Error: ${emailError.message}`));
+
+    invoice
+        .then(pdfBuffer => sendOwnerNewOrder(newOrder, pdfBuffer))
+        .catch(emailError => console.error(`[OWNER ALERT FAILED] Order ${newOrder._id} | Error: ${emailError.message}`));
 
     return newOrder;
 };

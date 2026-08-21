@@ -270,3 +270,107 @@ exports.sendReturnUpdate = async (user, returnRequest, status) => {
         html
     });
 };
+
+// 5. New Order Alert — to the studio, not the customer
+//
+// Fires from the same place as the customer confirmation, so it covers both the
+// eWAY webhook and the reconciliation sweep that catches dropped webhooks.
+// Deliberately plain: this is an operations email. Its job is to answer "what do
+// I make, who do I contact, where does it go" without anyone opening the admin.
+//
+// Recipients come from OWNER_NOTIFICATION_EMAIL (comma-separated for more than
+// one) and fall back to the studio's support address, so a missing env var means
+// the alert still lands somewhere real rather than silently going nowhere.
+const OWNER_RECIPIENTS = (process.env.OWNER_NOTIFICATION_EMAIL || 'support@angelfashionstudio.org')
+    .split(',')
+    .map((a) => a.trim())
+    .filter(Boolean);
+
+exports.sendOwnerNewOrder = async (order, pdfBuffer) => {
+    const ref = order._id.toString().substring(15).toUpperCase();
+    const ship = order.shippingInfo || {};
+    const buyer = order.user || {};
+
+    const row = (label, value) => `
+        <tr>
+            <td style="padding:5px 12px 5px 0; font-size:12px; color:#7F8C8D; white-space:nowrap; vertical-align:top;">${label}</td>
+            <td style="padding:5px 0; font-size:13px; color:#432918;">${value || '—'}</td>
+        </tr>`;
+
+    const itemsHtml = (order.orderItems || []).map((item) => `
+        <tr>
+            <td style="padding:9px 0; border-bottom:1px solid #E6D5B8; font-size:13px;">
+                <strong>${item.name}</strong><br>
+                <span style="font-size:11px; color:#7F8C8D;">Size ${item.size} &nbsp;|&nbsp; ${item.color}</span>
+            </td>
+            <td style="padding:9px 0; border-bottom:1px solid #E6D5B8; font-size:15px; font-weight:bold; text-align:center;">&times;${item.quantity}</td>
+            <td style="padding:9px 0; border-bottom:1px solid #E6D5B8; font-size:13px; text-align:right;">${formatPrice(item.price * item.quantity)}</td>
+        </tr>`).join('');
+
+    const unitCount = (order.orderItems || []).reduce((n, i) => n + (Number(i.quantity) || 0), 0);
+
+    const html = `
+        <div style="font-family:Helvetica,Arial,sans-serif; max-width:640px; margin:0 auto; padding:28px 20px; background:#FCFAF8; color:#432918;">
+
+            <div style="border-left:4px solid #C5A059; padding-left:14px; margin-bottom:26px;">
+                <p style="margin:0; font-size:11px; letter-spacing:2px; color:#C5A059; font-weight:bold;">NEW ORDER</p>
+                <h1 style="margin:4px 0 0; font-size:22px; letter-spacing:1px;">#${ref}</h1>
+                <p style="margin:6px 0 0; font-size:12px; color:#7F8C8D;">
+                    ${unitCount} item${unitCount === 1 ? '' : 's'} &nbsp;·&nbsp; ${formatPrice(order.totalPrice)} paid
+                </p>
+            </div>
+
+            <table style="width:100%; border-collapse:collapse; margin-bottom:24px;">
+                ${row('Customer', `${buyer.name || 'Guest'}`)}
+                ${row('Email', `<a href="mailto:${buyer.email}" style="color:#8A6B4E;">${buyer.email || ''}</a>`)}
+                ${row('Phone', `<a href="tel:${ship.phoneNumber}" style="color:#8A6B4E;">${ship.phoneNumber || ''}</a>`)}
+                ${row('Deliver to', [ship.address, ship.city, ship.state, ship.pinCode, ship.country].filter(Boolean).join(', '))}
+                ${row('Carrier', ship.carrier || 'Australia Post')}
+                ${row('Payment ref', order.paymentInfo && order.paymentInfo.id ? order.paymentInfo.id : '')}
+                ${order.couponCode ? row('Coupon used', order.couponCode) : ''}
+            </table>
+
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th style="font-size:10px; color:#7F8C8D; text-align:left; padding-bottom:8px; border-bottom:1px solid #E6D5B8;">TO PREPARE</th>
+                        <th style="font-size:10px; color:#7F8C8D; text-align:center; padding-bottom:8px; border-bottom:1px solid #E6D5B8;">QTY</th>
+                        <th style="font-size:10px; color:#7F8C8D; text-align:right; padding-bottom:8px; border-bottom:1px solid #E6D5B8;">LINE</th>
+                    </tr>
+                </thead>
+                <tbody>${itemsHtml}</tbody>
+                <tfoot>
+                    <tr><td colspan="2" style="padding-top:10px; font-size:11px; text-align:right; color:#7F8C8D;">Items</td>
+                        <td style="padding-top:10px; font-size:11px; text-align:right; color:#7F8C8D;">${formatPrice(order.itemsPrice)}</td></tr>
+                    ${order.discountAmount > 0 ? `<tr><td colspan="2" style="padding-top:5px; font-size:11px; text-align:right; color:#7F8C8D;">Discount</td><td style="padding-top:5px; font-size:11px; text-align:right; color:#7F8C8D;">-${formatPrice(order.discountAmount)}</td></tr>` : ''}
+                    <tr><td colspan="2" style="padding-top:5px; font-size:11px; text-align:right; color:#7F8C8D;">Shipping</td>
+                        <td style="padding-top:5px; font-size:11px; text-align:right; color:#7F8C8D;">${formatPrice(order.shippingPrice)}</td></tr>
+                    <tr><td colspan="2" style="padding-top:12px; font-size:12px; font-weight:bold; text-align:right;">TOTAL PAID</td>
+                        <td style="padding-top:12px; font-size:15px; font-weight:bold; color:#8A6B4E; text-align:right;">${formatPrice(order.totalPrice)}</td></tr>
+                </tfoot>
+            </table>
+
+            <p style="margin-top:26px; font-size:12px; color:#7F8C8D; border-top:1px solid #E6D5B8; padding-top:16px;">
+                Payment has cleared through eWAY. The customer has been sent their confirmation and tax invoice.
+            </p>
+        </div>`;
+
+    const attachments = pdfBuffer ? [{
+        filename: `tax_invoice_${order._id}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf',
+    }] : [];
+
+    // One message per recipient: sendEmail takes a single address, and sending
+    // separately means one bad address cannot suppress the others.
+    return Promise.all(
+        OWNER_RECIPIENTS.map((email) =>
+            sendEmail({
+                email,
+                subject: `New order #${ref} — ${formatPrice(order.totalPrice)} — ${buyer.name || 'Guest'}`,
+                html,
+                attachments,
+            })
+        )
+    );
+};
