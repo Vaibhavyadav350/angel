@@ -75,7 +75,7 @@ const showcases = [
         title: "SHERWANIS & JACKETS",
         items: [
           { name: "Classic Sherwani", sub: "GROOM", img: "/assets/landing/catalog/subcat_classicsherwani.jpg", url: "/products?category=Men&subCategory=SHERWANIS&productType=Classic%20Sherwani" },
-          { name: "Indowestern", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern.jpg", url: "/products?category=Men&subCategory=SHERWANIS&productType=Indowestern%20Sherwani" },
+          { name: "Indowestern", sub: "FUSION", img: "/assets/landing/catalog/subcat_indowestern_men.jpg", url: "/products?category=Men&subCategory=SHERWANIS&productType=Indowestern%20Sherwani" },
           { name: "Jacket Sets", sub: "MODERN", img: "/assets/landing/catalog/subcat_jacketset.jpg", url: "/products?category=Men&subCategory=JACKET&productType=jacket%20sets" },
           { name: "Jodhpuri", sub: "ROYAL", img: "/assets/landing/catalog/subcat_jodhpuri.jpg", url: "/products?category=Men&subCategory=JACKET&productType=jodhpuri%20jaket%20sets" }
         ]

@@ -164,7 +164,7 @@ const SUBJECT = {
 
   // Men
   'classic sherwani': 'subcat_classicsherwani',
-  'indowestern sherwani': 'subcat_indowestern',
+  'indowestern sherwani': 'subcat_indowestern_men',
   'jacket sets': 'subcat_jacketset',
   'jodhpuri jaket sets': 'subcat_jodhpuri',
   'kurta pajama sets': 'subcat_kurtapajama',
