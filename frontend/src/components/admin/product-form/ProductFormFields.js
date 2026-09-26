@@ -210,7 +210,7 @@ function ProductFormFields({ form, onField, imageList, onAddFiles, onRemoveImage
           <h4 className={sectionHeading}>3. Variant Options</h4>
           <p className="text-[9px] text-bronze/50 italic mt-1">
             {isSizelessCategory(category)
-              ? 'Jewelry items default to a single stock value. Select colors below to track stock by color.'
+              ? 'Jewellery items default to a single stock value. Select colors below to track stock by color.'
               : 'Pick the sizes and colours available for this product.'}
           </p>
         </div>

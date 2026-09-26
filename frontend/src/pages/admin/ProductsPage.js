@@ -18,12 +18,26 @@ function ProductsPage() {
   } = useAdminProductStore();
 
   const [exporting, setExporting] = React.useState(false);
+  const [search, setSearch] = React.useState('');
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const handleRefresh = async () => {
     await fetchProducts(true);
   };
+
+  // By name or category — this is the page titled "Inventory Archive" in its
+  // own header, so it's what gets searched when someone asks for search "in
+  // inventory". The separate /admin/inventory stock-levels page already has
+  // its own search; this was the one missing it.
+  const needle = search.trim().toLowerCase();
+  const filteredProducts = needle
+    ? products.filter((p) =>
+        String(p.name || '').toLowerCase().includes(needle) ||
+        String(p.category || '').toLowerCase().includes(needle) ||
+        String(p.subCategory || '').toLowerCase().includes(needle)
+      )
+    : products;
 
   const handleExport = async () => {
     setExporting(true);
@@ -60,6 +74,25 @@ function ProductsPage() {
         </div>
       </div>
 
+      <div className="bg-white border border-bronze/10 rounded-lg px-5 py-4 mb-6 flex items-center gap-4">
+        <span className="material-symbols-outlined text-bronze/30">search</span>
+        <input
+          className="flex-1 text-sm text-bronze bg-transparent focus:outline-none placeholder:text-bronze/30"
+          placeholder="Search by product name or category..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {search && (
+          <button
+            onClick={() => setSearch('')}
+            className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-bronze/50 hover:text-bronze transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">close</span>
+            Clear
+          </button>
+        )}
+      </div>
+
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-2 border-bronze/20 border-t-gold rounded-full animate-spin" />
@@ -69,7 +102,14 @@ function ProductsPage() {
           <p className="text-lg font-editorial text-red-500">There was an error loading products</p>
         </div>
       ) : (
-        <ProductsTable products={products} />
+        <>
+          {search && (
+            <p className="text-[10px] text-bronze/40 font-bold uppercase tracking-widest mb-3">
+              {filteredProducts.length} of {products.length} products match "{search}"
+            </p>
+          )}
+          <ProductsTable products={filteredProducts} />
+        </>
       )}
     </SidebarWithHeader>
   );
